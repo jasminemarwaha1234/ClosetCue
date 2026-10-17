@@ -1,5 +1,5 @@
 ---
-name: veri-lahacks
+name: veri
 description: Train, deploy, and serve open language models on Veri (api.veri.studio) at LA Hacks 2026. Covers CLI and MCP setup, what GPUs are available this weekend, fine-tuning (SFT, DPO, GRPO), harness-in-the-loop RL, OpenAI-compatible inference deployments, datasets, the REST API, and the pitfalls that cost hackathon teams time and credits. Use whenever the user mentions Veri, veri.toml, the veri CLI, or wants to fine-tune, RL-train, or serve a model.
 ---
 
