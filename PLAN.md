@@ -372,6 +372,7 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 2. "How did it fit?" feedback updating the profile
 3. Sentry tracing, logs and AI monitoring, with a written "what it showed us"
 4. Camera-roll scan with face matching
+5. Screenshots as inspiration: the scan currently skips screenshots. Instead, include them, tag them "inspiration" (outfits the user likes) as opposed to "worn" (camera photos of the user), and weigh the two differently in the style profile
 
 **Later (after the hackathon, unless we're far ahead)**
 
