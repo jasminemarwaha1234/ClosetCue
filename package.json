@@ -4,6 +4,8 @@
   "main": "index.ts",
   "dependencies": {
     "expo": "~57.0.30",
+    "expo-image-manipulator": "~57.0.21",
+    "expo-media-library": "~57.0.5",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
     "react-native": "0.86.3"
