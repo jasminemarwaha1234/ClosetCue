@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -14,18 +14,21 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 
 // How many of the newest photos to look at, and how small to shrink each one.
 const SCAN_LIMIT = 300;
-const THUMB_WIDTH = 256;
+const THUMB_WIDTH = 512; // bigger than before so faces are readable
 const THUMB_QUALITY = 0.6;
 const BATCH_SIZE = 4; // photos processed at the same time on the phone
 const UPLOAD_BATCH = 10; // thumbnails sent to the backend per request
+const FIND_OWNER_PHOTOS = 80; // newest photos used to find your face
 
 // Set in .env as EXPO_PUBLIC_API_BASE_URL (use your laptop's LAN IP on a real phone)
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
 
 type Thumb = { id: string; base64: string; takenAt: number };
 type Phase = 'idle' | 'scanning' | 'done';
-type Stage = 'shrinking' | 'checking';
-type ScanResult = { id: string; has_outfit: boolean; confidence?: number };
+type Stage = 'shrinking' | 'finding' | 'checking';
+type Framing = 'full' | 'upper' | 'none';
+type ScanResult = { id: string; has_outfit: boolean; framing?: Framing; confidence?: number };
+type Candidate = { embedding: number[]; crop: string; photos: number };
 
 function looksLikeScreenshot(asset: MediaLibrary.Asset): boolean {
   if (asset.mediaSubtypes?.includes('screenshot')) return true; // iOS
@@ -56,33 +59,87 @@ async function makeThumb(asset: MediaLibrary.Asset): Promise<Thumb | null> {
   }
 }
 
-// Sends one batch of thumbnails to the backend and returns the ids that have an outfit.
-async function classifyBatch(batch: Thumb[]): Promise<string[]> {
+// Asks the backend for the most common faces in these photos.
+async function findOwnerCandidates(thumbs: Thumb[]): Promise<Candidate[]> {
+  const res = await fetch(`${API_BASE_URL}/faces/find-owner`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(thumbs.map(({ id, base64 }) => ({ id, base64 }))),
+  });
+  if (!res.ok) throw new Error(`Backend returned ${res.status}`);
+  const data: { candidates: Candidate[] } = await res.json();
+  return data.candidates;
+}
+
+// Sends one batch of thumbnails to the backend and returns the results that have an outfit.
+async function classifyBatch(batch: Thumb[], owner: number[] | null): Promise<ScanResult[]> {
   const res = await fetch(`${API_BASE_URL}/scan`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(batch.map(({ id, base64 }) => ({ id, base64 }))),
+    body: JSON.stringify({
+      items: batch.map(({ id, base64 }) => ({ id, base64 })),
+      owner_embedding: owner,
+    }),
   });
   if (!res.ok) throw new Error(`Backend returned ${res.status}`);
   const data: { results: ScanResult[] } = await res.json();
-  return data.results.filter((r) => r.has_outfit).map((r) => r.id);
+  return data.results.filter((r) => r.has_outfit);
 }
 
 export default function App() {
-  const [permission, requestPermission] = MediaLibrary.usePermissions();
+  // Android 13+: ask for photos only, not audio and video too.
+  const [permission, requestPermission] = MediaLibrary.usePermissions({
+    granularPermissions: ['photo'],
+  });
   const [phase, setPhase] = useState<Phase>('idle');
   const [stage, setStage] = useState<Stage>('shrinking');
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [outfitThumbs, setOutfitThumbs] = useState<Thumb[]>([]);
+  const [framingCounts, setFramingCounts] = useState({ full: 0, upper: 0 });
   const [checked, setChecked] = useState(0);
   const [screenshots, setScreenshots] = useState(0);
   const [unreadable, setUnreadable] = useState(0);
   const [limited, setLimited] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  // face matching
+  const [owner, setOwner] = useState<number[] | null>(null);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [candIndex, setCandIndex] = useState(0);
+  const [awaitingConfirm, setAwaitingConfirm] = useState(false);
+  const [faceNote, setFaceNote] = useState<string | null>(null);
+  const pending = useRef<((idx: number | null) => void) | null>(null);
+
+  // Shows the "Is this you?" card and waits for the user to answer.
+  function askUser(cands: Candidate[]): Promise<number | null> {
+    setCandidates(cands);
+    setCandIndex(0);
+    setAwaitingConfirm(true);
+    return new Promise((resolve) => {
+      pending.current = resolve;
+    });
+  }
+
+  function answer(idx: number | null) {
+    setAwaitingConfirm(false);
+    pending.current?.(idx);
+    pending.current = null;
+  }
+
+  function onYes() {
+    answer(candIndex);
+  }
+
+  function onNo() {
+    if (candIndex + 1 < candidates.length) setCandIndex(candIndex + 1);
+    else answer(null);
+  }
+
   async function scan() {
     setMessage(null);
+    setFaceNote(null);
     setOutfitThumbs([]);
+    setFramingCounts({ full: 0, upper: 0 });
     setChecked(0);
     setScreenshots(0);
     setUnreadable(0);
@@ -127,29 +184,60 @@ export default function App() {
       setUnreadable(failed);
       setChecked(made.length);
 
-      // Step 2: send thumbnails to the backend, keep the ones with outfits
+      // Step 2: find the user's face (first time only), then ask "is this you?"
+      let ownerEmb = owner;
+      if (!ownerEmb) {
+        setStage('finding');
+        const cands = await findOwnerCandidates(made.slice(0, FIND_OWNER_PHOTOS));
+        if (cands.length === 0) {
+          setFaceNote("Couldn't find a face that shows up often, so face matching is off.");
+        } else {
+          const idx = await askUser(cands);
+          if (idx === null) {
+            setFaceNote('Face matching is off because none of the faces were you.');
+          } else {
+            ownerEmb = cands[idx].embedding;
+            setOwner(ownerEmb);
+          }
+        }
+      }
+
+      // Step 3: send thumbnails to the backend, keep the ones with you in an outfit
       setStage('checking');
       setProgress({ done: 0, total: made.length });
       const byId = new Map(made.map((t) => [t.id, t]));
       const hits: Thumb[] = [];
+      let full = 0;
+      let upper = 0;
       for (let i = 0; i < made.length; i += UPLOAD_BATCH) {
-        const ids = await classifyBatch(made.slice(i, i + UPLOAD_BATCH));
-        for (const id of ids) {
-          const t = byId.get(id);
-          if (t) hits.push(t);
+        const found = await classifyBatch(made.slice(i, i + UPLOAD_BATCH), ownerEmb);
+        for (const r of found) {
+          const t = byId.get(r.id);
+          if (!t) continue;
+          hits.push(t);
+          if (r.framing === 'full') full += 1;
+          else if (r.framing === 'upper') upper += 1;
         }
         setOutfitThumbs([...hits]);
+        setFramingCounts({ full, upper });
         setProgress({ done: Math.min(i + UPLOAD_BATCH, made.length), total: made.length });
       }
     } catch (e) {
       setMessage(`Scan failed: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
+      setAwaitingConfirm(false);
       setPhase('done');
     }
   }
 
   const scanning = phase === 'scanning';
   const pct = progress.total ? Math.round((progress.done / progress.total) * 100) : 0;
+  const stageText =
+    stage === 'shrinking'
+      ? 'Preparing'
+      : stage === 'finding'
+      ? 'Looking for your face in'
+      : 'Finding your outfits in';
 
   return (
     <View style={styles.container}>
@@ -161,8 +249,9 @@ export default function App() {
           <Text style={styles.cardTitle}>What this does</Text>
           <Text style={styles.cardText}>
             Looks at your {SCAN_LIMIT} newest photos, skips screenshots, and shrinks each one to a
-            small thumbnail. Those thumbnails are sent to our server so AI can check which photos
-            show someone wearing an outfit. Full-size photos never leave your phone.
+            small thumbnail. The first time, it finds the face that shows up most and asks if it's
+            you. Then it keeps only photos where you're wearing a visible outfit. Thumbnails are
+            checked on our server and not stored. Full-size photos never leave your phone.
           </Text>
         </View>
 
@@ -180,19 +269,44 @@ export default function App() {
           )}
         </Pressable>
 
-        {scanning && (
+        {awaitingConfirm && candidates.length > 0 && (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Is this you?</Text>
+            <Image
+              source={{ uri: `data:image/jpeg;base64,${candidates[candIndex].crop}` }}
+              style={styles.faceCrop}
+            />
+            <Text style={styles.cardText}>
+              This face shows up in about {candidates[candIndex].photos} of your recent photos.
+            </Text>
+            <View style={styles.row}>
+              <Pressable onPress={onYes} style={[styles.smallButton, styles.yes]}>
+                <Text style={styles.buttonText}>Yes, that's me</Text>
+              </Pressable>
+              <Pressable onPress={onNo} style={[styles.smallButton, styles.no]}>
+                <Text style={styles.noText}>
+                  {candIndex + 1 < candidates.length ? 'Not me' : "None of these"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
+
+        {scanning && !awaitingConfirm && (
           <View style={styles.progressWrap}>
             <View style={styles.progressTrack}>
               <View style={[styles.progressFill, { width: `${pct}%` }]} />
             </View>
             <Text style={styles.progressText}>
-              {stage === 'shrinking' ? 'Preparing' : 'Finding outfits in'} {progress.done} of{' '}
-              {progress.total} photos ({pct}%)
+              {stage === 'finding'
+                ? 'Looking for your face…'
+                : `${stageText} ${progress.done} of ${progress.total} photos (${pct}%)`}
             </Text>
           </View>
         )}
 
         {message && <Text style={styles.error}>{message}</Text>}
+        {faceNote && <Text style={styles.progressText}>{faceNote}</Text>}
 
         {limited && (
           <View style={styles.notice}>
@@ -209,10 +323,18 @@ export default function App() {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Results</Text>
             <Text style={styles.cardText}>Photos with outfits: {outfitThumbs.length}</Text>
+            <Text style={styles.cardText}>Full-body: {framingCounts.full}</Text>
+            <Text style={styles.cardText}>Waist-up: {framingCounts.upper}</Text>
             <Text style={styles.cardText}>Photos checked: {checked}</Text>
             <Text style={styles.cardText}>Screenshots skipped: {screenshots}</Text>
             <Text style={styles.cardText}>Couldn't read (e.g. iCloud only): {unreadable}</Text>
           </View>
+        )}
+
+        {owner && !scanning && (
+          <Pressable onPress={() => setOwner(null)}>
+            <Text style={styles.link}>Not you? Reset my face</Text>
+          </Pressable>
         )}
 
         {outfitThumbs.length > 0 && (
@@ -258,4 +380,10 @@ const styles = StyleSheet.create({
   link: { color: '#7c4dff', fontWeight: '600' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   thumb: { width: 96, height: 96, borderRadius: 10, backgroundColor: '#eee' },
+  faceCrop: { width: 140, height: 140, borderRadius: 70, alignSelf: 'center', marginVertical: 8 },
+  row: { flexDirection: 'row', gap: 10, marginTop: 8 },
+  smallButton: { flex: 1, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
+  yes: { backgroundColor: '#7c4dff' },
+  no: { backgroundColor: '#e5e0f5' },
+  noText: { color: '#4a3a8a', fontSize: 15, fontWeight: '600' },
 });

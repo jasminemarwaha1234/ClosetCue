@@ -20,6 +20,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Fitly looks for photos of you in outfits to learn your style. Only small thumbnails leave your phone, and they aren't stored."
+        }
+      ]
+    ]
   }
 }
