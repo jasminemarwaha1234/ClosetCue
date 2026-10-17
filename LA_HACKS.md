@@ -70,7 +70,7 @@ Prize amounts come from each sponsor's challenge doc, which is more detailed tha
 | **StepFun** | Get It Done with Step 5 Preview | Not listed on Devpost | The app must call `step-5-preview` at runtime; explain what each other model or service does alongside it. Judged on task completion, reliability, user understanding and control. [Platform](https://platform.stepfun.ai/) |
 | **Photon** | Build a Messaging/Calling Agent using Photon | Not listed on Devpost | Messaging or calling agent on Photon 2.0 beta (iMessage, SMS, RCS, Telegram, WhatsApp, email, phone). [Guidelines](https://somethingreat.notion.site/Hackathon-Guidelines-for-Photon-2-0-3f8e443f36bb81f9893fed0d08a4c01d?pvs=143) |
 | **Browser Use** | Best Use of Browser Use | Not listed on Devpost | An agent built on Browser Use that turns a goal into action on the web; needs a working demo. [Site](https://browser-use.com/) |
-| **MLH** | Best Domain Name (GoDaddy Registry), Gemini API, Snowflake API, ElevenLabs, Vultr, Solana, Tiger Data; plus the Commit Fellowship category | Hardware and swag (the MLH doc and Devpost list different items) | One prize each for best use of that technology. The Commit Fellowship category needs a working prototype, a real problem, opting in on Devpost, and a supplemental form. [Doc](https://docs.google.com/document/d/1a9TbDI0u8P2DGFFfoGXb9zEON5vrdm5PVK9yKufYLVo/edit?usp=sharing) |
+| **MLH** | Best Domain Name (GoDaddy Registry), Gemini API, Snowflake API, ElevenLabs, Vultr, Solana, Tiger Data | Hardware and swag (the MLH doc and Devpost list different items) | One prize each for best use of that technology. [Doc](https://docs.google.com/document/d/1a9TbDI0u8P2DGFFfoGXb9zEON5vrdm5PVK9yKufYLVo/edit?usp=sharing) |
 
 ### Fit with this repo (our judgment, not organizer guidance)
 
@@ -142,8 +142,8 @@ All workshops are on the 2nd Floor Patio and all meals on the Collins Patio (1st
 
 ## Repo facts that affect the build
 
-- **Stack:** Expo SDK 58 (`expo ~58.0.14`), React Native 0.88, React 19.3, TypeScript 6 (strict). npm (`package-lock.json`), so use `npx`, not `bunx`.
-- **Follow [AGENTS.md](AGENTS.md):** read the Expo v58 docs before touching any Expo API; add packages with `npx expo install`; run `npx expo lint` and `npx tsc --noEmit` before calling a task done.
+- **Stack:** Expo SDK 57 (`expo ~57.0.30`), React Native 0.86, React 19.2, TypeScript 6 (strict). npm (`package-lock.json`), so use `npx`, not `bunx`.
+- **Follow [AGENTS.md](AGENTS.md):** read the Expo v57 docs before touching any Expo API; add packages with `npx expo install`; run `npx expo lint` and `npx tsc --noEmit` before calling a task done.
 - **Routing is not set up yet.** The repo is still the blank template: [index.ts](index.ts) registers [App.tsx](App.tsx). AGENTS.md asks for Expo Router with routes in `src/app/`, so migrating to Expo Router is the first structural task. Do it once, before parallel feature work starts.
 - **Demo device:** Expo Go only bundles certain native modules. A library with custom native code needs a development build, which costs time to set up. Prefer libraries that work in Expo Go unless a feature truly needs native code.
 - **Venue Wi-Fi:** if a phone can't reach the dev server on campus Wi-Fi, run `npx expo start --tunnel`. Test this early, not at 11:50 AM Sunday.
