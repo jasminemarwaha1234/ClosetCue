@@ -1,6 +1,6 @@
 # PLAN: an AI stylist that builds whole outfits and checks out safely
 
-Working name: **As If** (from *Clueless*, whose digital closet inspired this). Swap it freely.
+Working names, to choose between later: **As If** (from *Clueless*, whose digital closet inspired this) or **Fitly** (used in the current photo-permission text in [app.json](app.json)). Once we pick, update that text to match.
 
 LA Hacks AI Hackathon 2026, team of 2. Hacking ends **Sunday Oct 18, 12:00 PM PDT**. See [LA_HACKS.md](LA_HACKS.md) for rules, judging and schedule.
 
@@ -96,39 +96,61 @@ The judges' likely question is "Why not just prompt GPT or Gemini?" The answer h
 
 ### Getting your photos
 
-The user chooses between picking photos and picking an album; both ship. The camera-roll scan is a stretch.
+The user chooses one of three ways to share photos. All three ship as equal options.
 
 | Option | How | Expo package | Status |
 | --- | --- | --- | --- |
-| **Pick photos** | The system picker, multi-select up to 20. On iOS the picker runs outside our app, so it needs no photo-library permission. | `expo-image-picker` (in Expo Go) | Must-have |
-| **Pick an album** | List your albums, you choose one (a folder you made, or Favorites), the app reads its photos. | `expo-media-library`: `Album.getAll()`, then `new Query().album(album).exe()` (in Expo Go) | Must-have |
-| **Scan the camera roll** | Read recent photos and keep only outfit photos of you, using face matching (below). | `expo-media-library` plus face matching | Stretch |
+| **Pick photos** | The system picker, multi-select up to 20. On iOS the picker runs outside our app, so it needs no photo-library permission. | `expo-image-picker` (in Expo Go) | To build |
+| **Pick an album** | List your albums, you choose one (a folder you made, or Favorites), the app reads its photos. | `expo-media-library`: `Album.getAll()`, then `new Query().album(album).exe()` (in Expo Go) | To build |
+| **Scan the camera roll** | Read the 300 newest photos and keep only the ones that show you in an outfit, using outfit detection and face matching (below). | `expo-media-library` (its `legacy` API), plus pose and face models on the server | Built as a prototype in [App.tsx](App.tsx) and `backend/main.py` |
+
+How the scan works today:
+
+1. The app skips screenshots and iCloud-only photos, then shrinks each photo on the phone to a 512 px wide JPEG thumbnail. Full-size photos never leave the phone. 512 px keeps faces readable, at about 4× the upload size of the earlier 256 px.
+2. The first time, the app finds the user's face (face matching, below).
+3. The app sends the thumbnails to `POST /scan` in batches of 10, with the user's face embedding if there is one. The server returns which photos show the user in an outfit, and how they're framed.
+4. The results screen shows the outfit photos and counts: full-body, waist-up, photos checked, screenshots skipped, and photos it couldn't read.
+
+### Outfit detection
+
+The server runs a pose model (`yolov8n-pose`) on each thumbnail. For every person it finds, the model scores 17 body points (shoulders, hips, knees, ankles and so on), and the server labels the photo's framing:
+
+- **`full`:** a shoulder, a hip, a knee and an ankle are visible.
+- **`upper`:** a shoulder and a hip are visible.
+- **`none`:** anything else, including face-only close-ups.
+
+A photo counts as an outfit photo when its best person is `full` or `upper` and fills at least 25% of the photo's height, so small people in the background don't count. With no face chosen, photos with more than 3 people are skipped. With a face chosen, only people whose face matches the user count. [SCAN_FIXES.md](SCAN_FIXES.md) has the full rules and test cases. `backend/test_framing.py` prints the framing for local photos.
 
 A 30-minute device test early Saturday (section 13) settles two unknowns about albums:
 
 - **Favorites.** Expo 57's docs don't say whether `Album.getAll()` returns iOS's built-in albums like Favorites or Selfies. If it doesn't, show Favorites as an extra option that filters recent photos with `asset.getFavorite()`.
-- **People.** Apple's docs and developer forum suggest apps can't read the Photos app's People groups at all. The device test prints every album the app can see. If a People album shows up, add it as an option; if not, "photos of me" waits for face matching.
+- **People.** Apple's docs and developer forum suggest apps can't read the Photos app's People groups at all. The device test prints every album the app can see. If a People album shows up, add it as an option; if not, face matching covers "photos of me".
 
 ### Face matching ("only look at photos of me")
 
 This is matching your face against your photos, not identity verification.
 
-1. The user takes a selfie in the app (`expo-camera`, in Expo Go).
-2. A face-recognition model turns the selfie into a face embedding (a list of numbers that summarizes a face).
-3. For each candidate photo, compare the faces in it to the selfie's embedding. Keep photos that contain the user; drop the rest **before** anything else reads them.
+No selfie is needed. In someone's own camera roll, the face that shows up most often is usually theirs, so the app finds it and asks.
 
-It works with the album and scan options, and it fixes both cases you described: Favorites full of other people, and photos of you that someone else took.
+1. The app sends its 80 newest thumbnails to `POST /faces/find-owner`.
+2. The server finds every face (MTCNN) and turns each into a face embedding, a list of 512 numbers that summarizes a face (FaceNet, `InceptionResnetV1` with VGGFace2 weights).
+3. It groups similar faces and returns up to 3 groups that appear in at least 2 photos, most frequent first, each with a cropped face to show.
+4. The app asks **"Is this you?"** for each face in turn. "Yes" makes that face the user's. "None of these" turns face matching off for this scan.
+5. Every `/scan` request then carries the user's embedding. The server keeps only people whose face is close enough to it (similarity of at least 0.6).
+6. The embedding lives only in the app's memory for the session. "Not you? Reset my face" clears it. The server stores nothing.
 
-**Where it runs is the hard part.** On the phone is the private version, but it needs native code, so a development build. On our backend (an open face model in Python) is quick to build, but it means uploading photos that contain other people's faces, the very thing the feature is meant to avoid. Face embeddings also count as biometric data under laws like Illinois' BIPA, so they need explicit consent and shouldn't be stored. Gemini isn't an option: face identification is the kind of request it's likely to refuse.
+It handles both problem cases: Favorites full of other people, and photos of you that someone else took. Today only the scan uses it; the album option could use it too.
 
-**Plan:** stretch. If we build it, run it on the backend for the demo behind a clear consent screen, keep the embedding only for the session, and tell judges that on-device matching is the production design. That honesty helps the Visa trust score.
+**Where it runs.** On the phone is the private version, but it needs native code, so a development build. Today it runs on the server, which means uploading photos that contain other people's faces. Finding the user's face also computes embeddings for **everyone** in the 80 photos, not just the user. Face embeddings count as biometric data under laws like Illinois' BIPA, so they need explicit consent and shouldn't be stored. Gemini isn't an option: face identification is the kind of request it's likely to refuse.
+
+**Plan:** keep it on the server for the demo, keep the embedding only for the session (done), put it behind a consent screen that says what it computes (section 8; not done yet), and tell judges that on-device matching is the production design. That honesty helps the Visa trust score.
 
 ### Screens
 
 Design these in Paper before building. The first six are the demo path.
 
 1. **Welcome and consent:** what we read, what we keep, and the choice of how to share photos.
-2. **Share your photos:** pick photos or pick an album (the scan option if built).
+2. **Share your photos:** pick photos, pick an album, or scan the camera roll. The scan asks "Is this you?" before it filters.
 3. **Your style:** the profile as a short, editable summary with the photos grouped into looks.
 4. **Build:** anchor item (chosen in a catalog picker), budget slider, occasion.
 5. **Outfits:** 2–3 cards, total price, reasons, swap a piece.
@@ -148,7 +170,8 @@ src/app/
 ├── index.tsx                redirects to onboarding (no profile yet) or to the tabs
 ├── onboarding/
 │   ├── welcome.tsx          1. Welcome and consent
-│   └── photos.tsx           2. Share your photos (pick / album / scan)
+│   ├── photos.tsx           2. Share your photos (pick / album / scan)
+│   └── is-this-you.tsx      2. "Is this you?" during the scan (an inline card in App.tsx today)
 ├── (tabs)/
 │   ├── _layout.tsx          tab bar: Build · Style · Rate · Trust
 │   ├── index.tsx            4. Build
@@ -189,6 +212,8 @@ Using our Llama for everything would be a weaker story, not a stronger one: an u
 Expo app (Expo Router)                 FastAPI backend                      Models and data
 ─────────────────────                  ───────────────                      ───────────────
 sign-in (anonymous) ─────────────────────────────────────────────────────▶ Supabase Auth
+newest photos ─────────────────────────▶ POST /faces/find-owner ─────────▶ face models: most common faces
+thumbnails + your face ────────────────▶ POST /scan ─────────────────────▶ pose + face models: photos of you in outfits
 photos ────────────────────────────────▶ POST /profile ──────────────────▶ Gemini: tag each photo
                                           builds profile ────────────────▶ Supabase: profiles
 anchor, budget ────────────────────────▶ POST /outfits ── candidates ────▶ Veri: our Llama 3B
@@ -201,7 +226,7 @@ trust screen ──────────────────────�
 ```
 
 - **App:** this repo. Expo SDK 57, TypeScript, Expo Router with routes in `src/app/` (see [AGENTS.md](AGENTS.md)). Photos are shrunk on the phone with `expo-image-manipulator` before upload.
-- **Backend:** FastAPI in `server/`. For the demo it runs on a laptop behind a tunnel, or on a small cloud VM if time allows.
+- **Backend:** FastAPI in `server/`. It's in `backend/` today and gets renamed when we move to the repo layout below. For the demo it runs on a laptop behind a tunnel, or on a small cloud VM if time allows. The pose and face models run inside the server process, on CPU.
 - **Supabase** stores accounts, style profiles and feedback:
   - **Anonymous sign-in** gives every user an account with no sign-up screen, so judges and friends can start in one tap. Email sign-in can come later.
   - Tables: `profiles` (one per user, the style profile as JSON), `feedback` (A/B choices and fit ratings, with the outfits shown). The `feedback` table exports straight to the DPO dataset.
@@ -212,7 +237,7 @@ trust screen ──────────────────────�
 
 ### Repo layout
 
-Everything lives in this one repo. The Expo app stays at the root, which is what [AGENTS.md](AGENTS.md) and the Expo commands expect.
+Everything lives in this one repo. The Expo app stays at the root, which is what [AGENTS.md](AGENTS.md) and the Expo commands expect. Today the app is one file ([App.tsx](App.tsx)) and the server is one file in `backend/`. When we move to this layout, `backend/` becomes `server/`, and the code in `backend/main.py` splits into the files below.
 
 ```
 LaHacksAI/
@@ -226,9 +251,10 @@ LaHacksAI/
 ├── assets/
 ├── server/           FastAPI
 │   ├── main.py       creates the app, includes the routers
-│   ├── routes/       profile.py, outfits.py, tryon.py, checkout.py, feedback.py, me.py, scan.py
-│   ├── services/     gemini.py, veri.py, supabase.py, retrieval.py
+│   ├── routes/       profile.py, outfits.py, tryon.py, checkout.py, feedback.py, me.py, scan.py, faces.py
+│   ├── services/     gemini.py, veri.py, supabase.py, retrieval.py, pose.py, faces.py
 │   ├── schemas.py    Pydantic request and response models
+│   ├── test_framing.py   prints the framing for local photos
 │   └── requirements.txt
 ├── training/
 │   ├── catalog.json  the catalog; the server reads it too
@@ -399,7 +425,8 @@ Trust is 15% of Visa's score and the main worry people have about agents that sp
 
 **Photos**
 
-- You choose what to share: specific photos or one album. We don't need the whole camera roll unless you choose the scan.
+- You choose what to share: specific photos, one album, or a scan of your 300 newest photos. Only small thumbnails leave the phone.
+- **Face matching, during the scan.** Finding your face computes face embeddings for everyone in your 80 newest photos, not just you. None of them are stored. Your own face's embedding stays in the app's memory for the session, and "Not you? Reset my face" clears it. The consent screen says all of this plainly before the scan runs.
 - Photos are processed for the session and not stored. Only the text tags and the profile are kept, and you can read and edit both.
 - One tap deletes everything: profile, feedback and anything from the session.
 
@@ -427,7 +454,7 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 
 - The training pipeline: catalog, data, reward with tests, SFT, GRPO, deployed model
 - The eval table with real numbers, and the training journal
-- Pick photos or pick an album, then a style profile saved in Supabase
+- Share photos in any of three ways (pick photos, pick an album, or scan the camera roll with face matching), then a style profile saved in Supabase
 - Anchor + budget, then 2–3 outfit cards from **our** model
 - The blind A/B screen, writing to Supabase
 - Try-on on one photo, with the flat-lay as a fallback
@@ -440,8 +467,7 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 1. v2-dpo from A/B answers gathered at the event
 2. "How did it fit?" feedback updating the profile
 3. Sentry tracing, logs and AI monitoring, with a written "what it showed us"
-4. Camera-roll scan with face matching
-5. Screenshots as inspiration: the scan currently skips screenshots. Instead, include them, tag them "inspiration" (outfits the user likes) as opposed to "worn" (camera photos of the user), and weigh the two differently in the style profile
+4. Screenshots as inspiration: the scan currently skips screenshots. Instead, include them, tag them "inspiration" (outfits the user likes) as opposed to "worn" (camera photos of the user), and weigh the two differently in the style profile
 
 **Later (after the hackathon, unless we're far ahead)**
 
@@ -455,14 +481,14 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 ## 10. Who does what, and when
 
 **Person A: model and backend.** Catalog, data, reward, Veri runs, eval, journal, `/outfits`, `/profile`, `/feedback`, Supabase.
-**Person B: design and app.** Paper style guide and screens, Expo Router setup, every screen including the A/B screen, `/tryon`, `/checkout`, `DELETE /me`, `/scan`, Sentry, domain and landing page, demo video.
+**Person B: design and app.** Paper style guide and screens, Expo Router setup, every screen including the A/B screen, `/tryon`, `/checkout`, `DELETE /me`, `/scan`, `/faces/find-owner`, Sentry, domain and landing page, demo video.
 
 The split works because training runs take 30–60 minutes of waiting. Person A writes server endpoints while a run trains.
 
 ### Staying unblocked
 
 1. **Contract first (Sat 2–4 PM, together).** Agree on the outfit JSON schema, the request and response of every endpoint, and the `catalog.json` fields. Write them into `server/schemas.py` and `src/api/types.ts`, and have B write `src/api/mocks.ts` from them. After that, neither of us waits on the other.
-2. **Split the server by file.** A owns `profile.py`, `outfits.py`, `feedback.py` and the `services/` files for Gemini, Veri and Supabase. B owns `tryon.py`, `checkout.py`, `me.py` and `scan.py`. `main.py` and `schemas.py` are shared: keep edits there small and pull before touching them.
+2. **Split the server by file.** A owns `profile.py`, `outfits.py`, `feedback.py` and the `services/` files for Gemini, Veri and Supabase. B owns `tryon.py`, `checkout.py`, `me.py`, `scan.py`, `faces.py`, and the pose and face `services/`. `main.py` and `schemas.py` are shared: keep edits there small and pull before touching them.
 3. **Integration checkpoints**, where the app swaps a mock for the real endpoint:
    - **Sat 10 PM:** `/profile` live, and `/outfits` against v0.
    - **Sun 6 AM:** `/outfits` against our trained model.
@@ -503,7 +529,7 @@ Times are PDT. Shift them if we start late, but keep the 10 PM track decision an
 - *Isn't Gemini doing the real work?* Gemini handles vision, images and writing training data. Every outfit on screen comes from our model, and the fallback is labeled.
 - *Is the reward gameable?* It was, and the journal shows how we found and fixed it. The gates (schema, no invented items) zero out the score.
 - *What's real and what's simulated?* Say it plainly: the catalog and prices are real, payment is a simulated tokenized flow, try-on is a hosted image model.
-- *Privacy?* You choose what to share, photos aren't stored, delete my data, and face matching (if built) asks for consent and keeps nothing.
+- *Privacy?* You choose what to share, photos aren't stored, delete my data, and face matching asks you to confirm your face, says what it computes, and keeps nothing.
 
 ---
 
@@ -516,6 +542,8 @@ Times are PDT. Shift them if we start late, but keep the 10 PM track decision an
 | Veri deployment cold start during judging | `veri deployments wake <id>` 10 minutes before. The backend falls back to base Llama, then Gemini, with a visible label. |
 | Try-on is slow (10–20 s) or looks bad | Generate the demo outfits' try-ons ahead of time. Show progress. The flat-lay always works. |
 | A library needs native code that Expo Go lacks (Face ID, Session Replay, on-device face matching) | Stay in Expo Go for the demo path. Build a development build only if one of us has Xcode set up and the time. |
+| Two phones scan at once and collide. The pose model and both face models are shared by every request, and the pose model's `predict` isn't thread-safe. | Fix 4 in [SCAN_FIXES.md](SCAN_FIXES.md): a lock around the model calls, and one `predict` call per batch. Extend the lock to the face models. |
+| A fresh server install crashes on import, because `facenet-pytorch` isn't in `requirements.txt` (it's installed separately with `pip install facenet-pytorch --no-deps`). | Put the step in the README's setup section, and tell each other when a dependency changes. |
 | The phone can't reach the laptop on venue Wi-Fi | `npx expo start --tunnel`, tested Saturday, not Sunday morning. |
 | Secrets in a public repo | Keys only in `.env.local` on the backend. Check `git log -p` for keys before making the repo public. |
 | Credits run out | `veri billing balance` before each run. `--min-replicas 0` on every deployment. Stop deployments overnight if we aren't using them. |
