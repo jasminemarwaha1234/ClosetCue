@@ -96,12 +96,11 @@ The judges' likely question is "Why not just prompt GPT or Gemini?" The answer h
 
 ### Getting your photos
 
-The user chooses one of three ways to share photos. All three ship as equal options.
+The user chooses one of two ways to share photos. Both ship as equal options.
 
 | Option | How | Expo package | Status |
 | --- | --- | --- | --- |
 | **Pick photos** | The system picker, multi-select up to 20. On iOS the picker runs outside our app, so it needs no photo-library permission. | `expo-image-picker` (in Expo Go) | To build |
-| **Pick an album** | List your albums, you choose one (a folder you made, or Favorites), the app reads its photos. | `expo-media-library`: `Album.getAll()`, then `new Query().album(album).exe()` (in Expo Go) | To build |
 | **Scan the camera roll** | Read the 300 newest photos and keep only the ones that show you in an outfit, using outfit detection and face matching (below). | `expo-media-library` (its `legacy` API), plus pose and face models on the server | Built as a prototype in [App.tsx](App.tsx) and `backend/main.py` |
 
 How the scan works today:
@@ -121,11 +120,6 @@ The server runs a pose model (`yolov8n-pose`) on each thumbnail. For every perso
 
 A photo counts as an outfit photo when its best person is `full` or `upper` and fills at least 25% of the photo's height, so small people in the background don't count. With no face chosen, photos with more than 3 people are skipped. With a face chosen, only people whose face matches the user count. [backend/SCAN_FIXES.md](backend/SCAN_FIXES.md) has the full rules and test cases. `backend/test_framing.py` prints the framing for local photos.
 
-A 30-minute device test early Saturday (section 13) settles two unknowns about albums:
-
-- **Favorites.** Expo 57's docs don't say whether `Album.getAll()` returns iOS's built-in albums like Favorites or Selfies. If it doesn't, show Favorites as an extra option that filters recent photos with `asset.getFavorite()`.
-- **People.** Apple's docs and developer forum suggest apps can't read the Photos app's People groups at all. The device test prints every album the app can see. If a People album shows up, add it as an option; if not, face matching covers "photos of me".
-
 ### Face matching ("only look at photos of me")
 
 This is matching your face against your photos, not identity verification.
@@ -139,7 +133,7 @@ No selfie is needed. In someone's own camera roll, the face that shows up most o
 5. Every `/scan` request then carries the user's embedding. The server keeps only people whose face is close enough to it (similarity of at least 0.6).
 6. The embedding lives only in the app's memory for the session. "Not you? Reset my face" clears it. The server stores nothing.
 
-It handles both problem cases: Favorites full of other people, and photos of you that someone else took. Today only the scan uses it; the album option could use it too.
+It drops photos of other people and keeps photos of you that someone else took. Only the scan needs it: when you pick photos yourself, you've already chosen photos of you.
 
 **Where it runs.** On the phone is the private version, but it needs native code, so a development build. Today it runs on the server, which means uploading photos that contain other people's faces. Finding the user's face also computes embeddings for **everyone** in the 80 photos, not just the user. Face embeddings count as biometric data under laws like Illinois' BIPA, so they need explicit consent and shouldn't be stored. Gemini isn't an option: face identification is the kind of request it's likely to refuse.
 
@@ -150,7 +144,7 @@ It handles both problem cases: Favorites full of other people, and photos of you
 Design these in Paper before building. The first six are the demo path.
 
 1. **Welcome and consent:** what we read, what we keep, and the choice of how to share photos.
-2. **Share your photos:** pick photos, pick an album, or scan the camera roll. The scan asks "Is this you?" before it filters.
+2. **Share your photos:** pick photos or scan the camera roll. The scan asks "Is this you?" before it filters.
 3. **Your style:** the profile as a short, editable summary with the photos grouped into looks.
 4. **Build:** anchor item (chosen in a catalog picker), budget slider, occasion.
 5. **Outfits:** 2–3 cards, total price, reasons, swap a piece.
@@ -170,7 +164,7 @@ src/app/
 ├── index.tsx                redirects to onboarding (no profile yet) or to the tabs
 ├── onboarding/
 │   ├── welcome.tsx          1. Welcome and consent
-│   ├── photos.tsx           2. Share your photos (pick / album / scan)
+│   ├── photos.tsx           2. Share your photos (pick / scan)
 │   └── is-this-you.tsx      2. "Is this you?" during the scan (an inline card in App.tsx today)
 ├── (tabs)/
 │   ├── _layout.tsx          tab bar: Build · Style · Rate · Trust
@@ -425,7 +419,7 @@ Trust is 15% of Visa's score and the main worry people have about agents that sp
 
 **Photos**
 
-- You choose what to share: specific photos, one album, or a scan of your 300 newest photos. Only small thumbnails leave the phone.
+- You choose what to share: specific photos, or a scan of your 300 newest photos. Only small thumbnails leave the phone.
 - **Face matching, during the scan.** Finding your face computes face embeddings for everyone in your 80 newest photos, not just you. None of them are stored. Your own face's embedding stays in the app's memory for the session, and "Not you? Reset my face" clears it. The consent screen says all of this plainly before the scan runs.
 - Photos are processed for the session and not stored. Only the text tags and the profile are kept, and you can read and edit both.
 - One tap deletes everything: profile, feedback and anything from the session.
@@ -454,7 +448,7 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 
 - The training pipeline: catalog, data, reward with tests, SFT, GRPO, deployed model
 - The eval table with real numbers, and the training journal
-- Share photos in any of three ways (pick photos, pick an album, or scan the camera roll with face matching), then a style profile saved in Supabase
+- Share photos in either of two ways (pick photos, or scan the camera roll with face matching), then a style profile saved in Supabase
 - Anchor + budget, then 2–3 outfit cards from **our** model
 - The blind A/B screen, writing to Supabase
 - Try-on on one photo, with the flat-lay as a fallback
@@ -499,7 +493,7 @@ Times are PDT. Shift them if we start late, but keep the 10 PM track decision an
 
 | When | Person A | Person B |
 | --- | --- | --- |
-| **Sat 2–4 PM** | Get Veri credits from @daniung on Discord and redeem them **before** any run. `veri whoami`. Check the Llama mirror with `veri jobs estimate`. Build `catalog.json`. Freeze the output schema and, with B, the API shapes. Start `training/JOURNAL.md`. | Device test of the photo options (section 13). Register the domain. Paper style guide: type, color, spacing, one hero screen. Move the app to Expo Router. Agree on the API shapes with A and write the mocks. |
+| **Sat 2–4 PM** | Get Veri credits from @daniung on Discord and redeem them **before** any run. `veri whoami`. Check the Llama mirror with `veri jobs estimate`. Build `catalog.json`. Freeze the output schema and, with B, the API shapes. Start `training/JOURNAL.md`. | Register the domain. Paper style guide: type, color, spacing, one hero screen. Move the app to Expo Router. Agree on the API shapes with A and write the mocks. |
 | **Sat 4–7 PM** | Generate profiles and prompts. Write `reward.py` and its tests. Run the v0 eval. Set up Supabase (anonymous sign-in, two tables). | Paper: the demo-path screens. Build photos → profile → build screens against mocked responses. Add Sentry. |
 | **Sat 7–10 PM** | Start v1-sft (by 8 PM), then v1-grpo from it. `/profile` with Gemini. `/outfits` against v0. **10 PM: confirm the track.** | Outfit cards, swap a piece, the A/B screen, checkout, trust screen. Mandate endpoints. |
 | **Overnight** | Watch runs (`veri jobs logs <id> -f`). Eval and read samples from each checkpoint. Journal every run. Push merged weights, deploy the winner. | Try-on endpoint and screen, flat-lay fallback. Polish against Paper. Load the A/B screen with v0 and v1 answers on held-out prompts. |
@@ -557,7 +551,6 @@ Not urgent right now. Each has an owner and a time it must be answered by.
 | Question | How to answer it | By |
 | --- | --- | --- |
 | Does Veri's trainer accept an ungated Llama 3.2 3B community mirror? If not, we use Qwen3-4B. | `veri jobs estimate` on a config with the mirror; ask at the Veri table if unclear. | Person A, before the first run |
-| Does Expo 57's `Album.getAll()` list iOS's built-in albums (Favorites, Selfies), or a People album? | Run it on a real iPhone in Expo Go and print every album name. | Person B, Sat 4 PM |
 | Does Visa have a sandbox or API for agent payment tokens at this event? | Ask the Visa team at their table. | Either, Saturday |
 
 ---
