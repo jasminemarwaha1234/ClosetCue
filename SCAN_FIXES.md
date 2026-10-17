@@ -46,6 +46,18 @@ The keypoint scores are in `res.keypoints.conf`, a tensor with one row per perso
 
 Expo Go supplies its own permission text. A development build or a store build shows the text from [app.json](app.json), and without it the build has no explanation of why the app wants photo access. Add the `expo-media-library` config plugin to `app.json` with a `photosPermission` message that says what the app does with photos, for example: "Fitly looks for photos of you in outfits to learn your style. Only small thumbnails leave your phone, and they aren't stored."
 
+## 4. Make the model safe to share between requests, and batch it
+
+**Problem.** `scan` in [backend/main.py](backend/main.py) runs each request on its own thread (`asyncio.to_thread`), and every thread calls `predict` on the same global `model`. Ultralytics warns that its predictor isn't thread-safe, so two phones scanning at once can collide. `check_sync` also calls `predict` once per image, which is slower than one call for the whole batch.
+
+**Fix.**
+
+- Add a module-level `threading.Lock()` and hold it around the `predict` call, so only one call runs at a time. Requests then wait their turn instead of colliding. The lock costs almost no speed, because one CPU does the work either way.
+- Decode every image in the request first, then call `model.predict(images, ...)` once with the list. Result `i` belongs to image `i`. Keep the per-image error handling: an image that fails to decode gets `has_outfit: False` with an `error` field and is left out of the `predict` list.
+- Keep the call inside `asyncio.to_thread`. Calling `predict` directly in the async handler would block the whole server, so `/health` and every other request would wait.
+
+**Check it works.** Send two `/scan` requests at the same time, for example with two `curl` commands started together. Both must return correct results with no errors, and the results must match what each request returns when sent alone.
+
 ## Reviewed and deliberately left as they are
 
 Don't change these. The team decided to keep them for now:
