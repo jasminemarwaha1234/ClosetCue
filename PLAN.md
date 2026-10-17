@@ -8,11 +8,11 @@ LA Hacks AI Hackathon 2026, team of 2. Hacking ends **Sunday Oct 18, 12:00 PM PD
 
 1. [Pitch](#1-pitch)
 2. [Track and challenge strategy](#2-track-and-challenge-strategy)
-3. [The model: what we train](#3-the-model-what-we-train)
-4. [How we validate the model](#4-how-we-validate-the-model)
-5. [The training journal: how we explain it to judges](#5-the-training-journal-how-we-explain-it-to-judges)
-6. [Product](#6-product)
-7. [Architecture and which model does what](#7-architecture-and-which-model-does-what)
+3. [Product](#3-product)
+4. [Architecture and which model does what](#4-architecture-and-which-model-does-what)
+5. [The model: what we train](#5-the-model-what-we-train)
+6. [How we validate the model](#6-how-we-validate-the-model)
+7. [The training journal: how we explain it to judges](#7-the-training-journal-how-we-explain-it-to-judges)
 8. [Trust, privacy and checkout](#8-trust-privacy-and-checkout)
 9. [Scope: must-have, stretch, later](#9-scope-must-have-stretch-later)
 10. [Who does what, and when](#10-who-does-what-and-when)
@@ -37,7 +37,7 @@ LA Hacks AI Hackathon 2026, team of 2. Hacking ends **Sunday Oct 18, 12:00 PM PD
 
 **Why this is a Model Learning project.** The stylist is a 3B open Llama model that we post-trained on Veri. Our reward function encodes what a good outfit is: within budget, only real catalog items, complete, colors and formality that go together, and true to the user's style. We measured the base model and each training stage on held-out data and with blind human ratings, and the app keeps collecting preference data that trains the next version. A small model that follows these rules reliably is cheap, fast, and small enough that it could one day run on the phone, so photos would never need to leave it.
 
-**Gemini versus our Llama.** Our Llama, post-trained and served on Veri, does one job: pick the outfit and explain why. That's the job we train, measure and pitch. Gemini does everything our model can't do or isn't trained for: reading photos into style tags, generating try-on images, writing the training data, and serving as the reference row in the eval. Every outfit on screen comes from our Llama. Section 7 has the full table and the reasons.
+**Gemini versus our Llama.** Our Llama, post-trained and served on Veri, does one job: pick the outfit and explain why. That's the job we train, measure and pitch. Gemini does everything our model can't do or isn't trained for: reading photos into style tags, generating try-on images, writing the training data, and serving as the reference row in the eval. Every outfit on screen comes from our Llama. Section 4 has the full table and the reasons.
 
 ---
 
@@ -45,7 +45,7 @@ LA Hacks AI Hackathon 2026, team of 2. Hacking ends **Sunday Oct 18, 12:00 PM PD
 
 ### Main track: Model Learning
 
-The track asks us to "Build systems that learn, adapt, and improve from data. Create innovative models that uncover patterns, make predictions, or solve complex problems." We qualify because the trained model is the core of the product and we can show it improved. Sections 3–5 are the heart of the project, and the app exists to put that model in front of people.
+The track asks us to "Build systems that learn, adapt, and improve from data. Create innovative models that uncover patterns, make predictions, or solve complex problems." We qualify because the trained model is the core of the product and we can show it improved. Sections 5–7 are the heart of the project, and the app exists to put that model in front of people.
 
 | Model Learning asks for | What we show |
 | --- | --- |
@@ -61,11 +61,11 @@ The judges' likely question is "Why not just prompt GPT or Gemini?" The answer h
 
 | Challenge | Fit | What it takes from us | Priority |
 | --- | --- | --- | --- |
-| **veri.studio**, best use of an open model ($800) | Strong. Requirement: "Use our platform to train an open-source model." | Sections 3–5, which we're doing anyway. The training journal doubles as our Veri write-up. | Core |
+| **veri.studio**, best use of an open model ($800) | Strong. Requirement: "Use our platform to train an open-source model." | Sections 5–7, which we're doing anyway. The training journal doubles as our Veri write-up. | Core |
 | **Visa**, Future of Shopping ($2,000) | Strong. It's an AI shopping product end to end. Weights: innovation 25%, UX 25%, technical execution 20%, commerce impact 15%, trust and responsibility 15%. | The spending-limit checkout and trust screen (section 8), plus a commerce-impact claim about fewer returns, with a cited source. | Core |
 | **Paper**, Best Designed Hack ($1,500 / $1,000 / $500) | Strong. Fashion is visual, and the judging rewards "personal craft and character" over AI-looking design. | Design the key screens in Paper first, with a real style guide (type, color, spacing), and build to match. Paper's MCP server lets an agent read the canvas while coding. Redeem `LAHACKS26`. | Core |
 | **Sentry**, Best Use of Sentry (guaranteed interviews) | Good. Needs Sentry plus at least two products beyond error monitoring, and "show how observability shaped what you built". | Tracing across app, backend, Veri and Gemini; Logs; AI agent monitoring on the model calls. About 1–2 hours if set up in the first hour so data builds up. Mobile Session Replay needs a development build (section 12), so we don't count on it. | Medium |
-| **MLH Best Use of Gemini API** (Google swag) | Free. We use Gemini for photo reading, try-on and data generation (section 7). | Mention it on Devpost. | Low effort |
+| **MLH Best Use of Gemini API** (Google swag) | Free. We use Gemini for photo reading, try-on and data generation (section 4). | Mention it on Devpost. | Low effort |
 | **MLH Best Domain Name, GoDaddy Registry** (digital gift card) | Good. The product is a mobile app, so the site is a landing page that sends people to it. | Register the domain. One static page with the pitch, the demo video, a QR code that opens the app, and the privacy policy (the same text as the in-app trust screen). About an hour. | Must-have (small) |
 
 **Skipped, and why:**
@@ -77,7 +77,179 @@ The judges' likely question is "Why not just prompt GPT or Gemini?" The answer h
 
 ---
 
-## 3. The model: what we train
+## 3. Product
+
+### Core loop
+
+1. **Open the app.** Anonymous sign-in gives you an account with no sign-up screen. The welcome screen says what we read and what we keep.
+2. **Style profile from your photos.** You give the app photos of outfits you wear (see "Getting your photos" below). Gemini tags each one (garments, colors, fit, formality) and the backend turns the tags into a style profile you can read and edit: "Mostly neutrals with one accent color, relaxed fits, smart-casual, avoids logos." The profile is saved to your account.
+3. **Pick an anchor and a budget.** Choose one item from the catalog (or "I need an outfit for…"), set a budget and an occasion.
+4. **Outfit cards.** The trained stylist returns 2–3 complete outfits built around the anchor, each with a total price and a one-line reason ("the cream knit picks up the off-white sneaker sole"). Swap any single piece.
+5. **Try it on.** See the outfit on your own full-body photo. The flat-lay view is the fallback.
+6. **Checkout under a limit.** The agent proposes a cart. You approve it against a spending limit you set, and the backend refuses anything over it. Confirm with Face ID or the passcode, then see a receipt (section 8).
+7. **Feedback.** "How did it fit?" updates your profile right away and becomes training data for the next model.
+
+**Available at any time, outside the loop:**
+
+- **Trust:** what data is used, and delete my data.
+- **Which is better?:** the blind A/B screen (section 6). It shows pairs prepared ahead of time (base Llama against our model on held-out prompts), not the user's own request, so it's a separate destination that friends at the venue can use without making a profile. Each answer is a preference pair for v2-dpo.
+
+### Getting your photos
+
+The user chooses between picking photos and picking an album; both ship. The camera-roll scan is a stretch.
+
+| Option | How | Expo package | Status |
+| --- | --- | --- | --- |
+| **Pick photos** | The system picker, multi-select up to 20. On iOS the picker runs outside our app, so it needs no photo-library permission. | `expo-image-picker` (in Expo Go) | Must-have |
+| **Pick an album** | List your albums, you choose one (a folder you made, or Favorites), the app reads its photos. | `expo-media-library`: `Album.getAll()`, then `new Query().album(album).exe()` (in Expo Go) | Must-have |
+| **Scan the camera roll** | Read recent photos and keep only outfit photos of you, using face matching (below). | `expo-media-library` plus face matching | Stretch |
+
+A 30-minute device test early Saturday (section 13) settles two unknowns about albums:
+
+- **Favorites.** Expo 57's docs don't say whether `Album.getAll()` returns iOS's built-in albums like Favorites or Selfies. If it doesn't, show Favorites as an extra option that filters recent photos with `asset.getFavorite()`.
+- **People.** Apple's docs and developer forum suggest apps can't read the Photos app's People groups at all. The device test prints every album the app can see. If a People album shows up, add it as an option; if not, "photos of me" waits for face matching.
+
+### Face matching ("only look at photos of me")
+
+This is matching your face against your photos, not identity verification.
+
+1. The user takes a selfie in the app (`expo-camera`, in Expo Go).
+2. A face-recognition model turns the selfie into a face embedding (a list of numbers that summarizes a face).
+3. For each candidate photo, compare the faces in it to the selfie's embedding. Keep photos that contain the user; drop the rest **before** anything else reads them.
+
+It works with the album and scan options, and it fixes both cases you described: Favorites full of other people, and photos of you that someone else took.
+
+**Where it runs is the hard part.** On the phone is the private version, but it needs native code, so a development build. On our backend (an open face model in Python) is quick to build, but it means uploading photos that contain other people's faces, the very thing the feature is meant to avoid. Face embeddings also count as biometric data under laws like Illinois' BIPA, so they need explicit consent and shouldn't be stored. Gemini isn't an option: face identification is the kind of request it's likely to refuse.
+
+**Plan:** stretch. If we build it, run it on the backend for the demo behind a clear consent screen, keep the embedding only for the session, and tell judges that on-device matching is the production design. That honesty helps the Visa trust score.
+
+### Screens
+
+Design these in Paper before building. The first six are the demo path.
+
+1. **Welcome and consent:** what we read, what we keep, and the choice of how to share photos.
+2. **Share your photos:** pick photos or pick an album (the scan option if built).
+3. **Your style:** the profile as a short, editable summary with the photos grouped into looks.
+4. **Build:** anchor item (chosen in a catalog picker), budget slider, occasion.
+5. **Outfits:** 2–3 cards, total price, reasons, swap a piece.
+6. **Try-on:** your photo wearing the outfit, plus a flat-lay view.
+7. **Checkout:** the cart, the spending limit, the tokenized card, confirm.
+8. **Which is better?:** the blind A/B screen (section 6).
+9. **Trust:** what data is used, delete my data, AI use policy, merchant impact.
+10. **How did it fit?:** feedback that updates the profile.
+
+### Routes
+
+Every file in `src/app/` is a screen in Expo Router. Folders in parentheses, like `(tabs)`, group screens under one layout without adding to the URL. The demo path (Welcome → Photos → Style → Build → Outfits → Try-on → Checkout) is one straight push through the stack. After onboarding, a tab bar holds the four places a user returns to.
+
+```
+src/app/
+├── _layout.tsx              root Stack; starts the anonymous Supabase session
+├── index.tsx                redirects to onboarding (no profile yet) or to the tabs
+├── onboarding/
+│   ├── welcome.tsx          1. Welcome and consent
+│   └── photos.tsx           2. Share your photos (pick / album / scan)
+├── (tabs)/
+│   ├── _layout.tsx          tab bar: Build · Style · Rate · Trust
+│   ├── index.tsx            4. Build
+│   ├── style.tsx            3. Your style (also the last onboarding step)
+│   ├── rate.tsx             8. Which is better?
+│   └── trust.tsx            9. Trust
+├── pick-item.tsx            modal: browse the catalog to choose the anchor
+├── outfits.tsx              5. Outfits
+├── tryon/[outfitId].tsx     6. Try-on
+├── checkout/
+│   ├── index.tsx            7. Checkout, including the refusal
+│   └── receipt.tsx          receipt and what's left of the mandate
+└── fit/[orderId].tsx        10. How did it fit?
+```
+
+---
+
+## 4. Architecture and which model does what
+
+### Which model does what
+
+Rule of thumb: **our Llama does the job we trained it for; Gemini does what our model can't do or wasn't trained for.**
+
+| Job | Model | Why |
+| --- | --- | --- |
+| Pick and explain the outfit | **Our Llama, on Veri** | The trained task. It's what the eval measures and what the judges score. |
+| Read photos into tags | Gemini | Needs vision. Veri's trainer is text-only, and serving an 11B vision Llama would take scarce GPUs and one of our two deployment slots for a job we aren't training. |
+| Try-on image | Gemini image editing | Needs image generation, which Llama can't do. |
+| Write training profiles and SFT answers | Gemini | A strong teacher model writes the data our small model learns from. That's standard distillation, and the reward filter keeps only good answers. |
+| Reference row in the eval | Gemini | Shows how close our 3B model gets to a frontier model. |
+| Fallback when Veri is down | Base Llama, then Gemini | Labeled in the app so we never pass Gemini off as our model. |
+
+Using our Llama for everything would be a weaker story, not a stronger one: an untrained model doing jobs we didn't measure. One wrinkle: Gemini writes the training data, so it shouldn't also judge the outputs. Keep the human A/B test as the judge of style quality.
+
+### System
+
+```
+Expo app (Expo Router)                 FastAPI backend                      Models and data
+─────────────────────                  ───────────────                      ───────────────
+sign-in (anonymous) ─────────────────────────────────────────────────────▶ Supabase Auth
+photos ────────────────────────────────▶ POST /profile ──────────────────▶ Gemini: tag each photo
+                                          builds profile ────────────────▶ Supabase: profiles
+anchor, budget ────────────────────────▶ POST /outfits ── candidates ────▶ Veri: our Llama 3B
+                                          retrieve, call, guard, retry once
+photo + items ─────────────────────────▶ POST /tryon ────────────────────▶ Gemini image editing
+cart ──────────────────────────────────▶ POST /checkout/mandate, /confirm   enforces the spending limit
+A/B choice, fit rating ────────────────▶ POST /feedback ─────────────────▶ Supabase: feedback (→ DPO data)
+trust screen ──────────────────────────▶ DELETE /me ─────────────────────▶ Supabase: delete user's rows
+                 Sentry: traces, logs and AI-call monitoring on both sides
+```
+
+- **App:** this repo. Expo SDK 57, TypeScript, Expo Router with routes in `src/app/` (see [AGENTS.md](AGENTS.md)). Photos are shrunk on the phone with `expo-image-manipulator` before upload.
+- **Backend:** FastAPI in `server/`. For the demo it runs on a laptop behind a tunnel, or on a small cloud VM if time allows.
+- **Supabase** stores accounts, style profiles and feedback:
+  - **Anonymous sign-in** gives every user an account with no sign-up screen, so judges and friends can start in one tap. Email sign-in can come later.
+  - Tables: `profiles` (one per user, the style profile as JSON), `feedback` (A/B choices and fit ratings, with the outfits shown). The `feedback` table exports straight to the DPO dataset.
+  - Photos are never stored. "Delete my data" deletes the user's rows.
+  - The phone only talks to Supabase for sign-in. Reads and writes go through the backend, which holds the service key.
+- **Secrets:** the Gemini, Veri and Supabase service keys live only on the backend, in `.env.local`. The repo goes public for submission, and anything the phone app ships can be read.
+- **The guard:** the backend runs the reward's checks on every model answer. A failing answer gets one retry and never reaches the screen.
+
+### Repo layout
+
+Everything lives in this one repo. The Expo app stays at the root, which is what [AGENTS.md](AGENTS.md) and the Expo commands expect.
+
+```
+LaHacksAI/
+├── package.json, app.json, tsconfig.json   the Expo app
+├── src/
+│   ├── app/          routes only (section 3)
+│   ├── components/   OutfitCard, ItemTile, BudgetSlider, PhotoGrid…
+│   ├── api/          client.ts (fetch + EXPO_PUBLIC_API_BASE_URL), types.ts, mocks.ts
+│   ├── lib/          supabase.ts, sentry.ts, photos.ts (the shrink and scan helpers now in App.tsx)
+│   └── theme/        colors, type and spacing from the Paper style guide
+├── assets/
+├── server/           FastAPI
+│   ├── main.py       creates the app, includes the routers
+│   ├── routes/       profile.py, outfits.py, tryon.py, checkout.py, feedback.py, me.py, scan.py
+│   ├── services/     gemini.py, veri.py, supabase.py, retrieval.py
+│   ├── schemas.py    Pydantic request and response models
+│   └── requirements.txt
+├── training/
+│   ├── catalog.json  the catalog; the server reads it too
+│   ├── reward.py, test_reward.py   the server imports reward.py as the guard
+│   ├── gen_profiles.py, build_prompts.py, gen_sft.py, eval.py
+│   ├── configs/      one Veri config per run
+│   ├── data/         JSONL files (gitignore the large ones)
+│   └── JOURNAL.md
+├── landing/          static page for the GoDaddy Registry domain
+└── README.md, PLAN.md, LA_HACKS.md
+```
+
+Rules that matter more than the exact folders:
+
+- **One copy of `catalog.json` and of `reward.py`.** The same reward trains the model and guards live answers, so a second copy that drifts means the guard rejects answers the model was trained to give. Run the server from the repo root (`uvicorn server.main:app`) so it can `import training.reward`. If `reward.py` embeds the catalog for Veri (section 5), generate that copy from `catalog.json` instead of editing it by hand.
+- **API shapes in two places:** `server/schemas.py` and `src/api/types.ts`. Freeze both in the first hour. `src/api/mocks.ts` returns fake data in those shapes, so the app can be built before the server is ready.
+- **One file per endpoint in `server/routes/`**, so both of us can work on the server without merge conflicts (section 10).
+
+---
+
+## 5. The model: what we train
 
 ### Task
 
@@ -148,7 +320,7 @@ Deterministic, fast, no network, because Veri runs it inside the trainer. The ca
 | Matches the profile: overlap of style tags, nothing from the profile's "avoid" list | 0 to +1 |
 | Reason is one sentence and names at least one item | +0.5 |
 
-The same code runs in the backend as a guard on every live answer (section 7), so the definition of "good" that trained the model also protects the demo.
+The same code runs in the backend as a guard on every live answer (section 4), so the definition of "good" that trained the model also protects the demo.
 
 ### Training runs
 
@@ -161,7 +333,7 @@ For every run, price it first with `veri jobs estimate`. LoRA runs must push **m
 
 ---
 
-## 4. How we validate the model
+## 6. How we validate the model
 
 We don't trust a number until we've checked it ourselves. Five layers, cheapest first:
 
@@ -190,7 +362,7 @@ If GRPO doesn't beat SFT, report that and ship SFT. An honest negative result wi
 
 ---
 
-## 5. The training journal: how we explain it to judges
+## 7. The training journal: how we explain it to judges
 
 Judges will ask how we customized the model. The answer should come from a record we kept, not memory at 3 AM.
 
@@ -218,109 +390,6 @@ Rules that keep it useful:
 3. We generated and filtered training data.
 4. We trained in stages (SFT, then GRPO) and fixed what the outputs showed us.
 5. We measured it two ways (automatic eval, blind human test) and kept learning from users (DPO).
-
----
-
-## 6. Product
-
-### Core loop
-
-1. **Style profile from your photos.** You give the app photos of outfits you wear (see "Getting your photos" below). Gemini tags each one (garments, colors, fit, formality) and the backend turns the tags into a style profile you can read and edit: "Mostly neutrals with one accent color, relaxed fits, smart-casual, avoids logos." The profile is saved to your account.
-2. **Pick an anchor and a budget.** Choose one item from the catalog (or "I need an outfit for…"), set a budget and an occasion.
-3. **Outfit cards.** The trained stylist returns 2–3 complete outfits built around the anchor, each with a total price and a one-line reason ("the cream knit picks up the off-white sneaker sole"). Swap any single piece.
-4. **Try it on.** See the outfit on your own full-body photo.
-5. **Checkout under a limit.** The agent proposes a cart. You approve it against a spending limit you set, and the backend refuses anything over it.
-6. **Feedback.** "Which outfit is better?" and "How did it fit?" update your profile right away, and become training data for the next model.
-
-### Getting your photos
-
-The user chooses between picking photos and picking an album; both ship. The camera-roll scan is a stretch.
-
-| Option | How | Expo package | Status |
-| --- | --- | --- | --- |
-| **Pick photos** | The system picker, multi-select up to 20. On iOS the picker runs outside our app, so it needs no photo-library permission. | `expo-image-picker` (in Expo Go) | Must-have |
-| **Pick an album** | List your albums, you choose one (a folder you made, or Favorites), the app reads its photos. | `expo-media-library`: `Album.getAll()`, then `new Query().album(album).exe()` (in Expo Go) | Must-have |
-| **Scan the camera roll** | Read recent photos and keep only outfit photos of you, using face matching (below). | `expo-media-library` plus face matching | Stretch |
-
-A 30-minute device test early Saturday (section 13) settles two unknowns about albums:
-
-- **Favorites.** Expo 57's docs don't say whether `Album.getAll()` returns iOS's built-in albums like Favorites or Selfies. If it doesn't, show Favorites as an extra option that filters recent photos with `asset.getFavorite()`.
-- **People.** Apple's docs and developer forum suggest apps can't read the Photos app's People groups at all. The device test prints every album the app can see. If a People album shows up, add it as an option; if not, "photos of me" waits for face matching.
-
-### Face matching ("only look at photos of me")
-
-This is matching your face against your photos, not identity verification.
-
-1. The user takes a selfie in the app (`expo-camera`, in Expo Go).
-2. A face-recognition model turns the selfie into a face embedding (a list of numbers that summarizes a face).
-3. For each candidate photo, compare the faces in it to the selfie's embedding. Keep photos that contain the user; drop the rest **before** anything else reads them.
-
-It works with the album and scan options, and it fixes both cases you described: Favorites full of other people, and photos of you that someone else took.
-
-**Where it runs is the hard part.** On the phone is the private version, but it needs native code, so a development build. On our backend (an open face model in Python) is quick to build, but it means uploading photos that contain other people's faces, the very thing the feature is meant to avoid. Face embeddings also count as biometric data under laws like Illinois' BIPA, so they need explicit consent and shouldn't be stored. Gemini isn't an option: face identification is the kind of request it's likely to refuse.
-
-**Plan:** stretch. If we build it, run it on the backend for the demo behind a clear consent screen, keep the embedding only for the session, and tell judges that on-device matching is the production design. That honesty helps the Visa trust score.
-
-### Screens
-
-Design these in Paper before building. The first six are the demo path.
-
-1. **Welcome and consent:** what we read, what we keep, and the choice of how to share photos.
-2. **Share your photos:** pick photos or pick an album (the scan option if built).
-3. **Your style:** the profile as a short, editable summary with the photos grouped into looks.
-4. **Build:** anchor item, budget slider, occasion.
-5. **Outfits:** 2–3 cards, total price, reasons, swap a piece.
-6. **Try-on:** your photo wearing the outfit, plus a flat-lay view.
-7. **Checkout:** the cart, the spending limit, the tokenized card, confirm.
-8. **Which is better?:** the blind A/B screen (section 4).
-9. **Trust:** what data is used, delete my data, AI use policy, merchant impact.
-10. **How did it fit?:** feedback that updates the profile.
-
----
-
-## 7. Architecture and which model does what
-
-### Which model does what
-
-Rule of thumb: **our Llama does the job we trained it for; Gemini does what our model can't do or wasn't trained for.**
-
-| Job | Model | Why |
-| --- | --- | --- |
-| Pick and explain the outfit | **Our Llama, on Veri** | The trained task. It's what the eval measures and what the judges score. |
-| Read photos into tags | Gemini | Needs vision. Veri's trainer is text-only, and serving an 11B vision Llama would take scarce GPUs and one of our two deployment slots for a job we aren't training. |
-| Try-on image | Gemini image editing | Needs image generation, which Llama can't do. |
-| Write training profiles and SFT answers | Gemini | A strong teacher model writes the data our small model learns from. That's standard distillation, and the reward filter keeps only good answers. |
-| Reference row in the eval | Gemini | Shows how close our 3B model gets to a frontier model. |
-| Fallback when Veri is down | Base Llama, then Gemini | Labeled in the app so we never pass Gemini off as our model. |
-
-Using our Llama for everything would be a weaker story, not a stronger one: an untrained model doing jobs we didn't measure. One wrinkle: Gemini writes the training data, so it shouldn't also judge the outputs. Keep the human A/B test as the judge of style quality.
-
-### System
-
-```
-Expo app (Expo Router)                 FastAPI backend                      Models and data
-─────────────────────                  ───────────────                      ───────────────
-sign-in (anonymous) ─────────────────────────────────────────────────────▶ Supabase Auth
-photos ────────────────────────────────▶ POST /profile ──────────────────▶ Gemini: tag each photo
-                                          builds profile ────────────────▶ Supabase: profiles
-anchor, budget ────────────────────────▶ POST /outfits ── candidates ────▶ Veri: our Llama 3B
-                                          retrieve, call, guard, retry once
-photo + items ─────────────────────────▶ POST /tryon ────────────────────▶ Gemini image editing
-cart ──────────────────────────────────▶ POST /checkout/mandate, /confirm   enforces the spending limit
-A/B choice, fit rating ────────────────▶ POST /feedback ─────────────────▶ Supabase: feedback (→ DPO data)
-trust screen ──────────────────────────▶ DELETE /me ─────────────────────▶ Supabase: delete user's rows
-                 Sentry: traces, logs and AI-call monitoring on both sides
-```
-
-- **App:** this repo. Expo SDK 57, TypeScript, Expo Router with routes in `src/app/` (see [AGENTS.md](AGENTS.md)). Photos are shrunk on the phone with `expo-image-manipulator` before upload.
-- **Backend:** FastAPI in `server/`. For the demo it runs on a laptop behind a tunnel, or on a small cloud VM if time allows.
-- **Supabase** stores accounts, style profiles and feedback:
-  - **Anonymous sign-in** gives every user an account with no sign-up screen, so judges and friends can start in one tap. Email sign-in can come later.
-  - Tables: `profiles` (one per user, the style profile as JSON), `feedback` (A/B choices and fit ratings, with the outfits shown). The `feedback` table exports straight to the DPO dataset.
-  - Photos are never stored. "Delete my data" deletes the user's rows.
-  - The phone only talks to Supabase for sign-in. Reads and writes go through the backend, which holds the service key.
-- **Secrets:** the Gemini, Veri and Supabase service keys live only on the backend, in `.env.local`. The repo goes public for submission, and anything the phone app ships can be read.
-- **The guard:** the backend runs the reward's checks on every model answer. A failing answer gets one retry and never reaches the screen.
 
 ---
 
@@ -385,14 +454,26 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 
 ## 10. Who does what, and when
 
-**Person A: model and backend.** Catalog, data, reward, Veri runs, eval, journal, `/outfits`, `/profile`, Supabase.
-**Person B: design and app.** Paper style guide and screens, Expo Router setup, every screen including the A/B screen, try-on, checkout, Sentry.
+**Person A: model and backend.** Catalog, data, reward, Veri runs, eval, journal, `/outfits`, `/profile`, `/feedback`, Supabase.
+**Person B: design and app.** Paper style guide and screens, Expo Router setup, every screen including the A/B screen, `/tryon`, `/checkout`, `DELETE /me`, `/scan`, Sentry, domain and landing page, demo video.
+
+The split works because training runs take 30–60 minutes of waiting. Person A writes server endpoints while a run trains.
+
+### Staying unblocked
+
+1. **Contract first (Sat 2–4 PM, together).** Agree on the outfit JSON schema, the request and response of every endpoint, and the `catalog.json` fields. Write them into `server/schemas.py` and `src/api/types.ts`, and have B write `src/api/mocks.ts` from them. After that, neither of us waits on the other.
+2. **Split the server by file.** A owns `profile.py`, `outfits.py`, `feedback.py` and the `services/` files for Gemini, Veri and Supabase. B owns `tryon.py`, `checkout.py`, `me.py` and `scan.py`. `main.py` and `schemas.py` are shared: keep edits there small and pull before touching them.
+3. **Integration checkpoints**, where the app swaps a mock for the real endpoint:
+   - **Sat 10 PM:** `/profile` live, and `/outfits` against v0.
+   - **Sun 6 AM:** `/outfits` against our trained model.
+4. **Git:** short-lived branches, or push to `main` inside your own folders, and pull often.
+5. **Watch A's load.** A is on the critical path, since no trained model means no Model Learning track. If A falls behind, B takes the Supabase setup or `/feedback`, both plain create, read, update and delete code.
 
 Times are PDT. Shift them if we start late, but keep the 10 PM track decision and the 8:30 AM feature freeze.
 
 | When | Person A | Person B |
 | --- | --- | --- |
-| **Sat 2–4 PM** | Get Veri credits from @daniung on Discord and redeem them **before** any run. `veri whoami`. Check the Llama mirror with `veri jobs estimate`. Build `catalog.json`. Freeze the output schema. Start `training/JOURNAL.md`. | Device test of the photo options (section 13). Register the domain. Paper style guide: type, color, spacing, one hero screen. Move the app to Expo Router. |
+| **Sat 2–4 PM** | Get Veri credits from @daniung on Discord and redeem them **before** any run. `veri whoami`. Check the Llama mirror with `veri jobs estimate`. Build `catalog.json`. Freeze the output schema and, with B, the API shapes. Start `training/JOURNAL.md`. | Device test of the photo options (section 13). Register the domain. Paper style guide: type, color, spacing, one hero screen. Move the app to Expo Router. Agree on the API shapes with A and write the mocks. |
 | **Sat 4–7 PM** | Generate profiles and prompts. Write `reward.py` and its tests. Run the v0 eval. Set up Supabase (anonymous sign-in, two tables). | Paper: the demo-path screens. Build photos → profile → build screens against mocked responses. Add Sentry. |
 | **Sat 7–10 PM** | Start v1-sft (by 8 PM), then v1-grpo from it. `/profile` with Gemini. `/outfits` against v0. **10 PM: confirm the track.** | Outfit cards, swap a piece, the A/B screen, checkout, trust screen. Mandate endpoints. |
 | **Overnight** | Watch runs (`veri jobs logs <id> -f`). Eval and read samples from each checkpoint. Journal every run. Push merged weights, deploy the winner. | Try-on endpoint and screen, flat-lay fallback. Polish against Paper. Load the A/B screen with v0 and v1 answers on held-out prompts. |
