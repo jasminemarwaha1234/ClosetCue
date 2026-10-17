@@ -119,7 +119,7 @@ The server runs a pose model (`yolov8n-pose`) on each thumbnail. For every perso
 - **`upper`:** a shoulder and a hip are visible.
 - **`none`:** anything else, including face-only close-ups.
 
-A photo counts as an outfit photo when its best person is `full` or `upper` and fills at least 25% of the photo's height, so small people in the background don't count. With no face chosen, photos with more than 3 people are skipped. With a face chosen, only people whose face matches the user count. [SCAN_FIXES.md](SCAN_FIXES.md) has the full rules and test cases. `backend/test_framing.py` prints the framing for local photos.
+A photo counts as an outfit photo when its best person is `full` or `upper` and fills at least 25% of the photo's height, so small people in the background don't count. With no face chosen, photos with more than 3 people are skipped. With a face chosen, only people whose face matches the user count. [backend/SCAN_FIXES.md](backend/SCAN_FIXES.md) has the full rules and test cases. `backend/test_framing.py` prints the framing for local photos.
 
 A 30-minute device test early Saturday (section 13) settles two unknowns about albums:
 
@@ -542,7 +542,7 @@ Times are PDT. Shift them if we start late, but keep the 10 PM track decision an
 | Veri deployment cold start during judging | `veri deployments wake <id>` 10 minutes before. The backend falls back to base Llama, then Gemini, with a visible label. |
 | Try-on is slow (10–20 s) or looks bad | Generate the demo outfits' try-ons ahead of time. Show progress. The flat-lay always works. |
 | A library needs native code that Expo Go lacks (Face ID, Session Replay, on-device face matching) | Stay in Expo Go for the demo path. Build a development build only if one of us has Xcode set up and the time. |
-| Two phones scan at once and collide. The pose model and both face models are shared by every request, and the pose model's `predict` isn't thread-safe. | Fix 4 in [SCAN_FIXES.md](SCAN_FIXES.md): a lock around the model calls, and one `predict` call per batch. Extend the lock to the face models. |
+| Two phones scan at once and collide. All three models (pose and two face models) are shared by every request, and the pose model's `predict` isn't thread-safe. | Fix 4 in [backend/SCAN_FIXES.md](backend/SCAN_FIXES.md): one lock around all model work, and one pose `predict` call per batch. |
 | A fresh server install crashes on import, because `facenet-pytorch` isn't in `requirements.txt` (it's installed separately with `pip install facenet-pytorch --no-deps`). | Put the step in the README's setup section, and tell each other when a dependency changes. |
 | The phone can't reach the laptop on venue Wi-Fi | `npx expo start --tunnel`, tested Saturday, not Sunday morning. |
 | Secrets in a public repo | Keys only in `.env.local` on the backend. Check `git log -p` for keys before making the repo public. |
