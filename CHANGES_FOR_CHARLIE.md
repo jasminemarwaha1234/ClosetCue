@@ -211,3 +211,13 @@ From Jasmine, 2026-10-18. App-only; no backend or contract changes. Merged your 
 # The app is called ClosetCue now (FYI)
 
 From Jasmine, 2026-10-18. Renamed from As If in `app.json` (app name, slug `closetcue`, photo and Face ID prompts), the welcome screen, README's title, PLAN.md's first line and the Paper frames ("ClosetCue / …"). Unchanged on purpose: the `lahacksai://` link scheme, the `~/.venvs/as-if` folder, and the internal account domain `users.asif.app`, since changing those would break existing sign-ins and setup. If any Devpost or demo text says As If, it should say ClosetCue.
+
+---
+
+# Checkout is live, and the landing page exists (FYI)
+
+From Jasmine, 2026-10-18.
+
+- `backend/routes/checkout.py`: the three routes work. Mandates are stored with `supabase.create_mandate`; `/checkout/cart` totals from `catalog.items()` prices and refuses `expired`, `not_apparel` (an id not in the catalog) or `over_limit` with a `suggestion`; `/checkout/confirm` reruns the check and adds to `spent`. Tested end to end against Supabase with a throwaway user.
+- `backend/services/stripe_issuing.py` is implemented. It only turns on when `STRIPE_SECRET_KEY` (sk_test_) and `STRIPE_CARDHOLDER_ID` are in `backend/.env`; otherwise checkout is the simulated fallback (`Visa •••• 4242`, `authorization_id: null`). One-time setup: `python -m backend.stripe_setup`. The card is cancelled when the mandate expires, not after each purchase, so what's left of a limit stays spendable.
+- `landing/index.html`: the static landing page (pitch, demo video slot, QR code, privacy). Nothing else uses it.
