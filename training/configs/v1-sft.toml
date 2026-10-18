@@ -12,7 +12,7 @@ name = "v1-sft"
 base = "unsloth/Llama-3.2-3B-Instruct"
 
 [dataset]
-id = "<dataset id from veri datasets upload>"
+id = "e6447f2e5a33"
 
 [method]
 type = "sft_text"
