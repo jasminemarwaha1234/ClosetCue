@@ -8,43 +8,85 @@ SLOTS = ("top", "bottom", "dress", "outerwear", "shoes", "accessory")
 DEPARTMENTS = ("men", "women", "unisex")
 SEASONS = ("spring", "summer", "fall", "winter")
 
+# COLORS
+
 COLORS = (
-    "white", "cream", "beige", "tan", "khaki", "brown",
-    "gray", "charcoal", "black", "navy", "denim",
-    "blue", "green", "olive", "yellow", "orange", "red", "burgundy", "pink", "lilac", "purple",
-    "gold", "silver",
+    # NEUTRALS
+    "white", "cream", "beige", "tan", "khaki",
+    "brown", "gray", "charcoal", "black",
+    # VERSATILES
+    "navy", "denim", "olive", "blue", "forest-green", "muted-green",
+    "burgundy", "light-blue", "lilac", "gold", "silver",
+    # ACCENTS
+    "yellow", "orange", "red", "pink", "purple",
 )
-# Go with anything. An outfit may add at most one color outside this set (PLAN section 5 reward).
+
 NEUTRALS = frozenset({
-    "white", "cream", "beige", "tan", "khaki", "brown",
-    "gray", "charcoal", "black", "navy", "denim", "gold", "silver",
+    "white", "cream", "beige", "tan", "khaki",
+    "brown", "gray", "charcoal", "black",
 })
-# Accent pairs that clash in one outfit.
-CLASHES = frozenset(frozenset(p) for p in [
-    ("red", "pink"), ("red", "orange"), ("red", "purple"), ("orange", "pink"),
-    ("orange", "purple"), ("green", "red"), ("yellow", "purple"), ("burgundy", "orange"),
-])
+
+VERSATILES = frozenset({
+    "navy", "denim", "olive", "blue", "forest-green", "muted-green",
+    "burgundy", "light-blue", "lilac", "gold", "silver",
+})
+
+ACCENTS = frozenset({
+    "yellow", "orange", "red", "pink", "purple",
+})
+
+COLOR_COMPATIBILITY = {
+    "neutral": {
+        "neutral": 1.0,
+        "versatile": 1.0,
+        "accent": 0.9,
+    },
+    "versatile": {
+        "neutral": 1.0,
+        "versatile": 0.9,
+        "accent": 0.75,
+    },
+    "accent": {
+        "neutral": 0.9,
+        "versatile": 0.75,
+        "accent": 0.6,
+    },
+}
+
+COLOR_GROUP = {
+    **{c: "neutral" for c in NEUTRALS},
+    **{c: "versatile" for c in VERSATILES},
+    **{c: "accent" for c in ACCENTS},
+}
+
+# PATTERN / FIT
+
+PATTERNS = ("solid", "stripe", "check", "small-print", "large-print", "graphic")
+# More than one of these in an outfit competes for attention.
+LOUD_PATTERNS = frozenset({"check", "large-print", "graphic"})
+
+FITS = ("slim", "regular", "relaxed", "oversized")
+# Shoes and accessories have no fit.
+FIT_SLOTS = frozenset({"top", "bottom", "dress", "outerwear"})
+
+# STYLE / OCCASION
 
 STYLE_TAGS = (
-    "minimal", "classic", "relaxed", "tailored", "smart-casual", "preppy",
-    "streetwear", "graphic", "workwear", "outdoors", "athleisure",
-    "vintage", "bohemian", "romantic", "edgy", "trendy", "logos",
+    "minimal", "old-money", "western", "preppy",
+    "streetwear", "techwear", "workwear", "outdoors", "athleisure",
+    "bohemian", "y2k", "goth", "coastal", "sporty",
+    "clean-girl", "soft-girl", "grunge"
 )
+MAX_STYLE_TAGS = 3
 
-# Formality runs 1 (athleisure) to 5 (formal). Inclusive target range per occasion (PLAN section 5).
+# Formality runs 1 to 5. Inclusive target range per occasion (PLAN section 5).
 OCCASION_FORMALITY = {
-    "everyday": (1, 3),
-    "work": (3, 4),
-    "date": (2, 4),
-    "party": (2, 4),
     "formal": (5, 5),
-    "active": (1, 1),
-    "wedding_guest": (4, 5),
-    "interview": (4, 5),
-    "brunch": (2, 3),
-    "travel": (1, 2),
-    "concert": (1, 3),
-    "outdoors": (1, 2),
-    "campus": (1, 2),
-    "lounge": (1, 1),
+    "semi-formal": (4, 5),
+    "work": (3, 4),
+    "everyday": (2, 4),
+    "party": (2, 4),
+    "casual": (1, 3),
+    "athletic": (1, 2),
+    "comfy": (1, 1),
 }

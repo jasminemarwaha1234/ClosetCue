@@ -3,6 +3,7 @@ uvicorn
 ultralytics
 pillow
 pydantic
+google-genai
 numpy
 stripe
 sentry-sdk[fastapi]

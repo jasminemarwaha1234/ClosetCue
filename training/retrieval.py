@@ -16,7 +16,7 @@ Rules, in order:
    - any of its style_tags or colors is in profile["avoid"];
    - its formality is more than one level outside the occasion's range (vocab.OCCASION_FORMALITY).
 2. Score: number of style_tags shared with the profile, plus COLOR_BONUS if any of its colors
-   is one the profile wears. Ties break by id.
+   is one the profile wears, plus FIT_BONUS if its fit is one of profile["fits"]. Ties break by id.
 3. Split n across the slots that still have items, with SLOT_WEIGHTS renormalized over them
    (largest-remainder rounding, ties in SLOTS order).
 4. Inside each slot, take the best-scoring items first, then fill IMPERFECT_SHARE of the slot's
@@ -39,6 +39,7 @@ SLOT_WEIGHTS = {
     "accessory": 0.08,
 }
 COLOR_BONUS = 0.5
+FIT_BONUS = 0.5
 IMPERFECT_SHARE = 0.15
 DIVERSITY_CAP = 2
 
@@ -111,6 +112,8 @@ def _score(item: dict, profile: dict) -> float:
     score = float(len(set(item["style_tags"]) & set(profile["style_tags"])))
     if set(item["colors"]) & set(profile["colors"]):
         score += COLOR_BONUS
+    if item.get("fit") in profile.get("fits", []):
+        score += FIT_BONUS
     return score
 
 

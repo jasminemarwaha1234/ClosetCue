@@ -32,8 +32,10 @@ function item(
     price,
     colors: [color],
     formality: 2,
-    style_tags: ['minimal', 'relaxed'],
+    style_tags: ['minimal'],
     season: ['fall', 'winter', 'spring'],
+    pattern: 'solid',
+    fit: slot === 'shoes' || slot === 'accessory' ? null : 'regular',
     image: '',
     // Stand-in for the real product page so the retailer links can be tried.
     url: `https://www.google.com/search?q=${encodeURIComponent(name)}`,
@@ -42,12 +44,12 @@ function item(
 }
 
 export const catalog: CatalogItem[] = [
-  item('top_012', 'Relaxed cotton crewneck', 'top', 38, 'cream'),
+  item('top_012', 'Relaxed cotton crewneck', 'top', 38, 'cream', { fit: 'relaxed' }),
   item('top_020', 'Black merino tee', 'top', 32, 'black'),
-  item('top_031', 'Striped boat-neck top', 'top', 44, 'navy', { department: 'women' }),
+  item('top_031', 'Striped boat-neck top', 'top', 44, 'navy', { department: 'women', pattern: 'stripe' }),
   item('top_044', 'White oxford shirt', 'top', 48, 'white', { department: 'men', formality: 3 }),
   item('bottom_004', 'Olive straight chino', 'bottom', 54, 'olive'),
-  item('bottom_009', 'Black wide trousers', 'bottom', 64, 'black', { formality: 3 }),
+  item('bottom_009', 'Black wide trousers', 'bottom', 64, 'black', { formality: 3, fit: 'relaxed' }),
   item('bottom_015', 'Light-wash straight jeans', 'bottom', 58, 'denim'),
   item('dress_003', 'Black slip dress', 'dress', 78, 'black', { department: 'women', formality: 4 }),
   item('outerwear_002', 'Navy chore jacket', 'outerwear', 62, 'navy'),
@@ -62,10 +64,11 @@ export const catalog: CatalogItem[] = [
 const byId = (id: string) => catalog.find((c) => c.id === id)!;
 
 export const profile: StyleProfile = {
-  summary: 'Mostly neutrals with one accent color, relaxed fits, smart-casual. Avoids logos.',
-  style_tags: ['minimal', 'relaxed', 'smart-casual', 'neutral tones'],
+  summary: 'Mostly neutrals with one accent color, relaxed fits, minimal workwear. Avoids y2k.',
+  style_tags: ['minimal', 'workwear', 'coastal'],
   colors: ['cream', 'black', 'olive', 'navy'],
-  avoid: ['logos', 'neon'],
+  fits: ['relaxed', 'regular'],
+  avoid: ['y2k', 'orange'],
   departments: ['men', 'women'],
   looks: [
     { name: 'Weekend errands', photo_ids: [] },
@@ -78,7 +81,10 @@ export const profile: StyleProfile = {
       slot: 'top',
       colors: ['navy'],
       formality: 3,
-      style_tags: ['smart-casual'],
+      style_tags: ['preppy'],
+      pattern: 'solid',
+      fit: 'regular',
+      season: ['spring', 'summer', 'fall', 'winter'],
       photo_id: '',
     },
     {
@@ -88,6 +94,9 @@ export const profile: StyleProfile = {
       colors: ['white'],
       formality: 2,
       style_tags: ['minimal'],
+      pattern: 'solid',
+      fit: null,
+      season: ['spring', 'summer', 'fall', 'winter'],
       photo_id: '',
     },
     {
@@ -96,7 +105,10 @@ export const profile: StyleProfile = {
       slot: 'outerwear',
       colors: ['tan'],
       formality: 3,
-      style_tags: ['relaxed'],
+      style_tags: ['workwear'],
+      pattern: 'solid',
+      fit: 'relaxed',
+      season: ['spring', 'fall', 'winter'],
       photo_id: '',
     },
   ],

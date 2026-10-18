@@ -87,9 +87,12 @@ export const swatches: Record<string, string> = {
   charcoal: '#3a3a40',
   navy: '#202848',
   blue: '#3b5ba5',
+  'light-blue': '#a9c7e8',
   denim: '#4a6890',
   olive: '#6e7445',
   green: '#4f7a4a',
+  'muted-green': '#8a9a7b',
+  'forest-green': '#2f5233',
   tan: '#c8a67e',
   beige: '#d9c8a9',
   khaki: '#b8a77a',
@@ -101,6 +104,8 @@ export const swatches: Record<string, string> = {
   purple: '#7c4dff',
   yellow: '#e8c547',
   orange: '#d9772b',
+  gold: '#c9a24a',
+  silver: '#b8bcc4',
 };
 
 export const type = {

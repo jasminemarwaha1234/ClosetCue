@@ -67,15 +67,15 @@ type StyleProfile = {
 
 // Placeholder data from the Paper design. Swap for the real backend response later.
 const mockProfile: StyleProfile = {
-  summary: 'Mostly neutrals with one accent color, relaxed fits, smart-casual. Avoids logos.',
-  tags: ['minimal', 'relaxed', 'smart-casual', 'neutral tones'],
+  summary: 'Mostly neutrals with one accent color, relaxed fits, minimal and preppy. Avoids y2k.',
+  tags: ['minimal', 'preppy', 'old-money'],
   colors: [
     { name: 'cream', hex: '#EFE4CC' },
     { name: 'black', hex: '#1A1A1A' },
     { name: 'olive', hex: '#6B7440' },
     { name: 'navy', hex: '#1F2A4A' },
   ],
-  leaveOut: ['logos', 'neon'],
+  leaveOut: ['y2k', 'orange'],
   looks: [
     { name: 'Weekend errands', photoCount: 14 },
     { name: 'Work casual', photoCount: 9 },

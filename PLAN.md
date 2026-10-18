@@ -106,7 +106,7 @@ The judges' likely question is "Why not just prompt GPT or Gemini?" The answer h
 ### Core loop
 
 1. **Open the app.** Anonymous sign-in gives you an account with no sign-up screen. The welcome screen says what we read and what we keep.
-2. **Style profile and closet from your photos.** You give the app photos of outfits you wear (see "Getting your photos" below). Gemini tags each one (garments, colors, fit, formality) and the backend turns the tags into a style profile you can read and edit: "Mostly neutrals with one accent color, relaxed fits, smart-casual, avoids logos." Each garment Gemini finds also becomes a **closet item**, a piece you already own. The profile and closet are saved to your account.
+2. **Style profile and closet from your photos.** You give the app photos of outfits you wear (see "Getting your photos" below). Gemini tags each one (garments, colors, fit, formality) and the backend turns the tags into a style profile you can read and edit: "Mostly neutrals with one accent color, relaxed fits, minimal and preppy, avoids y2k." Each garment Gemini finds also becomes a **closet item**, a piece you already own. The profile and closet are saved to your account.
 3. **Pick an anchor, a budget range and an occasion.** Everything is prefilled, so one tap builds outfits:
    - **Anchor (optional), one of three kinds:** a catalog item you'd buy, a closet item you already own ("find pants for this shirt"), or none ("I need an outfit for…"). The app suggests one: the catalog item that best matches your style tags, with some randomness.
    - **Budget range:** a slider with two handles, a minimum and a maximum. Default $50–$200. The checkout spending limit defaults to the maximum.
@@ -345,7 +345,7 @@ A bigger catalog gives retrieval more to choose from, so every user's candidates
 `training/retrieval.py`, used by both `build_prompts.py` and `/outfits`. Deterministic, so the same request always gets the same candidates.
 
 1. **Filter out** items that can't work: the anchor's slot (accessories excepted; a dress anchor also drops tops and bottoms, and a top or bottom anchor drops dresses), items priced above `budget_max` minus the anchor's price (a closet anchor costs $0), items above `max_item_price`, departments the profile doesn't shop (unisex always passes), dresses for a men-only profile, anything with a style tag or color on the profile's `avoid` list, and items more than one formality level outside the occasion's range.
-2. **Score** the rest by the number of style tags shared with the profile, plus 0.5 if any of the item's colors is one the user wears. Ties break by id.
+2. **Score** the rest by the number of style tags shared with the profile, plus 0.5 if any of the item's colors is one the user wears, plus 0.5 if its fit is one of the profile's `fits`. Ties break by id.
 3. **Keep the top N, split across slots** by fixed weights (tops 25%, bottoms 25%, shoes 20%, outerwear 12%, dresses 10%, accessories 8%), renormalized over the slots that still have items, with a diversity cap: at most two items in a slot that share both a color and a style tag. If a slot runs short, the remaining places go to the best items left in any slot.
 4. **Leave some imperfect options in.** About 15% of each slot's places go to items spread across the lower-scoring half. If the candidates all go together, the model does no real choosing and the "we trained it" claim weakens. The eval keeps this honest: base Llama gets the same candidates and still breaks rules.
 
@@ -357,15 +357,16 @@ Swaps on the outfit cards come from the whole catalog, computed by the backend a
 
 Each occasion has a target formality range that the reward checks against (`OCCASION_FORMALITY` in `training/vocab.py`). Fixed list; free text can't be scored.
 
-| Occasion | Formality | Occasion | Formality |
-| --- | --- | --- | --- |
-| `everyday` | 1–3 | `interview` | 4–5 |
-| `work` | 3–4 | `brunch` | 2–3 |
-| `date` | 2–4 | `travel` | 1–2 |
-| `party` | 2–4 | `concert` | 1–3 |
-| `formal` | 5 | `outdoors` | 1–2 |
-| `active` | 1 | `campus` | 1–2 |
-| `wedding_guest` | 4–5 | `lounge` | 1 |
+| Occasion | Formality |
+| --- | --- |
+| `formal` | 5 |
+| `semi-formal` | 4–5 |
+| `work` | 3–4 |
+| `everyday` | 2–4 |
+| `party` | 2–4 |
+| `casual` | 1–3 |
+| `athletic` | 1–2 |
+| `comfy` | 1 |
 
 ### Base model
 
@@ -379,7 +380,7 @@ Built by scripts, not by hand:
 
 1. **Pick stores** (`training/stores.json`, Charlie decides). Prefer stores on Shopify: many publish their whole product list at `<store>/products.json` (up to 250 products per page) with title, product type, price, images and URL. Big chains like Zara, H&M, Uniqlo and Nike have no such feed and block scraping, so skip them. Cover a real spread of styles, prices and both departments. Check each store's terms of service. The list is 22 stores that price in US dollars, from streetwear (Stüssy, Kith) to menswear basics (Taylor Stitch, Todd Snyder), activewear (Alo Yoga, Set Active), womenswear (Christy Dawn, Edikted, Princess Polly), shoes (Allbirds, Thursday Boot Co., Koio) and jewelry (Gorjana).
 2. **`scrape_catalog.py`** (done) pulls each store's feed, maps its product types to our six slots, keeps one price and image per product, sets `url` to the product's own page (`<store>/products/<handle>`, never the store's home page), drops color variants of the same item, and caps each store at 50 products spread across slots. One-slot stores get a lower cap in `stores.json` (`max_items`, 20–40) so they don't swamp a slot. Requests go strictly one at a time, at least 3.5 s apart: a parallel run once got our IP blocked across all of Shopify. The first pull (Oct 18) gave 930 untagged items in `catalog_raw.json` from 21 stores (Bonobos returned none): 191 tops, 172 bottoms, 108 dresses, 135 outerwear, 146 shoes and 178 accessories, priced $4–$998.
-3. **`tag_catalog.py`** (next) has Gemini (the fast model) tag each item's `department`, `colors`, `formality`, `style_tags` and `season` from its title and image, choosing only from the fixed vocabularies in `training/vocab.py` so "navy" and "dark blue" don't become two colors. The scraper's `department_hint` (from the product's type and tags, else the store's `department`) is a hint, not the answer.
+3. **`tag_catalog.py`** (next) has Gemini (the fast model) tag each item's `department`, `colors`, `formality`, `style_tags`, `season`, `pattern` and `fit` from its title and image, choosing only from the fixed vocabularies in `training/vocab.py` so "navy" and "dark blue" don't become two colors. The scraper's `department_hint` (from the product's type and tags, else the store's `department`) is a hint, not the answer.
 4. **Check:** slot and department balance, every image and product URL loads, and a person spot-checks about 30 random items. Record the date the catalog was pulled; prices and stock drift.
 
 ```json
@@ -392,8 +393,10 @@ Built by scripts, not by hand:
   "price": 38.0,
   "colors": ["cream"],
   "formality": 2,
-  "style_tags": ["minimal", "relaxed"],
+  "style_tags": ["minimal"],
   "season": ["fall", "winter", "spring"],
+  "pattern": "solid",
+  "fit": "relaxed",
   "image": "https://…",
   "url": "https://…"
 }
@@ -401,8 +404,10 @@ Built by scripts, not by hand:
 
 Formality runs from 1 (athleisure) to 5 (formal). Slots are `top`, `bottom`, `dress`, `outerwear`, `shoes`, `accessory`. Departments are `men`, `women`, `unisex`. The vocabularies, in `training/vocab.py`:
 
-- **Colors:** white, cream, beige, tan, khaki, brown, gray, charcoal, black, navy, denim, blue, green, olive, yellow, orange, red, burgundy, pink, lilac, purple, gold, silver. The neutrals are white through denim, plus gold and silver.
-- **Style tags:** minimal, classic, relaxed, tailored, smart-casual, preppy, streetwear, graphic, workwear, outdoors, athleisure, vintage, bohemian, romantic, edgy, trendy, logos.
+- **Colors,** in three groups. Neutrals: white, cream, beige, tan, khaki, brown, gray, charcoal, black. Versatiles: navy, denim, olive, blue, forest-green, muted-green, burgundy, light-blue, lilac, gold, silver. Accents: yellow, orange, red, pink, purple.
+- **Style tags,** 1 to 3 per item: minimal, old-money, western, preppy, streetwear, techwear, workwear, outdoors, athleisure, bohemian, y2k, goth, coastal, sporty, clean-girl, soft-girl, grunge.
+- **Patterns:** solid, stripe, check, small-print, large-print, graphic. Check, large-print and graphic are loud.
+- **Fits:** slim, regular, relaxed, oversized, for tops, bottoms, dresses and outerwear. Shoes and accessories have none.
 
 Changing a list means re-tagging the catalog and regenerating the training data.
 
@@ -417,7 +422,7 @@ Veri needs one prompt format per JSONL file. Mixing plain-string prompts with me
 
 ### Reward function: our definition of a good outfit
 
-`training/reward.py`. Deterministic, fast, no network and standard library only, because Veri runs it inside the trainer as a single file. Nothing from the catalog is embedded: each row's occasion, budget range, anchor, candidates (with their slot, price, colors, formality and style tags), and the profile's style tags and `avoid` list go in as extra dataset columns and arrive in `**kwargs`.
+`training/reward.py`. Deterministic, fast, no network and standard library only, because Veri runs it inside the trainer as a single file. Nothing from the catalog is embedded: each row's occasion, budget range, anchor, candidates (with their slot, price, colors, formality, style tags, pattern, fit and season), and the profile's style tags, fits and `avoid` list go in as extra dataset columns and arrive in `**kwargs`.
 
 Charlie owns the rules in this table (which checks are gates, the weights, the color table, the formality tolerance); the agent drafts the code and tests from it.
 
@@ -428,12 +433,14 @@ Charlie owns the rules in this table (which checks are gates, the weights, the c
 | Includes the anchor (full score when there is none) | +1 |
 | Complete outfit: top + bottom, or a dress with neither, plus shoes; at most one per slot except accessories; no repeated IDs | +1 |
 | Total of catalog items is within `budget_min`–`budget_max`, and the stated total equals the real sum to the cent. Closet items count as $0 | +1 |
-| Color harmony: neutrals pair with anything; no accent color or one scores 1, two score 0.5, three or more score 0, and any clashing pair (red and pink, for example) scores 0 | 0 to +1 |
+| Color harmony: the lowest score of any two different colors in the outfit, by group (neutral with neutral or versatile 1, neutral with accent 0.9, versatile with versatile 0.9, versatile with accent 0.75, accent with accent 0.6); one color or none scores 1 | 0.6 to +1 |
+| Pattern: at most one loud pattern (check, large-print, graphic) | +0.5 |
+| Season: the items share at least one season (items without seasons are skipped) | +0.5 |
 | Formality coherent: all items within 1 level of each other and inside the occasion's range | +1 |
-| Matches the profile: the share of non-anchor items with a style tag from the profile; 0 if any item has a tag or color from the profile's `avoid` list | 0 to +1 |
+| Matches the profile: the mean over non-anchor items of each item's checks (shares a style tag with the profile; has one of the profile's fits, when both have one); 0 if any item has a tag or color from the profile's `avoid` list | 0 to +1 |
 | Reason is one sentence of at most 40 words and names at least one item, by ID or by a word from its name | +0.5 |
 
-One outfit scores at most 6.5. A completion's reward is the sum of its outfits' scores divided by 3, so a missing outfit, a failed gate or a repeated outfit each count as 0.
+One outfit scores at most 7.5. A completion's reward is the sum of its outfits' scores divided by 3, so a missing outfit, a failed gate or a repeated outfit each count as 0.
 
 The per-item price cap, departments and the `avoid` list need no reward check: retrieval never shows the model items that break them, so it can't pick one without failing the "no invented items" gate.
 
@@ -455,7 +462,7 @@ Every stage gets a tiny version first, because the expensive failures (a bad dat
 | Stage | Small version | Proves | Then |
 | --- | --- | --- | --- |
 | Catalog | Scrape and tag 2 stores (~100 items) | The feed works, slot mapping is right, Gemini tags look sensible | All 22 stores |
-| Reward | The hand-written test outfits (19 tests, passing) | It ranks outfits the way we would | Score real model answers |
+| Reward | The hand-written test outfits (21 tests, passing) | It ranks outfits the way we would | Score real model answers |
 | Data | 20 profiles, 40 prompts | Prompts read well; `veri datasets check` passes; Gemini's SFT answers pass the reward often enough | 400 profiles |
 | Candidate list size | Base Llama on 20 prompts at each size, no training | Whether accuracy already drops at 100–200 before we pay to train on them | The full eval |
 | SFT and GRPO | `max_steps` 5–10 on 40 prompts | The config is accepted, the reward runs inside the trainer, logs show a reward, merged weights push to Hugging Face. SFT's model load and weight push are proven by the Oct 18 smoke runs (`training/JOURNAL.md`); the reward inside GRPO isn't yet | Full runs |
