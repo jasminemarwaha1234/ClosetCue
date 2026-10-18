@@ -14,7 +14,8 @@ Rules, in order:
    - its department isn't unisex and isn't in profile["departments"] (an empty list allows all);
    - the profile is men-only and the item is a dress;
    - any of its style_tags or colors is in profile["avoid"];
-   - its formality is more than one level outside the occasion's range (vocab.OCCASION_FORMALITY).
+   - its formality is more than one level outside the occasion's range (vocab.OCCASION_FORMALITY);
+   - it breaks the occasion's rule (vocab.OCCASION_RULES, checked by reward.occasion_allows).
 2. Score: number of style_tags shared with the profile, plus COLOR_BONUS if any of its colors
    is one the profile wears, plus FIT_BONUS if its fit is one of profile["fits"]. Ties break by id.
 3. Split n across the slots that still have items, with SLOT_WEIGHTS renormalized over them
@@ -28,6 +29,7 @@ Rules, in order:
 The result is sorted by slot, then id, so an item's position doesn't reveal its score.
 """
 
+from training.reward import occasion_allows
 from training.vocab import OCCASION_FORMALITY, SLOTS
 
 SLOT_WEIGHTS = {
@@ -95,7 +97,7 @@ def _allowed(item, profile, anchor, budget_max, max_item_price, occasion) -> boo
     if avoid & set(item["style_tags"]) or avoid & set(item["colors"]):
         return False
     low, high = OCCASION_FORMALITY[occasion]
-    return low - 1 <= item["formality"] <= high + 1
+    return low - 1 <= item["formality"] <= high + 1 and occasion_allows(item, occasion)
 
 
 def _excluded_slots(anchor_slot: str) -> set[str]:

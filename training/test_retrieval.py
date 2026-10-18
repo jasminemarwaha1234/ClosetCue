@@ -122,6 +122,22 @@ def test_formality_within_one_level_of_occasion():
     assert {item["formality"] for item in run(occasion="athletic", n=40)} == {1, 2, 3}
 
 
+def test_athletic_rule():
+    def it(id, name, tags):
+        return {**make_catalog(1)[0], "id": id, "name": name, "slot": id.split("_")[0], "formality": 2,
+                "style_tags": tags, "department": "unisex"}
+    catalog = [
+        it("top_1", "Mesh Tank", ["sporty"]), it("top_2", "Boxy Tee", ["minimal"]),
+        it("bottom_1", "Jogger Sweatpant", ["athleisure"]), it("bottom_2", "Relaxed Jeans", ["sporty"]),
+        it("bottom_3", "Bootcut Legging", ["athleisure"]), it("shoes_1", "Malibu Boot", ["athleisure"]),
+        it("shoes_2", "Trail Runner", ["sporty"]), it("shoes_3", "Recovery Slippers", ["athleisure"]),
+        it("outerwear_1", "Denim Jacket", ["minimal"]), it("accessory_1", "Leather Belt", ["preppy"]),
+    ]
+    ids = [item["id"] for item in run(catalog=catalog, occasion="athletic", n=10)]
+    assert ids == ["top_1", "bottom_1", "bottom_3", "outerwear_1", "shoes_2", "accessory_1"]
+    assert len(run(catalog=catalog, occasion="casual", n=10)) == 10
+
+
 def test_slot_proportions():
     counts = by_slot(run(make_catalog(per_slot=40), n=100))
     assert counts["top"] == 25 and counts["bottom"] == 25

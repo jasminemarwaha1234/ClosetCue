@@ -11,9 +11,9 @@ visit every profile once in a shuffled order (so eval.py's --limit rows come fro
 profiles), with the anchor kinds (ANCHOR_MIX) and candidate list sizes (SIZES) in exact
 proportions, shuffled. The occasion is one of the profile's occasions, and the budget is the
 profile's. An anchor is drawn from the items whose formality is inside the occasion's range: a
-catalog anchor also passes retrieval's filters for the profile and costs at most
+catalog anchor also passes retrieval's filters for the profile (the occasion rule included) and costs at most
 ANCHOR_BUDGET_SHARE of budget_max (so the rest of the outfit fits), a closet anchor comes from the
-profile's closet. When none qualifies the row has no anchor. Everything comes from one seeded random.Random, so the same inputs give the same files.
+profile's closet and passes the occasion rule (reward.occasion_allows). When none qualifies the row has no anchor. Everything comes from one seeded random.Random, so the same inputs give the same files.
 
 Each row of prompts_train.jsonl and prompts_eval.jsonl is
     {"messages": [system, user], <reward.CONTEXT_COLUMNS>, "profile_id": str}
@@ -75,7 +75,7 @@ def _row(profile: dict, catalog: list[dict], kind: str, size: int, rng: random.R
         pool = [i for i in catalog if low <= i["formality"] <= high
                 and _allowed(i, profile, None, profile["budget_max"] * ANCHOR_BUDGET_SHARE, None, occasion)]
     elif kind == "closet":
-        pool = [c for c in profile["closet"] if low <= c["formality"] <= high]
+        pool = [c for c in profile["closet"] if low <= c["formality"] <= high and reward.occasion_allows(c, occasion)]
     else:
         pool = []
     messages, columns = build_request(

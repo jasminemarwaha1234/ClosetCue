@@ -57,10 +57,12 @@ def test_anchor_mix():
 
 def test_candidate_sizes():
     # Retrieval returns fewer than asked when filters and the diversity cap leave too few, which
-    # this small synthetic catalog does at 75 and 100, and now and then at 50; 25 always fills.
+    # this small synthetic catalog does at 75 and 100, and now and then at 50; 25 fills except for
+    # athletic rows, where few of its items pass the athletic rule.
     rows = build_rows(PROFILES, make_catalog(400), per_profile=5, seed=0)
     sizes = [len(r["candidates"]) - (1 if r["anchor"] else 0) for r in rows]
-    assert (sizes.count(25), max(sizes)) == (50, 100) and sizes.count(50) >= 45
+    assert (sizes.count(25), sizes.count(50), max(sizes)) == (49, 39, 100)
+    assert {r["occasion"] for r, size in zip(rows, sizes) if size < 25} == {"athletic"}
     assert sorted(_in_proportion({s: 1 for s in SIZES}, 10, random.Random(0))) == [25, 25, 25, 50, 50, 50, 75, 75, 100, 100]
     assert sorted(_in_proportion(ANCHOR_MIX, 40, random.Random(0))) == ["catalog"] * 18 + ["closet"] * 14 + ["none"] * 8
 

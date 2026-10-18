@@ -56,6 +56,16 @@ OCCASION_FORMALITY = {
     "comfy": (1, 2),
 }
 LOUD_PATTERNS = frozenset({"check", "large-print", "graphic"})
+OCCASION_RULES = {
+    "athletic": {
+        "slots": ("top", "bottom", "dress", "shoes"),
+        "tags": ("sporty", "athleisure"),
+        "exclude": (
+            "jeans", "denim", "chino", "trouser", "skirt", "dress shirt", "oxford", "blazer",
+            "loafer", "boot", "slipper", "clog", "flip flop", "slide", "sandal", "heel",
+        ),
+    },
+}
 
 COLOR_GROUP = {
     **{c: "neutral" for c in NEUTRALS},
@@ -207,7 +217,19 @@ def _formality(items, occasion):
     lo, hi = OCCASION_FORMALITY[occasion]
     levels = [int(it["formality"]) for it in items]
     coherent = max(levels) - min(levels) <= 1
-    return 1.0 if coherent and all(lo <= f <= hi for f in levels) else 0.0
+    fits = all(lo <= f <= hi for f in levels) and all(occasion_allows(it, occasion) for it in items)
+    return 1.0 if coherent and fits else 0.0
+
+
+def occasion_allows(item, occasion):
+    """Whether the item passes the occasion's OCCASION_RULES entry (the formality range aside).
+    Retrieval, the prompt builder's anchors and the formality check all use this."""
+    rule = OCCASION_RULES.get(occasion)
+    if not rule or item["slot"] not in rule["slots"]:
+        return True
+    name = (item.get("name") or item.get("description") or "").lower()
+    return bool(set(rule["tags"]) & set(item["style_tags"])) and not any(
+        re.search(rf"\b{re.escape(word)}s?\b", name) for word in rule["exclude"])
 
 
 def _profile(items, tags, fits, avoid):

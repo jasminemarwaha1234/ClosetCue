@@ -79,6 +79,7 @@ def test_vocab_copy_matches():
     assert R.STYLE_TAGS == vocab.STYLE_TAGS
     assert R.OCCASION_FORMALITY == vocab.OCCASION_FORMALITY
     assert R.LOUD_PATTERNS == vocab.LOUD_PATTERNS
+    assert R.OCCASION_RULES == vocab.OCCASION_RULES
 
 
 def test_clearly_good_scores_max():
@@ -174,6 +175,32 @@ def test_formality_rules():
     assert score(GOOD, occasion="not_an_occasion")[2]["formality"] == 0.0
 
 
+def test_athletic_rule_zeroes_formality():
+    gym = [dict(c, style_tags=["sporty"]) if c["id"] in ("top_001", "shoes_001") else c for c in CANDIDATES]
+    gym.append(item("bottom_005", "bottom", 70.0, ["black"], 1, ["athleisure"], "Jogger sweatpants"))
+    # The jeans carry no sporty tag; with joggers instead, every base piece passes.
+    assert score(GOOD, candidates=gym, occasion="athletic")[2]["formality"] == 0.0
+    joggers = outfit(["top_001", "bottom_005", "shoes_001"])
+    assert score(joggers, candidates=gym, occasion="athletic")[2]["formality"] == 1.0
+    # Sporty-tagged jeans still fail on the name.
+    jeans = [dict(c, style_tags=["sporty"]) if c["id"] == "bottom_001" else c for c in gym]
+    assert score(GOOD, candidates=jeans, occasion="athletic")[2]["formality"] == 0.0
+    # Accessories are exempt.
+    capped = outfit(["top_001", "bottom_005", "shoes_001", "accessory_003"])
+    assert score(capped, candidates=gym, occasion="athletic")[2]["formality"] == 1.0
+
+
+def test_occasion_allows():
+    shoe = {"slot": "shoes", "style_tags": ["athleisure"], "name": "ALO Malibu Boot - Espresso"}
+    assert R.occasion_allows(shoe, "athletic") is False
+    assert R.occasion_allows({**shoe, "name": "Bootcut Legging"}, "athletic") is True
+    assert R.occasion_allows({**shoe, "name": "Men's Allbirds Flip Flop"}, "athletic") is False
+    assert R.occasion_allows({**shoe, "name": None, "description": "black slides"}, "athletic") is False
+    assert R.occasion_allows({**shoe, "style_tags": ["minimal"], "name": "Runner"}, "athletic") is False
+    assert R.occasion_allows({**shoe, "slot": "outerwear", "style_tags": ["minimal"]}, "athletic") is True
+    assert R.occasion_allows({**shoe, "style_tags": ["minimal"]}, "casual") is True
+
+
 def test_profile_avoid_style_and_fit():
     with_cap = outfit(["top_001", "bottom_001", "shoes_001", "accessory_001"])
     assert score(with_cap)[2]["profile"] == 0.0
@@ -251,7 +278,7 @@ def test_ranking_and_spread():
         "invented": text(outfit(["top_001", "bottom_999", "shoes_001"])),
         "malformed": text(GOOD)[:-2],
     }
-    scores = {k: R.score_completion(v, ctx(budget_max=400.0)) for k, v in cases.items()}
+    scores = {k: R.score_completion(v, ctx(budget_max=300.0)) for k, v in cases.items()}
     for k, v in scores.items():
         print(f"{v:6.3f}  {k}")
     order = list(scores.values())
