@@ -1,0 +1,124 @@
+"""Run with `python -m pytest training/test_build_prompts.py`."""
+
+import itertools
+import json
+import random
+
+from training import reward
+from training.build_prompts import (
+    ANCHOR_MIX, SIZES, _in_proportion, build_rows, complete_possible, main, split_profiles,
+)
+from training.gen_profiles import generate
+from training.prompt import SYSTEM
+from training.retrieval import format_candidates
+from training.test_retrieval import make_catalog
+
+PROFILES = generate(40, seed=0)
+CATALOG = make_catalog()
+ROWS = build_rows(PROFILES, CATALOG, per_profile=5, seed=0)
+
+
+def test_deterministic():
+    assert build_rows(PROFILES, CATALOG, per_profile=5, seed=0) == ROWS
+    assert build_rows(PROFILES, CATALOG, per_profile=5, seed=1) != ROWS
+    assert split_profiles(PROFILES, 0.25, seed=0) == split_profiles(PROFILES, 0.25, seed=0)
+
+
+def test_split_by_profile_is_disjoint():
+    train, held_out = split_profiles(generate(400, seed=0), 0.25, seed=0)
+    assert (len(train), len(held_out)) == (300, 100)
+    assert not {p["id"] for p in train} & {p["id"] for p in held_out}
+
+    train, held_out = split_profiles(PROFILES[:20], 0.25, seed=0)
+    assert (len(train), len(held_out)) == (15, 5)
+
+
+def test_cli_files_share_no_profile(tmp_path, monkeypatch):
+    profiles, catalog = tmp_path / "profiles.jsonl", tmp_path / "catalog.json"
+    profiles.write_text("".join(json.dumps(p) + "\n" for p in PROFILES[:20]))
+    catalog.write_text(json.dumps(CATALOG))
+    monkeypatch.setattr("sys.argv", ["build_prompts", "--profiles", str(profiles), "--catalog", str(catalog),
+                                     "--out-dir", str(tmp_path)])
+    main()
+    train = [json.loads(line) for line in (tmp_path / "prompts_train.jsonl").read_text().splitlines()]
+    held_out = [json.loads(line) for line in (tmp_path / "prompts_eval.jsonl").read_text().splitlines()]
+    assert (len(train), len(held_out)) == (30, 10)
+    assert len({r["profile_id"] for r in train}) == 15 and len({r["profile_id"] for r in held_out}) == 5
+    assert not {r["profile_id"] for r in train} & {r["profile_id"] for r in held_out}
+
+
+def test_anchor_mix():
+    sources = [r["anchor"]["source"] if r["anchor"] else "none" for r in ROWS]
+    # 200 rows: 90 catalog / 70 closet / 40 none, unless a profile had no anchor to offer.
+    assert 85 <= sources.count("catalog") <= 90
+    assert 65 <= sources.count("closet") <= 70
+    assert 40 <= sources.count("none") <= 50
+
+
+def test_candidate_sizes():
+    # Retrieval returns fewer than asked when filters and the diversity cap leave too few, which
+    # this small synthetic catalog does at 75 and 100; 25 and 50 always fill.
+    rows = build_rows(PROFILES, make_catalog(400), per_profile=5, seed=0)
+    sizes = [len(r["candidates"]) - (1 if r["anchor"] else 0) for r in rows]
+    assert (sizes.count(25), sizes.count(50), max(sizes)) == (50, 50, 100)
+    assert sorted(_in_proportion({s: 1 for s in SIZES}, 10, random.Random(0))) == [25, 25, 25, 50, 50, 50, 75, 75, 100, 100]
+    assert sorted(_in_proportion(ANCHOR_MIX, 40, random.Random(0))) == ["catalog"] * 18 + ["closet"] * 14 + ["none"] * 8
+
+
+def test_row_format_and_context():
+    profiles = {p["id"]: p for p in PROFILES}
+    for r in ROWS:
+        assert list(r) == ["messages", *reward.CONTEXT_COLUMNS, "profile_id"]
+        assert [m["role"] for m in r["messages"]] == ["system", "user"]
+        assert r["messages"][0]["content"] == SYSTEM
+        p = profiles[r["profile_id"]]
+        assert r["occasion"] in p["occasions"]
+        assert (r["budget_min"], r["budget_max"]) == (p["budget_min"], p["budget_max"])
+        assert r["profile_style_tags"] == p["style_tags"] and r["profile_avoid"] == p["avoid"]
+        ctx = reward.prepare_context(json.loads(json.dumps(r)))
+        assert set(ctx["by_id"]) == {c["id"] for c in r["candidates"]}
+
+
+def test_anchor_is_rendered():
+    for r in ROWS:
+        user = r["messages"][1]["content"]
+        if r["anchor"] is None:
+            assert "\nAnchor: none.\n" in user
+            continue
+        anchor = next(c for c in r["candidates"] if c["id"] == r["anchor"]["id"])
+        assert f"must include:\n{format_candidates([anchor])}\n" in user
+        assert r["anchor"]["source"] == ("closet" if anchor["id"].startswith("closet_") else "catalog")
+        for c in r["candidates"]:
+            if c is not anchor:
+                assert f"\n{format_candidates([c])}\n" in user
+
+
+def test_known_good_answer_scores_high():
+    rows = [r for r in ROWS if complete_possible(r)]
+    assert len(rows) >= 150
+    for r in rows[:10]:
+        ctx = reward.prepare_context(r)
+        answer = json.dumps({"outfits": _best_outfits(ctx)})
+        assert reward.score_completion(answer, ctx) >= 6.5
+
+
+def _best_outfits(ctx: dict) -> list[dict]:
+    """The 3 highest-scoring top+bottom+shoes or dress+shoes outfits that include the anchor."""
+    anchor = ctx["anchor"]["id"] if ctx["anchor"] else None
+    by_slot = {}
+    for item in ctx["by_id"].values():
+        by_slot.setdefault(item["slot"], []).append(item)
+    scored = []
+    for slots in (("top", "bottom", "shoes"), ("dress", "shoes")):
+        for combo in itertools.product(*(by_slot.get(s, []) for s in slots)):
+            ids = [i["id"] for i in combo]
+            if anchor and anchor not in ids:
+                if ctx["by_id"][anchor]["slot"] in slots:
+                    continue
+                ids.append(anchor)
+            items = [ctx["by_id"][i] for i in ids]
+            outfit = {"items": ids, "total": round(sum(i["price"] for i in items), 2),
+                      "reason": f"The {ids[0]} anchors it."}
+            score, _, _ = reward.score_outfit(outfit, ctx)
+            scored.append((-score, ids, outfit))
+    return [o for _, _, o in sorted(scored)[:3]]

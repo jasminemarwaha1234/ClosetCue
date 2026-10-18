@@ -17,8 +17,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from backend.schemas import GeneratedBy, Outfit, OutfitsRequest, OutfitsResponse
 from backend.services import catalog, gemini, supabase, veri
 from training import reward
-from training.prompt import render_prompt
-from training.retrieval import _allowed, _score, retrieve
+from training.prompt import build_request
+from training.retrieval import _allowed, _score
 
 router = APIRouter()
 log = logging.getLogger(__name__)
@@ -50,24 +50,11 @@ async def outfits(req: OutfitsRequest, user_id: str = Depends(supabase.current_u
         current = round(sum(_lookup(i, items, closet)["price"] for i in req.upgrade_of), 2)
         budget_min, budget_max, wanted = round(current + 0.01, 2), current + UPGRADE_RANGE, 1
 
-    candidates = retrieve(
-        list(items.values()), profile, anchor=anchor, budget_max=budget_max,
-        max_item_price=req.max_item_price, occasion=req.occasion, n=CANDIDATES,
+    messages, columns = build_request(
+        profile, list(items.values()), occasion=req.occasion, budget_min=budget_min, budget_max=budget_max,
+        anchor=anchor, n=CANDIDATES, max_item_price=req.max_item_price, outfits=wanted,
     )
-    messages = render_prompt(
-        profile, occasion=req.occasion, budget_min=budget_min, budget_max=budget_max,
-        anchor=anchor, candidates=candidates, outfits=wanted,
-    )
-    ctx = reward.prepare_context({
-        "occasion": req.occasion,
-        "budget_min": budget_min,
-        "budget_max": budget_max,
-        "anchor": req.anchor.model_dump() if req.anchor else None,
-        "candidates": candidates + ([anchor] if anchor else []),
-        "profile_style_tags": profile["style_tags"],
-        "profile_fits": profile["fits"],
-        "profile_avoid": profile["avoid"],
-    })
+    ctx = reward.prepare_context(columns)
 
     generated_by, chosen = await _generate(messages, ctx, wanted, upgrade=bool(req.upgrade_of))
     swap_pool = [i for i in items.values() if _allowed(i, profile, None, budget_max, req.max_item_price, req.occasion)]

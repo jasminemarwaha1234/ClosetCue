@@ -6,7 +6,7 @@ StyleProfile, and the anchor and candidates like retrieval's items (id, name, sl
 formality, style_tags). A closet anchor has a closet_<n> id and price 0.
 """
 
-from training.retrieval import format_candidates
+from training.retrieval import format_candidates, retrieve
 from training.vocab import OCCASION_FORMALITY
 
 SYSTEM = (
@@ -53,6 +53,49 @@ Build {count}. Each outfit uses only the anchor and candidate ids above, and `it
 Reply with only this JSON:
 {{"outfits": [{{"items": ["<id>", "<id>"], "total": <number>, "reason": "<one sentence>"}}]}}"""
     return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
+
+
+# The candidate fields the reward reads; the rest (brand, image, url, ...) stays out of the rows.
+REWARD_FIELDS = ("id", "name", "slot", "price", "colors", "formality", "style_tags", "pattern", "fit", "season")
+
+
+def build_request(
+    profile: dict,
+    catalog: list[dict],
+    *,
+    occasion: str,
+    budget_min: float,
+    budget_max: float,
+    anchor: dict | None,
+    n: int,
+    max_item_price: float | None = None,
+    outfits: int = 3,
+) -> tuple[list[dict], dict]:
+    """The messages for one request and its reward context columns (reward.CONTEXT_COLUMNS).
+
+    `anchor` is a catalog item, a closet item shaped like one (with a name and price 0), or None.
+    """
+    candidates = retrieve(
+        catalog, profile, anchor=anchor, budget_max=budget_max,
+        max_item_price=max_item_price, occasion=occasion, n=n,
+    )
+    messages = render_prompt(
+        profile, occasion=occasion, budget_min=budget_min, budget_max=budget_max,
+        anchor=anchor, candidates=candidates, outfits=outfits,
+    )
+    columns = {
+        "occasion": occasion,
+        "budget_min": budget_min,
+        "budget_max": budget_max,
+        "anchor": None if anchor is None else {
+            "source": "closet" if anchor["id"].startswith("closet_") else "catalog", "id": anchor["id"],
+        },
+        "candidates": [{k: c.get(k) for k in REWARD_FIELDS} for c in candidates + ([anchor] if anchor else [])],
+        "profile_style_tags": profile["style_tags"],
+        "profile_fits": profile["fits"],
+        "profile_avoid": profile["avoid"],
+    }
+    return messages, columns
 
 
 def _list(values: list[str]) -> str:
