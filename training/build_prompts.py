@@ -6,13 +6,14 @@ Run from the repo root:
         [--out-dir training/data]
 
 Profiles are split into train and eval first (eval_share of them, rounded, go to eval), so no
-profile has prompts on both sides. Each side gets per_profile prompts per profile, with the anchor
-kinds (ANCHOR_MIX) and candidate list sizes (SIZES) in exact proportions, shuffled. The occasion is
-one of the profile's occasions, and the budget is the profile's. An anchor is drawn from the items
-whose formality is inside the occasion's range: a catalog anchor also passes retrieval's filters for
-the profile and costs at most ANCHOR_BUDGET_SHARE of budget_max (so the rest of the outfit fits),
-a closet anchor comes from the profile's closet. When none qualifies the row has no
-anchor. Everything comes from one seeded random.Random, so the same inputs give the same files.
+profile has prompts on both sides. Each side gets per_profile prompts per profile, in rounds that
+visit every profile once in a shuffled order (so eval.py's --limit rows come from different
+profiles), with the anchor kinds (ANCHOR_MIX) and candidate list sizes (SIZES) in exact
+proportions, shuffled. The occasion is one of the profile's occasions, and the budget is the
+profile's. An anchor is drawn from the items whose formality is inside the occasion's range: a
+catalog anchor also passes retrieval's filters for the profile and costs at most
+ANCHOR_BUDGET_SHARE of budget_max (so the rest of the outfit fits), a closet anchor comes from the
+profile's closet. When none qualifies the row has no anchor. Everything comes from one seeded random.Random, so the same inputs give the same files.
 
 Each row of prompts_train.jsonl and prompts_eval.jsonl is
     {"messages": [system, user], <reward.CONTEXT_COLUMNS>, "profile_id": str}
@@ -45,7 +46,7 @@ def split_profiles(profiles: list[dict], eval_share: float, seed: int) -> tuple[
 
 def build_rows(profiles: list[dict], catalog: list[dict], per_profile: int, seed: int) -> list[dict]:
     rng = random.Random(seed)
-    jobs = [p for p in profiles for _ in range(per_profile)]
+    jobs = rng.sample(profiles, len(profiles)) * per_profile
     kinds = _in_proportion(ANCHOR_MIX, len(jobs), rng)
     sizes = _in_proportion({size: 1 for size in SIZES}, len(jobs), rng)
     return [_row(p, catalog, kind, size, rng) for p, kind, size in zip(jobs, kinds, sizes)]

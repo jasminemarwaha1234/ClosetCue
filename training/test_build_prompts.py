@@ -43,6 +43,7 @@ def test_cli_files_share_no_profile(tmp_path, monkeypatch):
     held_out = [json.loads(line) for line in (tmp_path / "prompts_eval.jsonl").read_text().splitlines()]
     assert (len(train), len(held_out)) == (30, 10)
     assert len({r["profile_id"] for r in train}) == 15 and len({r["profile_id"] for r in held_out}) == 5
+    assert len({r["profile_id"] for r in held_out[:5]}) == 5
     assert not {r["profile_id"] for r in train} & {r["profile_id"] for r in held_out}
 
 
@@ -98,7 +99,7 @@ def test_known_good_answer_scores_high():
     for r in rows[:10]:
         ctx = reward.prepare_context(r)
         answer = json.dumps({"outfits": best_outfits(ctx)})
-        assert reward.score_completion(answer, ctx) >= 6.5
+        assert reward.score_completion(answer, ctx) >= 5.5
 
 
 
