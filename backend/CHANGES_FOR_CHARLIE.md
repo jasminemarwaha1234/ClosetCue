@@ -1,4 +1,4 @@
-> **Status, Oct 17 evening (after the Stripe / closet / budget-range push):** both requests below are still open. `StyleProfile.formality` is still in `schemas.py` and `types.ts`, and there's still no way to ask `/outfits` for "make it nicer". The app already follows everything in JANGES_FOR_JASMINE.md. Until "make it nicer" exists, the app fakes it from `src/api/mocks.ts`.
+> **Status, Oct 17 late (after the "updated plan w payment info" push):** three things are open: the new "View at retailer" request at the bottom, plus the two below. `StyleProfile.formality` is still in `schemas.py` and `types.ts`, and there's still no way to ask `/outfits` for "make it nicer". The app already follows everything in JANGES_FOR_JASMINE.md. Until "make it nicer" exists, the app fakes it from `src/api/mocks.ts`.
 
 # Change request: remove "formality" from the style profile
 
@@ -89,3 +89,17 @@ For reference, the refused screen also lets the person raise their own limit and
 ## Dropped: "How did it fit?"
 
 We can't know when an order arrives, so the fit screen is cut from the app. Nothing from the app will call `POST /fit`.
+
+---
+
+# Change request: real product URLs for "View at retailer"
+
+From Jasmine (app and design). Written 2026-10-17, after the PLAN.md section 8 update.
+
+The outfit cards and the receipt now have a **View at retailer** link on every item, opened in an in-app browser. The app reads `CatalogItem.url` and hides the link when it's empty. Nothing in the contract changes; this is about filling the field.
+
+1. **Scraper (section 5):** set `url` to the item's real product page, for example `https://<store>/products/<handle>` from the store's `products.json`. Please don't leave it empty or point it at the store's home page.
+2. **`/catalog`, `/outfits` and `/checkout/confirm`:** return the full `CatalogItem` with `url` for each item, including `Outfit.swaps` and `Receipt.items`. The receipt is where the demo shows that no order was placed, and that the links go to the real pages.
+3. **Training prompts:** no change. `url` doesn't need to go into the model's input.
+
+The receipt's "Demo: no order was placed and no money moved." line is entirely in the app, so it needs nothing from you.
