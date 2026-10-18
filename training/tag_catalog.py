@@ -54,10 +54,10 @@ outfit: tag only the garment the item names (its slot says which), ignoring ever
   Use "gold"/"silver" only for metal (jewelry, hardware-heavy items). When the name or url
   handle names a color, that's the item's main color (the photo can make it look different).
 - formality: 1 to 5. 1 = athletic or loungewear (leggings, sports bras, sweatpants, slides);
-  2 = casual (tees, hoodies, jeans, sneakers, caps, shorts); 3 = smart casual (button-ups, polos,
-  chinos, knit sweaters, loafers, casual dresses, leather boots); 4 = dressy (blazers, tailored
-  trousers, silk blouses, cocktail dresses, heels, dress shoes); 5 = formal (suits, tuxedos,
-  gowns). Most items are 2 or 3.
+  2 = casual (tees, hoodies, jeans, sneakers, caps, shorts); 3 = smart casual (polos, chinos,
+  knit sweaters, loafers, casual dresses, leather boots); 4 = dressy (button-ups, dress shirts,
+  blazers, tailored trousers, silk blouses, cocktail dresses, heels, dress shoes); 5 = formal
+  (suits, tuxedos, tuxedo shirts, gowns). Most items are 2 or 3.
 - style_tags: 1 to {MAX_STYLE_TAGS} from {list(STYLE_TAGS)}.
 - pattern: one of {list(PATTERNS)}. stripe = any stripes; check = plaid, gingham or
   houndstooth; small-print = small repeating prints like florals or dots that read as texture

@@ -19,7 +19,7 @@ Rules for whoever picks this up:
 | Retrieval | `training/retrieval.py`, `test_retrieval.py` (17 pass) | `retrieve(...)` and `format_candidates(items)` for the prompt. Deterministic |
 | Reward | `training/reward.py`, `test_reward.py` (21 pass) | `reward()` for Veri, plus `parse_output`, `score_outfit`, `score_completion`, `prepare_context` for the backend guard. Stdlib only. Max score 7.5 |
 | Catalog scraper | `training/scrape_catalog.py`, `training/stores.json` | One request at a time, ≥3.5 s apart (parallel requests got the IP blocked across all of Shopify). `--cache DIR` reuses fetched feeds |
-| Raw catalog | `training/catalog_raw.json` | **930 items, 21 US-dollar stores**, pulled 2026-10-18. Untagged: no department/colors/formality/style_tags/season yet |
+| Raw catalog | `training/catalog_raw.json` | **1,040 items, 24 US-dollar stores**, pulled 2026-10-18 (Jack Victor, Paul Evans and Mac Duggal added later that day for formal wear). Tagged into `training/catalog.json` |
 | Veri pipeline check | JOURNAL entry | Llama trains, merged weights push to HF. See "Veri facts" |
 
 Run the tests: `python3 -m pytest -q training/`.
@@ -29,8 +29,8 @@ Run the tests: `python3 -m pytest -q training/`.
 - Stores: Stüssy, Brain Dead, Kith, Taylor Stitch, Todd Snyder, Big Bud Press, Faherty, Rowing Blazers, Outerknown, Alo Yoga, Set Active, Outdoor Voices, Christy Dawn, Edikted, Allbirds (cap 30), Thursday Boot Co. (30), Birdies (30), Steve Madden (40), Koio (30), Gorjana (20), Princess Polly. Others: 50 each.
 - Bonobos is in `stores.json` but skipped: its feed returns HTTP 500 partway through. Retry once later or delete the line.
 - Decisions already made: US-dollar stores only, English names only (no Rouje), **no Brixton** (its terms ban AI training by name). Scraping stores whose terms technically forbid it is accepted.
-- Slots: top 191, bottom 172, accessory 178, shoes 146, outerwear 135, dress 108. Department hints: women 411, men 263, unisex 97, unknown 159. Median price $110.
-- Add a store: append one line to `stores.json` (`max_items` caps it), rerun `python -m training.scrape_catalog --cache <dir>`. Ids follow store order, so appending never renumbers earlier items.
+- Slots: top 207, accessory 207, bottom 185, shoes 161, outerwear 147, dress 133. Department hints: women 441, men 343, unisex 97, unknown 159. Median price $128.
+- Add a store: append one line to `stores.json` (`max_items` caps it), run `python -m training.scrape_catalog --stores "<name>"`, then `python -m training.tag_catalog`. `--stores` keeps every other store's items and ids and numbers the new ones after them, so cached tags stay valid. A full rescrape refetches live feeds and can renumber items.
 
 ### Veri facts (learned the hard way)
 
@@ -116,6 +116,7 @@ Owner in brackets. Critical path: 1 → 2 → 4 → 5 → 7 → 8.
    - Gemini (fast model) fills `department`, `colors`, `formality` (1–5), `style_tags`, `season` from name, product_type, tags, description and image, choosing **only** from `training/vocab.py`. Validate every answer against the vocab and retry or drop bad ones.
    - Use `department_hint` when set. Drop scraper-only fields (`product_type`, `tags`, `description`, `department_hint`) from `catalog.json` so it matches `CatalogItem`.
    - Start with 20 items, read them, then all 930.
+   - **Done 2026-10-18:** all 1,040 items, tagged by `gemini-3.8-flash` (84 calls, including a re-tag of the tops after dress shirts moved to formality 4).
    - Fallback if Gemini fails: rules from Shopify data (color option names and tags, product type → formality).
 2. **[Charlie] Spot-check about 30 random tagged items.** Record the pull date.
 3. **[agent] Tell Jasmine the final color and tag lists** (they're `vocab.py`).

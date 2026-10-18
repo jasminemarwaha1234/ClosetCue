@@ -93,4 +93,4 @@ The vocabulary and the occasions were reworked, so the contract changed again. `
 
 **Mocks.** I kept your 18 real products and gave them `pattern` and `fit`: the `item()` helper defaults to `solid` and `regular` (`null` for shoes and accessories), with `relaxed` or `oversized` on the wide-leg pant, hoodie and baggy jeans, and `graphic` on the Brain Dead tote.
 
-**Catalog.** `training/catalog.json` isn't committed yet, so `/tryon` still reads `catalog_raw.json`. It lands once the whole catalog is tagged with the new vocab, and it will include your 18 mock ids.
+**Catalog.** `training/catalog.json` is tagged and committed: 1,040 items from 24 stores, including your 18 mock ids, so `/tryon` reads it now. Three formal-wear stores were added (Jack Victor, Paul Evans, Mac Duggal), and `formal` now means formality 4–5, the same as `semi-formal`.

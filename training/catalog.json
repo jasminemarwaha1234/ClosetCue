@@ -36,14 +36,12 @@
     "price": 160.0,
     "colors": [
       "yellow",
-      "white",
-      "blue"
+      "white"
     ],
     "formality": 2,
     "style_tags": [
-      "coastal",
       "streetwear",
-      "bohemian"
+      "coastal"
     ],
     "season": [
       "spring",
@@ -164,14 +162,11 @@
     "department": "men",
     "price": 60.0,
     "colors": [
-      "blue",
-      "navy"
+      "blue"
     ],
     "formality": 2,
     "style_tags": [
-      "streetwear",
-      "grunge",
-      "y2k"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -674,7 +669,7 @@
     "department": "men",
     "price": 160.0,
     "colors": [
-      "brown",
+      "tan",
       "black"
     ],
     "formality": 3,
@@ -730,8 +725,8 @@
     ],
     "formality": 2,
     "style_tags": [
-      "preppy",
-      "streetwear"
+      "streetwear",
+      "preppy"
     ],
     "season": [
       "spring",
@@ -1046,12 +1041,13 @@
     "formality": 2,
     "style_tags": [
       "streetwear",
-      "sporty"
+      "coastal"
     ],
     "season": [
       "spring",
       "summer",
-      "fall"
+      "fall",
+      "winter"
     ],
     "pattern": "graphic",
     "fit": "relaxed",
@@ -1123,8 +1119,7 @@
     ],
     "formality": 2,
     "style_tags": [
-      "streetwear",
-      "grunge"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -1223,7 +1218,7 @@
     "colors": [
       "white"
     ],
-    "formality": 3,
+    "formality": 2,
     "style_tags": [
       "streetwear",
       "outdoors",
@@ -1713,8 +1708,7 @@
     ],
     "formality": 2,
     "style_tags": [
-      "streetwear",
-      "grunge"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -1763,9 +1757,10 @@
     "price": 101.0,
     "colors": [
       "black",
-      "blue"
+      "blue",
+      "yellow"
     ],
-    "formality": 2,
+    "formality": 1,
     "style_tags": [
       "sporty",
       "streetwear",
@@ -1773,6 +1768,7 @@
     ],
     "season": [
       "spring",
+      "summer",
       "fall",
       "winter"
     ],
@@ -2128,7 +2124,7 @@
     "formality": 2,
     "style_tags": [
       "streetwear",
-      "preppy",
+      "athleisure",
       "sporty"
     ],
     "season": [
@@ -2200,7 +2196,7 @@
     "department": "unisex",
     "price": 275.0,
     "colors": [
-      "muted-green"
+      "olive"
     ],
     "formality": 2,
     "style_tags": [
@@ -2209,8 +2205,8 @@
     ],
     "season": [
       "spring",
-      "summer",
-      "fall"
+      "fall",
+      "winter"
     ],
     "pattern": "stripe",
     "fit": "oversized",
@@ -2282,15 +2278,14 @@
     ],
     "formality": 2,
     "style_tags": [
-      "y2k",
       "streetwear",
-      "soft-girl"
+      "y2k"
     ],
     "season": [
       "spring",
       "summer"
     ],
-    "pattern": "solid",
+    "pattern": "graphic",
     "fit": "slim",
     "image": "https://cdn.shopify.com/s/files/1/0642/8893/files/Ribbed_Envelope_Baby_Tee_Natural_Front_optimized.jpg",
     "url": "https://wearebraindead.com/products/ribbed-envelope-baby-tee-natural"
@@ -2307,14 +2302,12 @@
     ],
     "formality": 2,
     "style_tags": [
-      "streetwear",
-      "grunge"
+      "streetwear"
     ],
     "season": [
       "spring",
       "summer",
-      "fall",
-      "winter"
+      "fall"
     ],
     "pattern": "graphic",
     "fit": "oversized",
@@ -2338,8 +2331,7 @@
     "season": [
       "spring",
       "summer",
-      "fall",
-      "winter"
+      "fall"
     ],
     "pattern": "graphic",
     "fit": "oversized",
@@ -2514,7 +2506,7 @@
     "formality": 3,
     "style_tags": [
       "streetwear",
-      "grunge"
+      "minimal"
     ],
     "season": [
       "spring",
@@ -2583,17 +2575,17 @@
     "department": "unisex",
     "price": 60.0,
     "colors": [
-      "muted-green"
+      "forest-green"
     ],
     "formality": 2,
     "style_tags": [
-      "streetwear"
+      "streetwear",
+      "y2k"
     ],
     "season": [
       "spring",
       "summer",
-      "fall",
-      "winter"
+      "fall"
     ],
     "pattern": "graphic",
     "fit": "oversized",
@@ -2638,7 +2630,7 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "clean-girl"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -3031,9 +3023,8 @@
     ],
     "formality": 2,
     "style_tags": [
-      "streetwear",
       "minimal",
-      "old-money"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -3198,8 +3189,7 @@
     "season": [
       "spring",
       "summer",
-      "fall",
-      "winter"
+      "fall"
     ],
     "pattern": "graphic",
     "fit": "regular",
@@ -3214,18 +3204,16 @@
     "department": "men",
     "price": 75.0,
     "colors": [
-      "cream"
+      "beige"
     ],
     "formality": 2,
     "style_tags": [
-      "streetwear",
-      "minimal"
+      "streetwear"
     ],
     "season": [
       "spring",
       "summer",
-      "fall",
-      "winter"
+      "fall"
     ],
     "pattern": "graphic",
     "fit": "regular",
@@ -3555,8 +3543,9 @@
     ],
     "formality": 2,
     "style_tags": [
+      "grunge",
       "minimal",
-      "grunge"
+      "goth"
     ],
     "season": [
       "spring",
@@ -3577,7 +3566,7 @@
     "colors": [
       "cream"
     ],
-    "formality": 3,
+    "formality": 2,
     "style_tags": [
       "y2k",
       "bohemian"
@@ -3630,14 +3619,13 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "grunge",
-      "streetwear"
+      "streetwear",
+      "goth"
     ],
     "season": [
       "spring",
       "summer",
-      "fall",
-      "winter"
+      "fall"
     ],
     "pattern": "solid",
     "fit": "slim",
@@ -4112,8 +4100,8 @@
     "formality": 3,
     "style_tags": [
       "workwear",
-      "outdoors",
-      "old-money"
+      "old-money",
+      "outdoors"
     ],
     "season": [
       "spring",
@@ -4212,9 +4200,9 @@
     "department": "men",
     "price": 198.0,
     "colors": [
-      "light-blue"
+      "blue"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "coastal",
       "minimal"
@@ -4363,12 +4351,14 @@
     "department": "men",
     "price": 168.0,
     "colors": [
-      "navy"
+      "navy",
+      "blue"
     ],
-    "formality": 3,
+    "formality": 2,
     "style_tags": [
+      "bohemian",
       "coastal",
-      "bohemian"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -4618,7 +4608,7 @@
     "colors": [
       "blue"
     ],
-    "formality": 3,
+    "formality": 2,
     "style_tags": [
       "workwear",
       "minimal"
@@ -4744,10 +4734,10 @@
     "colors": [
       "muted-green"
     ],
-    "formality": 3,
+    "formality": 2,
     "style_tags": [
       "coastal",
-      "preppy"
+      "minimal"
     ],
     "season": [
       "spring",
@@ -4844,8 +4834,8 @@
     ],
     "formality": 2,
     "style_tags": [
-      "outdoors",
       "workwear",
+      "outdoors",
       "minimal"
     ],
     "season": [
@@ -4897,8 +4887,8 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "outdoors",
-      "workwear"
+      "workwear",
+      "athleisure"
     ],
     "season": [
       "spring",
@@ -4949,8 +4939,8 @@
     "formality": 3,
     "style_tags": [
       "preppy",
-      "minimal",
-      "coastal"
+      "old-money",
+      "minimal"
     ],
     "season": [
       "spring",
@@ -5154,8 +5144,8 @@
     ],
     "season": [
       "spring",
-      "summer",
-      "fall"
+      "fall",
+      "winter"
     ],
     "pattern": "solid",
     "fit": "regular",
@@ -5352,9 +5342,8 @@
     ],
     "formality": 3,
     "style_tags": [
-      "old-money",
       "minimal",
-      "preppy"
+      "old-money"
     ],
     "season": [
       "spring",
@@ -5688,7 +5677,7 @@
       "red",
       "white"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "coastal",
       "preppy"
@@ -5714,9 +5703,8 @@
     ],
     "formality": 3,
     "style_tags": [
-      "minimal",
       "coastal",
-      "old-money"
+      "minimal"
     ],
     "season": [
       "spring",
@@ -5762,14 +5750,12 @@
     "department": "men",
     "price": 139.0,
     "colors": [
-      "red",
-      "orange"
+      "red"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "minimal",
-      "old-money",
-      "coastal"
+      "old-money"
     ],
     "season": [
       "spring",
@@ -5788,7 +5774,7 @@
     "department": "men",
     "price": 98.0,
     "colors": [
-      "tan"
+      "beige"
     ],
     "formality": 2,
     "style_tags": [
@@ -5816,7 +5802,6 @@
     "formality": 3,
     "style_tags": [
       "coastal",
-      "old-money",
       "minimal"
     ],
     "season": [
@@ -5970,11 +5955,10 @@
       "light-blue",
       "white"
     ],
-    "formality": 3,
+    "formality": 2,
     "style_tags": [
       "coastal",
-      "preppy",
-      "old-money"
+      "preppy"
     ],
     "season": [
       "spring",
@@ -6049,8 +6033,7 @@
     ],
     "formality": 2,
     "style_tags": [
-      "minimal",
-      "streetwear"
+      "minimal"
     ],
     "season": [
       "spring",
@@ -6175,13 +6158,12 @@
     "price": 159.0,
     "colors": [
       "muted-green",
-      "cream"
+      "white"
     ],
-    "formality": 2,
+    "formality": 1,
     "style_tags": [
       "athleisure",
-      "sporty",
-      "coastal"
+      "sporty"
     ],
     "season": [
       "spring",
@@ -6491,7 +6473,8 @@
     "price": 64.0,
     "colors": [
       "white",
-      "light-blue"
+      "light-blue",
+      "yellow"
     ],
     "formality": 2,
     "style_tags": [
@@ -6520,8 +6503,7 @@
     "formality": 2,
     "style_tags": [
       "y2k",
-      "streetwear",
-      "minimal"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -6575,7 +6557,6 @@
     "formality": 2,
     "style_tags": [
       "streetwear",
-      "sporty",
       "minimal"
     ],
     "season": [
@@ -6677,8 +6658,8 @@
     ],
     "formality": 2,
     "style_tags": [
-      "streetwear",
-      "sporty"
+      "sporty",
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -6700,18 +6681,18 @@
     "colors": [
       "black"
     ],
-    "formality": 2,
+    "formality": 1,
     "style_tags": [
-      "streetwear",
       "athleisure",
-      "minimal"
+      "streetwear",
+      "y2k"
     ],
     "season": [
       "spring",
       "summer"
     ],
     "pattern": "solid",
-    "fit": "regular",
+    "fit": "slim",
     "image": "https://cdn.shopify.com/s/files/1/0775/2355/files/01ECOMMMINITANKSJULIETBLACKLBYMIGUEL7-9-260248.png",
     "url": "https://bigbudpress.com/products/contrast-stitch-mini-tank-basic-black"
   },
@@ -6724,7 +6705,8 @@
     "price": 168.0,
     "colors": [
       "black",
-      "forest-green"
+      "forest-green",
+      "orange"
     ],
     "formality": 2,
     "style_tags": [
@@ -6735,7 +6717,7 @@
       "spring",
       "fall"
     ],
-    "pattern": "small-print",
+    "pattern": "large-print",
     "fit": "oversized",
     "image": "https://cdn.shopify.com/s/files/1/0775/2355/files/ECOMM_HALLOWEEN_SPELLBOUND_CROP_OVERSHIRT_KANDIA_P_BY_MIGUEL_9-30-262642.png",
     "url": "https://bigbudpress.com/products/cropped-overshirt-spellbound"
@@ -6762,7 +6744,7 @@
       "summer"
     ],
     "pattern": "stripe",
-    "fit": "regular",
+    "fit": "slim",
     "image": "https://cdn.shopify.com/s/files/1/0775/2355/files/01ECOMMFRUITPRINTCROPTANKLJULIETBYMIGUEL7-16-260165.png",
     "url": "https://bigbudpress.com/products/cropped-tank-fruit-fantasy"
   },
@@ -6786,7 +6768,7 @@
       "summer"
     ],
     "pattern": "solid",
-    "fit": "regular",
+    "fit": "slim",
     "image": "https://cdn.shopify.com/s/files/1/0775/2355/files/01E-COMMCROPTANKSMUSTANGREDALEXPBYMORGAN8-20-202521680.png",
     "url": "https://bigbudpress.com/products/cropped-tank-top-mustang-red"
   },
@@ -7008,8 +6990,8 @@
     "price": 85.0,
     "colors": [
       "brown",
-      "yellow",
-      "orange"
+      "orange",
+      "yellow"
     ],
     "formality": 2,
     "style_tags": [
@@ -7112,18 +7094,18 @@
     "department": "unisex",
     "price": 36.0,
     "colors": [
-      "brown"
+      "tan"
     ],
     "formality": 2,
     "style_tags": [
+      "minimal",
       "streetwear",
       "sporty"
     ],
     "season": [
       "spring",
       "summer",
-      "fall",
-      "winter"
+      "fall"
     ],
     "pattern": "solid",
     "fit": "regular",
@@ -7195,8 +7177,9 @@
     ],
     "formality": 2,
     "style_tags": [
-      "y2k",
-      "streetwear"
+      "minimal",
+      "streetwear",
+      "y2k"
     ],
     "season": [
       "spring",
@@ -7640,8 +7623,7 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "streetwear",
-      "workwear"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -7650,7 +7632,7 @@
       "winter"
     ],
     "pattern": "solid",
-    "fit": "oversized",
+    "fit": "relaxed",
     "image": "https://cdn.shopify.com/s/files/1/0775/2355/files/01ECOMMORGANICTEEFRENCHBLUESYDNEYXXSBYMORGAN7177.png",
     "url": "https://bigbudpress.com/products/the-organic-vintage-tee-french-blue"
   },
@@ -7667,7 +7649,6 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "streetwear",
       "clean-girl"
     ],
     "season": [
@@ -7675,7 +7656,7 @@
       "summer"
     ],
     "pattern": "solid",
-    "fit": "regular",
+    "fit": "slim",
     "image": "https://cdn.shopify.com/s/files/1/0775/2355/files/01ECOMMTANKSREDWINELJULIETBYMIGUEL7-16-260244.png",
     "url": "https://bigbudpress.com/products/the-tank-top-red-wine"
   },
@@ -7693,17 +7674,16 @@
     "formality": 2,
     "style_tags": [
       "streetwear",
-      "preppy",
-      "minimal"
+      "sporty",
+      "preppy"
     ],
     "season": [
       "spring",
       "summer",
-      "fall",
-      "winter"
+      "fall"
     ],
     "pattern": "solid",
-    "fit": "oversized",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0775/2355/files/01ECOMMRINGERTEESREDWINEPKANDIABYMIGUEL7-9-260139.png",
     "url": "https://bigbudpress.com/products/vintage-ringer-tee-red-wine"
   },
@@ -8149,7 +8129,8 @@
     "season": [
       "spring",
       "summer",
-      "fall"
+      "fall",
+      "winter"
     ],
     "pattern": "graphic",
     "fit": "regular",
@@ -8320,10 +8301,9 @@
     "colors": [
       "gray"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
-      "minimal",
-      "athleisure",
+      "old-money",
       "preppy"
     ],
     "season": [
@@ -8331,7 +8311,7 @@
       "fall",
       "winter"
     ],
-    "pattern": "solid",
+    "pattern": "check",
     "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0359/8357/files/HO25-FAHERTY-Mens-MQH2517-APH-LegendSweaterQuarterZip-AlpineGreyHerringbone_OM_FRONT_CROP_1_Web.jpg",
     "url": "https://fahertybrand.com/products/legend-sweater-quarter-zip-alpine-grey-herringbone"
@@ -8422,7 +8402,7 @@
     "colors": [
       "navy"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "sporty",
       "streetwear"
@@ -8446,7 +8426,8 @@
     "price": 198.0,
     "colors": [
       "tan",
-      "cream"
+      "cream",
+      "brown"
     ],
     "formality": 2,
     "style_tags": [
@@ -8455,7 +8436,6 @@
     ],
     "season": [
       "spring",
-      "summer",
       "fall",
       "winter"
     ],
@@ -8679,13 +8659,14 @@
     "price": 154.0,
     "colors": [
       "brown",
-      "cream"
+      "white",
+      "charcoal"
     ],
     "formality": 3,
     "style_tags": [
       "western",
-      "outdoors",
-      "old-money"
+      "bohemian",
+      "outdoors"
     ],
     "season": [
       "fall",
@@ -8762,7 +8743,6 @@
     "formality": 3,
     "style_tags": [
       "coastal",
-      "preppy",
       "minimal"
     ],
     "season": [
@@ -8815,8 +8795,8 @@
     "formality": 2,
     "style_tags": [
       "preppy",
-      "sporty",
-      "streetwear"
+      "athleisure",
+      "sporty"
     ],
     "season": [
       "spring",
@@ -8888,9 +8868,7 @@
     "department": "women",
     "price": 78.0,
     "colors": [
-      "gray",
-      "black",
-      "gold"
+      "gray"
     ],
     "formality": 2,
     "style_tags": [
@@ -9016,12 +8994,12 @@
     "department": "men",
     "price": 118.0,
     "colors": [
-      "blue",
-      "white"
+      "blue"
     ],
     "formality": 2,
     "style_tags": [
       "preppy",
+      "sporty",
       "athleisure"
     ],
     "season": [
@@ -9148,9 +9126,9 @@
     "colors": [
       "brown",
       "cream",
-      "light-blue"
+      "navy"
     ],
-    "formality": 3,
+    "formality": 2,
     "style_tags": [
       "preppy",
       "sporty"
@@ -9311,15 +9289,14 @@
     "formality": 2,
     "style_tags": [
       "preppy",
-      "sporty",
-      "old-money"
+      "sporty"
     ],
     "season": [
       "spring",
       "fall",
       "winter"
     ],
-    "pattern": "graphic",
+    "pattern": "solid",
     "fit": "relaxed",
     "image": "https://cdn.shopify.com/s/files/1/1770/6343/files/MF26T22K03RED-06.jpg",
     "url": "https://rowingblazers.com/products/men-s-diana-edition-sheep-harrison-rugby-red"
@@ -9383,14 +9360,13 @@
     "department": "men",
     "price": 54.6,
     "colors": [
-      "forest-green",
-      "white"
+      "forest-green"
     ],
     "formality": 2,
     "style_tags": [
-      "streetwear",
-      "sporty",
-      "preppy"
+      "preppy",
+      "outdoors",
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -9417,14 +9393,14 @@
     "formality": 3,
     "style_tags": [
       "preppy",
-      "sporty"
+      "streetwear"
     ],
     "season": [
       "spring",
       "fall",
       "winter"
     ],
-    "pattern": "graphic",
+    "pattern": "large-print",
     "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/1770/6343/files/GeneratedwithKive.ai-kive-imagecopy2.jpg",
     "url": "https://rowingblazers.com/products/mens-cotton-football-sweater-green"
@@ -9443,14 +9419,14 @@
     "formality": 3,
     "style_tags": [
       "preppy",
-      "old-money"
+      "streetwear"
     ],
     "season": [
       "spring",
       "fall",
       "winter"
     ],
-    "pattern": "check",
+    "pattern": "large-print",
     "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/1770/6343/files/DONE-NEEDSTAGRED.jpg",
     "url": "https://rowingblazers.com/products/mens-cotton-patchwork-sweater-brick-patchwork"
@@ -9474,6 +9450,7 @@
     ],
     "season": [
       "spring",
+      "summer",
       "fall"
     ],
     "pattern": "stripe",
@@ -9961,8 +9938,7 @@
     "department": "women",
     "price": 118.8,
     "colors": [
-      "red",
-      "white"
+      "red"
     ],
     "formality": 3,
     "style_tags": [
@@ -10014,10 +9990,10 @@
     "colors": [
       "white"
     ],
-    "formality": 3,
+    "formality": 4,
     "style_tags": [
       "preppy",
-      "clean-girl",
+      "old-money",
       "minimal"
     ],
     "season": [
@@ -10229,7 +10205,7 @@
       "summer"
     ],
     "pattern": "stripe",
-    "fit": "regular",
+    "fit": "relaxed",
     "image": "https://cdn.shopify.com/s/files/1/1770/6343/files/weavy-Gemini3_NanoBananaPro_-2026-01-30at14.13.28_1.png",
     "url": "https://rowingblazers.com/products/womens-seersucker-tank-blue"
   },
@@ -10751,8 +10727,7 @@
     "department": "women",
     "price": 75.61,
     "colors": [
-      "navy",
-      "white"
+      "navy"
     ],
     "formality": 3,
     "style_tags": [
@@ -10859,7 +10834,7 @@
     "style_tags": [
       "coastal",
       "old-money",
-      "preppy"
+      "outdoors"
     ],
     "season": [
       "spring",
@@ -11059,7 +11034,8 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "streetwear"
+      "streetwear",
+      "workwear"
     ],
     "season": [
       "spring",
@@ -11136,12 +11112,13 @@
     ],
     "formality": 2,
     "style_tags": [
+      "coastal",
       "minimal",
-      "streetwear",
-      "grunge"
+      "workwear"
     ],
     "season": [
       "spring",
+      "summer",
       "fall",
       "winter"
     ],
@@ -11499,7 +11476,6 @@
     ],
     "season": [
       "spring",
-      "summer",
       "fall",
       "winter"
     ],
@@ -11542,7 +11518,8 @@
     "department": "women",
     "price": 46.8,
     "colors": [
-      "white"
+      "white",
+      "blue"
     ],
     "formality": 2,
     "style_tags": [
@@ -11570,8 +11547,9 @@
     ],
     "formality": 2,
     "style_tags": [
+      "minimal",
       "coastal",
-      "athleisure"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -11596,7 +11574,7 @@
     "formality": 2,
     "style_tags": [
       "coastal",
-      "athleisure"
+      "minimal"
     ],
     "season": [
       "spring",
@@ -12014,7 +11992,7 @@
       "fall"
     ],
     "pattern": "solid",
-    "fit": "regular",
+    "fit": "relaxed",
     "image": "https://cdn.shopify.com/s/files/1/2185/2813/files/M1250R_04064_b2_s1_a2_dSU26_m243_a887dbac-04a8-4c72-9120-9fc3432a28e4.jpg",
     "url": "https://www.aloyoga.com/products/m1250r-sports-club-sweater-knit-polo-espresso"
   },
@@ -12031,8 +12009,8 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "streetwear",
-      "athleisure"
+      "athleisure",
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -12236,7 +12214,7 @@
     "formality": 2,
     "style_tags": [
       "clean-girl",
-      "minimal",
+      "soft-girl",
       "athleisure"
     ],
     "season": [
@@ -12258,11 +12236,10 @@
     "colors": [
       "brown"
     ],
-    "formality": 2,
+    "formality": 1,
     "style_tags": [
-      "clean-girl",
-      "minimal",
-      "athleisure"
+      "athleisure",
+      "clean-girl"
     ],
     "season": [
       "spring",
@@ -12287,14 +12264,14 @@
     "formality": 2,
     "style_tags": [
       "sporty",
-      "preppy",
-      "athleisure"
+      "athleisure",
+      "preppy"
     ],
     "season": [
       "spring",
       "summer"
     ],
-    "pattern": "solid",
+    "pattern": "stripe",
     "fit": "slim",
     "image": "https://cdn.shopify.com/s/files/1/2185/2813/files/W2796R_06514_b2_s1_a1_m256.jpg",
     "url": "https://www.aloyoga.com/products/w2796r-ribbed-sweater-knit-highline-c-bluestone-white"
@@ -12363,9 +12340,8 @@
     ],
     "formality": 2,
     "style_tags": [
-      "clean-girl",
       "athleisure",
-      "minimal"
+      "clean-girl"
     ],
     "season": [
       "spring",
@@ -12373,7 +12349,7 @@
       "fall"
     ],
     "pattern": "solid",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/2185/2813/files/W31067R_06026_b1_s1_a2_dFA26_m270.jpg",
     "url": "https://www.aloyoga.com/products/w31067r-sweater-knit-crossover-long-sleeve-warm-butter"
   },
@@ -12416,8 +12392,7 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "clean-girl",
-      "athleisure"
+      "clean-girl"
     ],
     "season": [
       "spring",
@@ -12426,7 +12401,7 @@
       "winter"
     ],
     "pattern": "solid",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/2185/2813/files/W3903R_07947_b1_s1_a21_dSU26_m271.jpg",
     "url": "https://www.aloyoga.com/products/w3903r-ribbed-modal-long-sleeve-dune-grass"
   },
@@ -12928,15 +12903,13 @@
     ],
     "formality": 1,
     "style_tags": [
-      "sporty",
       "athleisure",
+      "sporty",
       "preppy"
     ],
     "season": [
       "spring",
-      "summer",
-      "fall",
-      "winter"
+      "summer"
     ],
     "pattern": "solid",
     "fit": "slim",
@@ -12951,18 +12924,16 @@
     "department": "women",
     "price": 64.0,
     "colors": [
-      "gray"
+      "charcoal"
     ],
     "formality": 1,
     "style_tags": [
-      "sporty",
-      "athleisure"
+      "athleisure",
+      "sporty"
     ],
     "season": [
       "spring",
-      "summer",
-      "fall",
-      "winter"
+      "summer"
     ],
     "pattern": "small-print",
     "fit": "slim",
@@ -13035,8 +13006,7 @@
     "formality": 2,
     "style_tags": [
       "streetwear",
-      "athleisure",
-      "preppy"
+      "athleisure"
     ],
     "season": [
       "spring",
@@ -13062,9 +13032,8 @@
     ],
     "formality": 2,
     "style_tags": [
-      "preppy",
-      "y2k",
-      "streetwear"
+      "streetwear",
+      "y2k"
     ],
     "season": [
       "spring",
@@ -13216,15 +13185,13 @@
     ],
     "formality": 1,
     "style_tags": [
-      "athleisure",
       "sporty",
-      "clean-girl"
+      "athleisure",
+      "preppy"
     ],
     "season": [
       "spring",
-      "summer",
-      "fall",
-      "winter"
+      "summer"
     ],
     "pattern": "solid",
     "fit": "slim",
@@ -13240,12 +13207,12 @@
     "price": 58.0,
     "colors": [
       "light-blue",
-      "tan",
-      "cream"
+      "beige"
     ],
     "formality": 1,
     "style_tags": [
       "athleisure",
+      "coastal",
       "sporty"
     ],
     "season": [
@@ -13303,7 +13270,7 @@
       "winter"
     ],
     "pattern": "solid",
-    "fit": "relaxed",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0006/7040/0565/files/SET-ACTIVE-HEAVY-COTTON-HALF-ZIP-SWEATS-ESPRESSO-4.jpg",
     "url": "https://setactive.co/products/heavyweight-sweats-half-zip-espresso"
   },
@@ -13606,11 +13573,10 @@
       "burgundy",
       "pink"
     ],
-    "formality": 1,
+    "formality": 2,
     "style_tags": [
       "streetwear",
-      "athleisure",
-      "y2k"
+      "athleisure"
     ],
     "season": [
       "spring",
@@ -13633,11 +13599,11 @@
       "gray",
       "white"
     ],
-    "formality": 1,
+    "formality": 2,
     "style_tags": [
       "athleisure",
       "sporty",
-      "preppy"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -13645,7 +13611,7 @@
       "winter"
     ],
     "pattern": "stripe",
-    "fit": "oversized",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0006/7040/0565/files/92-2026_10_07_SET_0652.jpg",
     "url": "https://setactive.co/products/midweight-sweats-staple-pro-shop-stripe-crewneck-racquet"
   },
@@ -13685,18 +13651,18 @@
     "colors": [
       "charcoal"
     ],
-    "formality": 1,
+    "formality": 2,
     "style_tags": [
       "athleisure",
-      "sporty",
-      "techwear"
+      "streetwear",
+      "sporty"
     ],
     "season": [
       "spring",
       "fall"
     ],
     "pattern": "solid",
-    "fit": "relaxed",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0006/7040/0565/files/2025_10_29_Set_Active48873_WEB.jpg",
     "url": "https://setactive.co/products/nylon-track-cinched-windbreaker-mast"
   },
@@ -13982,6 +13948,7 @@
     ],
     "season": [
       "spring",
+      "summer",
       "fall",
       "winter"
     ],
@@ -14177,14 +14144,12 @@
     "department": "women",
     "price": 84.0,
     "colors": [
-      "burgundy",
-      "gray"
+      "burgundy"
     ],
     "formality": 1,
     "style_tags": [
       "athleisure",
-      "streetwear",
-      "sporty"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -14267,7 +14232,8 @@
     "season": [
       "spring",
       "summer",
-      "fall"
+      "fall",
+      "winter"
     ],
     "pattern": "solid",
     "fit": "regular",
@@ -14287,11 +14253,11 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "clean-girl",
       "streetwear"
     ],
     "season": [
       "spring",
+      "summer",
       "fall",
       "winter"
     ],
@@ -14336,7 +14302,7 @@
     "colors": [
       "tan"
     ],
-    "formality": 1,
+    "formality": 2,
     "style_tags": [
       "athleisure",
       "sporty",
@@ -14440,7 +14406,7 @@
     "colors": [
       "gray"
     ],
-    "formality": 1,
+    "formality": 2,
     "style_tags": [
       "athleisure",
       "minimal"
@@ -14468,8 +14434,8 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "preppy",
-      "clean-girl"
+      "clean-girl",
+      "preppy"
     ],
     "season": [
       "spring",
@@ -14669,15 +14635,15 @@
       "pink",
       "brown"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "preppy",
-      "sporty",
-      "streetwear"
+      "sporty"
     ],
     "season": [
       "spring",
-      "fall"
+      "fall",
+      "winter"
     ],
     "pattern": "stripe",
     "fit": "regular",
@@ -14842,14 +14808,12 @@
     "department": "women",
     "price": 48.0,
     "colors": [
-      "black",
-      "pink"
+      "black"
     ],
     "formality": 2,
     "style_tags": [
       "y2k",
-      "streetwear",
-      "soft-girl"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -14976,8 +14940,8 @@
     "formality": 2,
     "style_tags": [
       "outdoors",
-      "minimal",
-      "clean-girl"
+      "sporty",
+      "coastal"
     ],
     "season": [
       "spring",
@@ -15160,9 +15124,7 @@
     ],
     "season": [
       "spring",
-      "summer",
-      "fall",
-      "winter"
+      "summer"
     ],
     "pattern": "solid",
     "fit": "slim",
@@ -15232,8 +15194,8 @@
     "formality": 2,
     "style_tags": [
       "athleisure",
-      "sporty",
-      "minimal"
+      "minimal",
+      "clean-girl"
     ],
     "season": [
       "spring",
@@ -15263,9 +15225,7 @@
     ],
     "season": [
       "spring",
-      "summer",
-      "fall",
-      "winter"
+      "summer"
     ],
     "pattern": "solid",
     "fit": "slim",
@@ -15284,14 +15244,13 @@
     ],
     "formality": 2,
     "style_tags": [
-      "soft-girl",
-      "clean-girl",
-      "minimal"
+      "athleisure",
+      "sporty",
+      "clean-girl"
     ],
     "season": [
       "spring",
-      "summer",
-      "fall"
+      "summer"
     ],
     "pattern": "solid",
     "fit": "slim",
@@ -15310,9 +15269,9 @@
     ],
     "formality": 2,
     "style_tags": [
-      "minimal",
       "athleisure",
-      "outdoors"
+      "sporty",
+      "minimal"
     ],
     "season": [
       "spring",
@@ -15675,7 +15634,7 @@
     "formality": 2,
     "style_tags": [
       "streetwear",
-      "athleisure"
+      "bohemian"
     ],
     "season": [
       "spring",
@@ -15746,18 +15705,16 @@
     "department": "women",
     "price": 198.0,
     "colors": [
-      "cream",
-      "navy"
+      "cream"
     ],
     "formality": 3,
     "style_tags": [
       "bohemian",
-      "preppy"
+      "soft-girl"
     ],
     "season": [
       "spring",
-      "summer",
-      "fall"
+      "summer"
     ],
     "pattern": "check",
     "fit": "regular",
@@ -16007,14 +15964,15 @@
     "colors": [
       "beige"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "bohemian",
-      "soft-girl"
+      "coastal"
     ],
     "season": [
       "spring",
-      "summer"
+      "summer",
+      "fall"
     ],
     "pattern": "small-print",
     "fit": "oversized",
@@ -16034,8 +15992,8 @@
     "formality": 3,
     "style_tags": [
       "bohemian",
-      "preppy",
-      "soft-girl"
+      "soft-girl",
+      "preppy"
     ],
     "season": [
       "spring",
@@ -16055,13 +16013,13 @@
     "department": "women",
     "price": 158.0,
     "colors": [
-      "white"
+      "cream"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "bohemian",
-      "minimal",
-      "clean-girl"
+      "clean-girl",
+      "coastal"
     ],
     "season": [
       "spring",
@@ -16083,11 +16041,10 @@
       "red",
       "brown"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "bohemian",
-      "soft-girl",
-      "outdoors"
+      "soft-girl"
     ],
     "season": [
       "fall",
@@ -16318,8 +16275,7 @@
     ],
     "season": [
       "spring",
-      "fall",
-      "winter"
+      "fall"
     ],
     "pattern": "solid",
     "fit": "relaxed",
@@ -16417,7 +16373,8 @@
     "formality": 3,
     "style_tags": [
       "bohemian",
-      "coastal"
+      "coastal",
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -16472,7 +16429,6 @@
       "bohemian"
     ],
     "season": [
-      "spring",
       "fall",
       "winter"
     ],
@@ -16596,14 +16552,14 @@
     "formality": 3,
     "style_tags": [
       "bohemian",
-      "soft-girl"
+      "grunge"
     ],
     "season": [
       "spring",
       "fall"
     ],
     "pattern": "small-print",
-    "fit": "relaxed",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/1132/5272/files/DAWN_082526_FALL_2498_COVER.jpg",
     "url": "https://christydawn.com/products/the-sandra-blouse-hickory-ditsy"
   },
@@ -17142,8 +17098,7 @@
     "formality": 3,
     "style_tags": [
       "streetwear",
-      "minimal",
-      "clean-girl"
+      "y2k"
     ],
     "season": [
       "spring",
@@ -17168,8 +17123,7 @@
     "formality": 2,
     "style_tags": [
       "y2k",
-      "clean-girl",
-      "bohemian"
+      "clean-girl"
     ],
     "season": [
       "spring",
@@ -17216,7 +17170,7 @@
     "colors": [
       "white"
     ],
-    "formality": 3,
+    "formality": 2,
     "style_tags": [
       "y2k",
       "clean-girl"
@@ -17226,7 +17180,7 @@
       "summer"
     ],
     "pattern": "solid",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0467/4148/7783/files/s24498_white_25-08-2670_a50fbf4f-24ed-45ac-99ee-e9185bda75ea.jpg",
     "url": "https://edikted.com/products/s24498_white"
   },
@@ -17292,15 +17246,14 @@
     "formality": 2,
     "style_tags": [
       "bohemian",
-      "y2k",
-      "coastal"
+      "y2k"
     ],
     "season": [
       "spring",
       "summer"
     ],
     "pattern": "solid",
-    "fit": "relaxed",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0467/4148/7783/files/s25066_gray_08-09-26_51_97d12289-cc8f-4c01-8488-d9004bc33889.jpg",
     "url": "https://edikted.com/products/s25066_gray"
   },
@@ -17342,9 +17295,8 @@
     ],
     "formality": 2,
     "style_tags": [
-      "minimal",
-      "clean-girl",
-      "y2k"
+      "streetwear",
+      "athleisure"
     ],
     "season": [
       "spring",
@@ -17353,7 +17305,7 @@
       "winter"
     ],
     "pattern": "solid",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0467/4148/7783/files/s25385_light-gray-melange_01-09-2621_1f73931f-8979-4868-9781-49d17538dbc8.jpg",
     "url": "https://edikted.com/products/s25385_light-gray-melange"
   },
@@ -17429,7 +17381,7 @@
       "summer"
     ],
     "pattern": "small-print",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0467/4148/7783/files/s25838_aqua-and-brown_11-08-26_52.jpg",
     "url": "https://edikted.com/products/s25838_aqua-and-brown"
   },
@@ -17673,15 +17625,15 @@
     ],
     "formality": 2,
     "style_tags": [
-      "y2k"
+      "y2k",
+      "grunge"
     ],
     "season": [
       "spring",
-      "summer",
       "fall"
     ],
     "pattern": "stripe",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0467/4148/7783/files/Frame173.png",
     "url": "https://edikted.com/products/s26263_blue-and-brown"
   },
@@ -17972,9 +17924,8 @@
     ],
     "formality": 2,
     "style_tags": [
-      "y2k",
-      "grunge",
-      "preppy"
+      "preppy",
+      "y2k"
     ],
     "season": [
       "spring",
@@ -17999,8 +17950,7 @@
     "formality": 2,
     "style_tags": [
       "soft-girl",
-      "y2k",
-      "clean-girl"
+      "y2k"
     ],
     "season": [
       "spring",
@@ -18024,13 +17974,11 @@
     ],
     "formality": 2,
     "style_tags": [
-      "grunge",
       "y2k",
-      "bohemian"
+      "grunge"
     ],
     "season": [
       "spring",
-      "summer",
       "fall"
     ],
     "pattern": "solid",
@@ -18611,9 +18559,9 @@
     ],
     "formality": 2,
     "style_tags": [
-      "minimal",
-      "clean-girl",
-      "athleisure"
+      "athleisure",
+      "sporty",
+      "minimal"
     ],
     "season": [
       "spring",
@@ -18986,7 +18934,7 @@
     "style_tags": [
       "workwear",
       "outdoors",
-      "grunge"
+      "western"
     ],
     "season": [
       "spring",
@@ -18994,7 +18942,7 @@
       "winter"
     ],
     "pattern": "check",
-    "fit": "regular",
+    "fit": "slim",
     "image": "https://cdn.shopify.com/s/files/1/0419/1525/files/1024x1024-BuffaloCheckShirt-Hawk-121024-Front.jpg",
     "url": "https://thursdayboots.com/products/mens-buffalo-check-flannel-shirt-hawk"
   },
@@ -19119,8 +19067,7 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "preppy",
-      "old-money"
+      "preppy"
     ],
     "season": [
       "spring",
@@ -19146,10 +19093,10 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "old-money",
       "outdoors"
     ],
     "season": [
+      "spring",
       "fall",
       "winter"
     ],
@@ -19172,8 +19119,7 @@
     "formality": 3,
     "style_tags": [
       "coastal",
-      "preppy",
-      "bohemian"
+      "minimal"
     ],
     "season": [
       "spring",
@@ -19192,13 +19138,13 @@
     "department": "men",
     "price": 98.0,
     "colors": [
-      "tan"
+      "beige"
     ],
     "formality": 3,
     "style_tags": [
-      "minimal",
       "coastal",
-      "old-money"
+      "old-money",
+      "minimal"
     ],
     "season": [
       "spring",
@@ -19217,15 +19163,16 @@
     "department": "men",
     "price": 128.0,
     "colors": [
-      "beige"
+      "tan"
     ],
     "formality": 3,
     "style_tags": [
+      "outdoors",
       "minimal",
-      "old-money",
-      "outdoors"
+      "old-money"
     ],
     "season": [
+      "spring",
       "fall",
       "winter"
     ],
@@ -19242,14 +19189,13 @@
     "department": "men",
     "price": 98.0,
     "colors": [
-      "blue",
-      "white"
+      "white",
+      "light-blue"
     ],
-    "formality": 3,
+    "formality": 4,
     "style_tags": [
       "preppy",
-      "old-money",
-      "minimal"
+      "old-money"
     ],
     "season": [
       "spring",
@@ -19275,8 +19221,7 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "old-money",
-      "preppy"
+      "old-money"
     ],
     "season": [
       "spring",
@@ -20680,7 +20625,7 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "old-money"
+      "clean-girl"
     ],
     "season": [
       "spring",
@@ -21027,10 +20972,10 @@
     "colors": [
       "forest-green"
     ],
-    "formality": 3,
+    "formality": 4,
     "style_tags": [
-      "clean-girl",
-      "minimal"
+      "minimal",
+      "old-money"
     ],
     "season": [
       "spring",
@@ -21054,8 +20999,8 @@
     ],
     "formality": 3,
     "style_tags": [
-      "clean-girl",
-      "y2k"
+      "y2k",
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -21063,7 +21008,7 @@
       "fall"
     ],
     "pattern": "solid",
-    "fit": "regular",
+    "fit": "slim",
     "image": "https://cdn.shopify.com/s/files/1/2170/8465/files/STEVEMADDEN-APPAREL_SC10238_WALNUT_02.jpg",
     "url": "https://www.stevemadden.com/products/sc10238-walnut"
   },
@@ -21083,12 +21028,11 @@
       "streetwear"
     ],
     "season": [
-      "spring",
       "fall",
       "winter"
     ],
     "pattern": "solid",
-    "fit": "regular",
+    "fit": "slim",
     "image": "https://cdn.shopify.com/s/files/1/2170/8465/files/STEVEMADDEN_APPAREL_SC11228_BLACK_01.jpg",
     "url": "https://www.stevemadden.com/products/sc11228-black"
   },
@@ -21276,7 +21220,7 @@
     "department": "women",
     "price": 89.0,
     "colors": [
-      "white"
+      "cream"
     ],
     "formality": 3,
     "style_tags": [
@@ -21289,7 +21233,7 @@
       "fall"
     ],
     "pattern": "solid",
-    "fit": "regular",
+    "fit": "relaxed",
     "image": "https://cdn.shopify.com/s/files/1/2170/8465/files/STEVEMADDEN_APPAREL_SD09048_WHITE-SWAN_01.jpg",
     "url": "https://www.stevemadden.com/products/sd09048-birch-white"
   },
@@ -21305,8 +21249,8 @@
     ],
     "formality": 3,
     "style_tags": [
-      "clean-girl",
-      "minimal"
+      "minimal",
+      "clean-girl"
     ],
     "season": [
       "spring",
@@ -21327,19 +21271,20 @@
     "price": 109.0,
     "colors": [
       "cream",
-      "brown"
+      "brown",
+      "tan"
     ],
     "formality": 3,
     "style_tags": [
-      "bohemian",
-      "preppy"
+      "preppy",
+      "bohemian"
     ],
     "season": [
       "fall",
       "winter"
     ],
-    "pattern": "small-print",
-    "fit": "regular",
+    "pattern": "large-print",
+    "fit": "relaxed",
     "image": "https://cdn.shopify.com/s/files/1/2170/8465/files/STEVEMADDEN_APPAREL_SD11234_MULTI_01.jpg",
     "url": "https://www.stevemadden.com/products/sd11234-multi"
   },
@@ -22181,7 +22126,7 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "clean-girl"
+      "old-money"
     ],
     "season": [
       "spring",
@@ -22207,7 +22152,7 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "clean-girl"
+      "old-money"
     ],
     "season": [
       "spring",
@@ -22233,7 +22178,7 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "clean-girl"
+      "old-money"
     ],
     "season": [
       "spring",
@@ -22312,7 +22257,7 @@
     ],
     "formality": 3,
     "style_tags": [
-      "minimal",
+      "preppy",
       "clean-girl"
     ],
     "season": [
@@ -22321,7 +22266,7 @@
       "fall",
       "winter"
     ],
-    "pattern": "solid",
+    "pattern": "graphic",
     "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/265-120-16-G_1.jpg",
     "url": "https://www.gorjana.com/products/bride-to-be-parker-charm"
@@ -22391,7 +22336,7 @@
     "formality": 3,
     "style_tags": [
       "minimal",
-      "clean-girl"
+      "old-money"
     ],
     "season": [
       "spring",
@@ -22684,7 +22629,7 @@
       "fall",
       "winter"
     ],
-    "pattern": "solid",
+    "pattern": "graphic",
     "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/265-122-16-G_1.jpg",
     "url": "https://www.gorjana.com/products/the-mrs-carabiner-charm"
@@ -22726,7 +22671,7 @@
     "formality": 3,
     "style_tags": [
       "y2k",
-      "clean-girl"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -22746,12 +22691,12 @@
     "department": "women",
     "price": 40.0,
     "colors": [
-      "light-blue"
+      "blue"
     ],
     "formality": 2,
     "style_tags": [
-      "minimal",
-      "streetwear"
+      "streetwear",
+      "y2k"
     ],
     "season": [
       "spring",
@@ -22957,16 +22902,15 @@
     ],
     "formality": 2,
     "style_tags": [
-      "clean-girl",
       "streetwear",
-      "y2k"
+      "minimal"
     ],
     "season": [
       "spring",
       "summer"
     ],
     "pattern": "solid",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0061/8627/0804/files/0-modelinfo-bella-us2_c3b2832e-8f52-4523-a7b0-4cd2962052dc.jpg",
     "url": "https://us.princesspolly.com/products/cecilly-trim-racerback-top-plum"
   },
@@ -23010,8 +22954,7 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "clean-girl",
-      "athleisure"
+      "clean-girl"
     ],
     "season": [
       "spring",
@@ -23020,7 +22963,7 @@
       "winter"
     ],
     "pattern": "solid",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0061/8627/0804/files/0-modelinfo-crystal-us2_8aff0c8b-623f-4d41-b3cf-dbb5a0a045a4.jpg",
     "url": "https://us.princesspolly.com/products/daily-define-thin-strap-low-back-bodysuit-aubergine"
   },
@@ -23059,7 +23002,7 @@
     "colors": [
       "black"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "y2k",
       "bohemian"
@@ -23069,7 +23012,7 @@
       "summer"
     ],
     "pattern": "solid",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0061/8627/0804/files/0-modelinfo-olivia-us2_9e1bf642-b5e0-464b-9369-9e02372169ed.jpg",
     "url": "https://us.princesspolly.com/products/delliah-micro-crop-top-black"
   },
@@ -23158,11 +23101,10 @@
     "colors": [
       "gray"
     ],
-    "formality": 2,
+    "formality": 3,
     "style_tags": [
       "minimal",
-      "clean-girl",
-      "preppy"
+      "clean-girl"
     ],
     "season": [
       "spring",
@@ -23337,9 +23279,8 @@
     ],
     "formality": 3,
     "style_tags": [
-      "grunge",
       "goth",
-      "y2k"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -23347,7 +23288,7 @@
       "winter"
     ],
     "pattern": "solid",
-    "fit": "slim",
+    "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0061/8627/0804/files/0-modelinfo-ella-us14_fd30bdcd-900c-45c4-b11a-246551343ca7.jpg",
     "url": "https://us.princesspolly.com/products/kecia-long-sleeve-lace-top-black-curve"
   },
@@ -23796,13 +23737,13 @@
     "department": "women",
     "price": 45.0,
     "colors": [
-      "light-blue",
-      "blue"
+      "blue",
+      "white"
     ],
     "formality": 3,
     "style_tags": [
-      "y2k",
-      "preppy"
+      "bohemian",
+      "y2k"
     ],
     "season": [
       "spring",
@@ -23826,8 +23767,7 @@
     "formality": 2,
     "style_tags": [
       "minimal",
-      "streetwear",
-      "athleisure"
+      "streetwear"
     ],
     "season": [
       "spring",
@@ -23965,5 +23905,2806 @@
     "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/0061/8627/0804/files/0-modelinfo-nat-us2_c4af31fc-17c7-4c72-9e93-6584868ece79.jpg",
     "url": "https://us.princesspolly.com/products/zevvy-faux-fur-collared-jacket-green"
+  },
+  {
+    "id": "top_192",
+    "name": "Banquier Hunter Green Stripe Shirt",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 268.0,
+    "colors": [
+      "forest-green",
+      "white"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "stripe",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261130_HUNTER_11327.jpg",
+    "url": "https://www.jackvictor.com/products/banquier-hunter-green-stripe-shirt"
+  },
+  {
+    "id": "bottom_173",
+    "name": "Berry Stretch Chino",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 298.0,
+    "colors": [
+      "burgundy"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "preppy",
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/6262909_1165_final.jpg",
+    "url": "https://www.jackvictor.com/products/berry-stretch-chino"
+  },
+  {
+    "id": "outerwear_136",
+    "name": "Black Solid Tuxedo Jacket",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 898.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/SPT3050_562__MOMENTIS_815f1de9-7ebb-40d9-8f66-c12a6523ea79.jpg",
+    "url": "https://www.jackvictor.com/products/black-solid-elwood-wool-peak-lapel-tuxedo-jacket"
+  },
+  {
+    "id": "bottom_174",
+    "name": "Phoenix Black Solid Tuxedo Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 348.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/SPT3050_894__MOMENTIS_a1658a5e-69ae-4af8-88ee-14f28860e8be.jpg",
+    "url": "https://www.jackvictor.com/products/black-solid-phoenix-wool-tuxedo-trouser"
+  },
+  {
+    "id": "accessory_179",
+    "name": "Black Solid Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 128.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V320060_BLK___01_923fc3a7-b3d6-4060-8c95-32ef1eeaf6f9.jpg",
+    "url": "https://www.jackvictor.com/products/black-solid-tie-v320060"
+  },
+  {
+    "id": "top_193",
+    "name": "Classic Merino Dark Orange Sweater Jacket",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 498.0,
+    "colors": [
+      "orange"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261125_DARK_ORANGE_103932.jpg",
+    "url": "https://www.jackvictor.com/products/blouson-dark-orange-v261125-dkorng"
+  },
+  {
+    "id": "outerwear_137",
+    "name": "Callum Blue and Grey Herringbone Shirt Jacket",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 898.0,
+    "colors": [
+      "gray",
+      "blue"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal",
+      "workwear"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "stripe",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/OC84302_BLUEGREY_14124.jpg",
+    "url": "https://www.jackvictor.com/products/callum-blue-and-grey-herringbone-shirt-jacket"
+  },
+  {
+    "id": "outerwear_138",
+    "name": "Cary Brown Sport Jacket",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 898.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/OC84201_13986_14c96ba1-5e82-4a3a-ba96-95b1d1fff944.jpg",
+    "url": "https://www.jackvictor.com/products/cary-brown-sport-jacket"
+  },
+  {
+    "id": "top_194",
+    "name": "Classic Merino Milano Light Grey Crewneck Sweater",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 348.0,
+    "colors": [
+      "gray"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261127_GREY_13119.jpg",
+    "url": "https://www.jackvictor.com/products/classic-merino-milano-light-grey-crewneck-sweater"
+  },
+  {
+    "id": "top_195",
+    "name": "Classic Merino Milano Royal Crewneck Sweater",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 348.0,
+    "colors": [
+      "blue"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261127_14073.jpg",
+    "url": "https://www.jackvictor.com/products/classic-merino-milano-royal-crewneck-sweater"
+  },
+  {
+    "id": "outerwear_139",
+    "name": "Colbey Sand Shirt Jacket",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 798.0,
+    "colors": [
+      "beige"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "relaxed",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/OC84206_14035_d7946112-ca48-4117-bf59-f3e6b378bd5c.jpg",
+    "url": "https://www.jackvictor.com/products/colbey-sand-shirt-jacket"
+  },
+  {
+    "id": "outerwear_140",
+    "name": "COMFORTWEAR™ Blue Tonal Micro Houndstooth Blazer",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 998.0,
+    "colors": [
+      "blue"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "check",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/WC14064_375_9877.jpg",
+    "url": "https://www.jackvictor.com/products/comfortwear-blue-tonal-micro-houndstooth-blazer"
+  },
+  {
+    "id": "accessory_180",
+    "name": "Denim Blue Solid Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 128.0,
+    "colors": [
+      "blue"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V320060__DENIM_MOMENTIS1_a383cdba-241e-4b61-90aa-9b80d782bc6b.jpg",
+    "url": "https://www.jackvictor.com/products/denim-blue-solid-tie-v320060"
+  },
+  {
+    "id": "top_196",
+    "name": "DREAM™ Grey Stretch Dress Shirt",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 228.0,
+    "colors": [
+      "gray"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261131_26555.jpg",
+    "url": "https://www.jackvictor.com/products/dream-twill-grey-dress-shirt-32-v261131-py"
+  },
+  {
+    "id": "outerwear_141",
+    "name": "Erie Navy Textured Jacquard Dinner Jacket",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 998.0,
+    "colors": [
+      "navy"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/WEW1823_0430.jpg",
+    "url": "https://www.jackvictor.com/products/erie-spj-regular-wew1823-653-er"
+  },
+  {
+    "id": "outerwear_142",
+    "name": "Erie Green Velvet Dinner Jacket",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 798.0,
+    "colors": [
+      "forest-green"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/WEW1363_653__MOMENTIS.jpg",
+    "url": "https://www.jackvictor.com/products/green-velvet-dinner-jacket"
+  },
+  {
+    "id": "outerwear_143",
+    "name": "Harlington Taupe Trench Coat",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 998.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/OC84104_12749.jpg",
+    "url": "https://www.jackvictor.com/products/harlington-taupe-trench-coat"
+  },
+  {
+    "id": "top_197",
+    "name": "Hingston Burgundy Short Sleeve T-Shirt",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 178.0,
+    "colors": [
+      "burgundy"
+    ],
+    "formality": 2,
+    "style_tags": [
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V252038__WINE_MOMENTIS.jpg",
+    "url": "https://www.jackvictor.com/products/hingston-ss-crew-neck-burgundy-v252038-burgun"
+  },
+  {
+    "id": "top_198",
+    "name": "Cotton Cashmere Tan Hooded Sweatshirt",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 498.0,
+    "colors": [
+      "tan"
+    ],
+    "formality": 2,
+    "style_tags": [
+      "minimal",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261156_TAN_4801.jpg",
+    "url": "https://www.jackvictor.com/products/hoodie-tan-v261156-tan"
+  },
+  {
+    "id": "accessory_181",
+    "name": "Indigo Solid Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 128.0,
+    "colors": [
+      "navy"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V320062__INDIGO_MOMENTIS_bf015955-375d-4200-a5b1-18ce4b3ab3aa.jpg",
+    "url": "https://www.jackvictor.com/products/indigo-solid-tie-v320060"
+  },
+  {
+    "id": "bottom_175",
+    "name": "Jackie Light Beige Five-Pocket Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 278.0,
+    "colors": [
+      "beige"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/JT215680_1552__MOMENTIS_26665bcc-b273-4024-9fad-87125324868d.webp",
+    "url": "https://www.jackvictor.com/products/jackie-reg-pant-jt215680l-1552-tr"
+  },
+  {
+    "id": "outerwear_144",
+    "name": "Jonte Sage Field Jacket",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 698.0,
+    "colors": [
+      "muted-green"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "outdoors",
+      "workwear"
+    ],
+    "season": [
+      "spring",
+      "fall"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/OC81100_1569_0122_6d24a36b-7abf-4aa7-83b8-44e29fe7c55a.jpg",
+    "url": "https://www.jackvictor.com/products/jonte-sml-oc81100-1569-ww"
+  },
+  {
+    "id": "top_199",
+    "name": "Navy Long Sleeve Crew Neck",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 278.0,
+    "colors": [
+      "navy"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "minimal",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V252037__NAVY_MOMENTIS.jpg",
+    "url": "https://www.jackvictor.com/products/long-sleeve-crew-neck-navy-v252037-navy"
+  },
+  {
+    "id": "top_200",
+    "name": "Black Long Sleeve Polo",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 298.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "minimal",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V252008__BLK_MOMENTIS.jpg",
+    "url": "https://www.jackvictor.com/products/long-sleeve-polo-black-v252008-blk"
+  },
+  {
+    "id": "top_201",
+    "name": "Light Grey Long Sleeve Polo",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 298.0,
+    "colors": [
+      "gray"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "minimal",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V252008__LIGHTGREY_MOMENTIS.jpg",
+    "url": "https://www.jackvictor.com/products/long-sleeve-polo-light-grey-v252008-litegy"
+  },
+  {
+    "id": "top_202",
+    "name": "Long Sleeve Ecru Sartorial Polo",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 228.0,
+    "colors": [
+      "cream"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "preppy",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261099_WHITE_13544.jpg",
+    "url": "https://www.jackvictor.com/products/ls-sartorial-polo-ecru-v261099-ecru"
+  },
+  {
+    "id": "outerwear_145",
+    "name": "Marcus Light Tan Tonal Herringbone Blazer",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 898.0,
+    "colors": [
+      "tan"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/W1262253_5046_Final.jpg",
+    "url": "https://www.jackvictor.com/products/marcus-light-tan-tonal-herringbone-blazer"
+  },
+  {
+    "id": "outerwear_146",
+    "name": "Martin Brown Solid Blazer",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 998.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/W1262459_12144_439d9b85-b1a2-457f-a003-b8d709550c0f.jpg",
+    "url": "https://www.jackvictor.com/products/martin-brown-solid-blazer"
+  },
+  {
+    "id": "outerwear_147",
+    "name": "Midland Sand Plain Blazer",
+    "brand": "Jack Victor",
+    "slot": "outerwear",
+    "department": "men",
+    "price": 798.0,
+    "colors": [
+      "tan"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/W1262001_12236.jpg",
+    "url": "https://www.jackvictor.com/products/midland-sand-plain-blazer"
+  },
+  {
+    "id": "accessory_182",
+    "name": "Brown Mr. Vic Insignia Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 178.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261132_BROWN_01.png",
+    "url": "https://www.jackvictor.com/products/mr-vic-dot-tie-brown-v261132-brown"
+  },
+  {
+    "id": "bottom_176",
+    "name": "Pablo Blue Plain Front Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 298.0,
+    "colors": [
+      "blue"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/6262402_BLUE_1514.jpg",
+    "url": "https://www.jackvictor.com/products/pablo-blue-plain-front-trouser"
+  },
+  {
+    "id": "bottom_177",
+    "name": "Pablo Medium Brown Plain Front Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 298.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy",
+      "minimal"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/6262404_13570.jpg",
+    "url": "https://www.jackvictor.com/products/pablo-medium-brown-plain-front-trouser"
+  },
+  {
+    "id": "bottom_178",
+    "name": "Parma Taupe Wool Tailored Trouser with Side Tabs",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 398.0,
+    "colors": [
+      "tan"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/6262927_TAUPE_14104_1ac804ac-834e-49ff-a1c3-cafe4991aa12.jpg",
+    "url": "https://www.jackvictor.com/products/parma-reg-pant-6262927-1225-tr"
+  },
+  {
+    "id": "bottom_179",
+    "name": "Patrick Navy Solid Stretch TEMPO Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 278.0,
+    "colors": [
+      "navy"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "minimal",
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/JT214205_782__MOMENTIS_dd5011c0-f80c-4df4-86ac-53b06ee58b1f.jpg",
+    "url": "https://www.jackvictor.com/products/patrick-ct-pant-reg-pant-jt214205-782-tr"
+  },
+  {
+    "id": "bottom_180",
+    "name": "Patrick Mid Grey Solid Stretch TEMPO Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 278.0,
+    "colors": [
+      "gray"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "minimal",
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/JT214240_782__MOMENTIS_58d75d4a-87ec-462d-b9c1-b56d90332a96.jpg",
+    "url": "https://www.jackvictor.com/products/patrick-ct-pant-reg-pant-jt214240-782-tr"
+  },
+  {
+    "id": "bottom_181",
+    "name": "Patrick Taupe Solid Stretch TEMPO Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 278.0,
+    "colors": [
+      "tan"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "minimal",
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/JT214280_782__MOMENTIS_740ae1c8-6f79-4bb7-9aad-a50d8fdaea67.jpg",
+    "url": "https://www.jackvictor.com/products/patrick-ct-pant-reg-pant-jt214280-782-tr"
+  },
+  {
+    "id": "accessory_183",
+    "name": "Sky Blue Pindot Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 128.0,
+    "colors": [
+      "light-blue",
+      "white"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "preppy",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V320061_SKY___01_14bc1165-7fdc-4b18-9041-e2d537483af6_1.jpg",
+    "url": "https://www.jackvictor.com/products/pindot-woven-tie-in-sky-blue-v320061"
+  },
+  {
+    "id": "accessory_184",
+    "name": "Teal Pindot Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 128.0,
+    "colors": [
+      "forest-green",
+      "white"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V320061_TEAL___01_2822d4d5-6e4e-4534-b404-e99fffaf4c19_1.jpg",
+    "url": "https://www.jackvictor.com/products/pindot-woven-tie-in-teal-v320061"
+  },
+  {
+    "id": "bottom_182",
+    "name": "Plum Trouser with Stretch Waistband",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 348.0,
+    "colors": [
+      "burgundy"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy",
+      "minimal"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/JT252220L_1550__MOMENTIS.jpg",
+    "url": "https://www.jackvictor.com/products/prato-pant-reg-pant-jt252220l-1550-tr"
+  },
+  {
+    "id": "top_203",
+    "name": "Classic Merino Brown Quarter Zip Polo",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 298.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "preppy",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261102_BROWN_14269.jpg",
+    "url": "https://www.jackvictor.com/products/quarter-zip-polo-brown-v261102-brown"
+  },
+  {
+    "id": "accessory_185",
+    "name": "Navy Paisley Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 148.0,
+    "colors": [
+      "navy",
+      "blue"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "large-print",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261148_NAVY_01_4.jpg",
+    "url": "https://www.jackvictor.com/products/repp-paisley-tie-navy-v261148-navy"
+  },
+  {
+    "id": "accessory_186",
+    "name": "Green Rikrak Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 148.0,
+    "colors": [
+      "forest-green"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261138_GREEN_01.jpg",
+    "url": "https://www.jackvictor.com/products/rikrak-tie-green-v261138-green"
+  },
+  {
+    "id": "accessory_187",
+    "name": "Purple Pattern Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 128.0,
+    "colors": [
+      "purple",
+      "tan"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V320080_PURPLE___01_10ce1669-007e-4588-80e1-2890a85302a2.jpg",
+    "url": "https://www.jackvictor.com/products/st-george-silk-tie-in-purple-v320080"
+  },
+  {
+    "id": "accessory_188",
+    "name": "Black Beanie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 148.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 2,
+    "style_tags": [
+      "minimal",
+      "streetwear"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V252039_BLACK_01.jpg",
+    "url": "https://www.jackvictor.com/products/steven-hat-black-v252039-blk"
+  },
+  {
+    "id": "top_204",
+    "name": "Cotton Cashmere Pink Crewneck Sweatshirt",
+    "brand": "Jack Victor",
+    "slot": "top",
+    "department": "men",
+    "price": 398.0,
+    "colors": [
+      "pink"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261155_PINK_0829_final.jpg",
+    "url": "https://www.jackvictor.com/products/sweatshirt-pink-v261155-pink"
+  },
+  {
+    "id": "accessory_189",
+    "name": "Black Textured Dot Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 148.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261143_BLACK_01.jpg",
+    "url": "https://www.jackvictor.com/products/textured-dot-tie-black-v261143-blk"
+  },
+  {
+    "id": "accessory_190",
+    "name": "Royal Textured Dot Tie",
+    "brand": "Jack Victor",
+    "slot": "accessory",
+    "department": "men",
+    "price": 148.0,
+    "colors": [
+      "blue"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/V261143_ROYAL_01.jpg",
+    "url": "https://www.jackvictor.com/products/textured-dot-tie-royal-v261143-royal"
+  },
+  {
+    "id": "bottom_183",
+    "name": "Yves Navy Single Pleat Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 398.0,
+    "colors": [
+      "navy"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/6262601_13692.jpg",
+    "url": "https://www.jackvictor.com/products/yves-pant-reg-pant-6262601-899-tr"
+  },
+  {
+    "id": "bottom_184",
+    "name": "Yves Olive Single Pleat Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 398.0,
+    "colors": [
+      "olive"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/6262602_13672.jpg",
+    "url": "https://www.jackvictor.com/products/yves-pant-reg-pant-6262602-899-tr"
+  },
+  {
+    "id": "bottom_185",
+    "name": "Yves Light Brown Single Pleat Trouser",
+    "brand": "Jack Victor",
+    "slot": "bottom",
+    "department": "men",
+    "price": 398.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0493/6938/3079/files/6262604_BROWN_1779_Final.jpg",
+    "url": "https://www.jackvictor.com/products/yves-pant-reg-pant-6262604-899-tr"
+  },
+  {
+    "id": "shoes_147",
+    "name": "The Burton Double Monk Strap - Oxblood",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 519.0,
+    "colors": [
+      "burgundy"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau3053_022_h.jpg",
+    "url": "https://www.paulevansny.com/products/double-monk-strap-with-cap-toe-oxblood"
+  },
+  {
+    "id": "accessory_191",
+    "name": "Dark Blue Leather Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "navy"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Blue_Calfskin_Belt.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-blue"
+  },
+  {
+    "id": "accessory_192",
+    "name": "Brown Leather Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Brown1.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-brown"
+  },
+  {
+    "id": "accessory_193",
+    "name": "Brown Suede Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Cafe_Suede_Belt.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-cafe-suede"
+  },
+  {
+    "id": "accessory_194",
+    "name": "Chocolate Leather Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Belt_-_Chocolate.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-chocolate"
+  },
+  {
+    "id": "accessory_195",
+    "name": "Coriander Suede Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 239.0,
+    "colors": [
+      "brown",
+      "tan"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Coriander.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-coriander"
+  },
+  {
+    "id": "accessory_196",
+    "name": "Havana Brown Leather Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "tan",
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Belt_-_Havana_Brown.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-havana-brown"
+  },
+  {
+    "id": "accessory_197",
+    "name": "Marrone Leather Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 239.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Belt_-_Marrone.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-marrone"
+  },
+  {
+    "id": "accessory_198",
+    "name": "Martora Suede Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 239.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Martora_Italian_Leather_Belt.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-martora-suede"
+  },
+  {
+    "id": "accessory_199",
+    "name": "Dark Blue Suede Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "navy"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Blue_suede_belt.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-midnight-blue-suede"
+  },
+  {
+    "id": "accessory_200",
+    "name": "Black Leather Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "minimal",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Nero1.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-nero"
+  },
+  {
+    "id": "accessory_201",
+    "name": "Black Suede Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "minimal",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Nero_suede.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-nero-suede"
+  },
+  {
+    "id": "accessory_202",
+    "name": "Oxblood Leather Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "burgundy"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Oxblood1.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-oxblood"
+  },
+  {
+    "id": "accessory_203",
+    "name": "Rum Suede Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 239.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Rum.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-rum"
+  },
+  {
+    "id": "accessory_204",
+    "name": "Tobacco Leather Belt",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 209.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Tobacco1.jpg",
+    "url": "https://www.paulevansny.com/products/italian-leather-belt-tobacco"
+  },
+  {
+    "id": "accessory_205",
+    "name": "Men's Leather Sport Belt - Chocolate",
+    "brand": "Paul Evans",
+    "slot": "accessory",
+    "department": "men",
+    "price": 239.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "minimal",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/Chocolate_Sport_Belt.jpg",
+    "url": "https://www.paulevansny.com/products/mens-leather-sport-belt-chocolate"
+  },
+  {
+    "id": "shoes_148",
+    "name": "The Ellis Slip-On Sneaker - Brown",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 449.0,
+    "colors": [
+      "brown",
+      "white"
+    ],
+    "formality": 2,
+    "style_tags": [
+      "minimal",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/IMG_9342.jpg",
+    "url": "https://www.paulevansny.com/products/slip-on-sneaker-chocolate"
+  },
+  {
+    "id": "shoes_149",
+    "name": "The Brando Semi-Brogue Oxford - Havana Brown",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 499.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau3053_041_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-brando-semi-brogue-oxford-havana-brown"
+  },
+  {
+    "id": "shoes_150",
+    "name": "The Cagney Cap-Toe Oxford - Havana Brown",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 499.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau3053_109_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-cagney-cap-toe-oxford-havana-brown"
+  },
+  {
+    "id": "shoes_151",
+    "name": "The Carter Mid-Top Sneaker - Blue - White Sole",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 479.0,
+    "colors": [
+      "blue",
+      "white"
+    ],
+    "formality": 2,
+    "style_tags": [
+      "streetwear",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau2977_031_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-carter-mid-top-sneaker-blue-white-sole"
+  },
+  {
+    "id": "shoes_152",
+    "name": "The Damon Penny Loafer - Tobacco",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 349.3,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/files/PE_TheDamon_Tobacco_SO-P0058-TOZZ-0500-24_1.jpg",
+    "url": "https://www.paulevansny.com/products/the-damon-penny-loafer-tobacco"
+  },
+  {
+    "id": "shoes_153",
+    "name": "The Jackman Cap-Toe Boot - Chocolate",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 579.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "workwear"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau3133_085_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-jackman-cap-toe-boot-chocolate"
+  },
+  {
+    "id": "shoes_154",
+    "name": "The Martin II Wholecut Oxford - Brown",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 519.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau3017_016_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-martin-ii-wholecut-oxford-marrone"
+  },
+  {
+    "id": "shoes_155",
+    "name": "The Newman Chukka Boot - Marrone",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 391.3,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau3053_175_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-newman-chukka-boot-marrone"
+  },
+  {
+    "id": "shoes_156",
+    "name": "The Olivier Single Monk Strap - Brown",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 559.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "preppy"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau2729_028_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-olivier-single-monk-strap-marrone"
+  },
+  {
+    "id": "shoes_157",
+    "name": "The Ramses Wholecut Oxford - Dark Brown Chocolate",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 399.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau3741_009_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-ramses-wholecut-oxford-dark-brown-chocolate"
+  },
+  {
+    "id": "shoes_158",
+    "name": "The Sinatra Evening Slipper - Nero",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 479.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/IMG_9333.jpg",
+    "url": "https://www.paulevansny.com/products/the-sinatra-evening-slipper-nero"
+  },
+  {
+    "id": "shoes_159",
+    "name": "The Smith Low-Top Sneaker - Black Croc",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 449.0,
+    "colors": [
+      "black",
+      "white"
+    ],
+    "formality": 2,
+    "style_tags": [
+      "minimal",
+      "streetwear"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/files/PE_TheSmith_BlackCroc_SN-P0049-BKZZ-0500-24_1.jpg",
+    "url": "https://www.paulevansny.com/products/the-smith-low-top-sneaker-black-croc"
+  },
+  {
+    "id": "shoes_160",
+    "name": "The Stewart Penny Loafer - Havana Brown",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 499.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "preppy",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau3053_099_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-stewart-penny-loafer-havana-brown"
+  },
+  {
+    "id": "shoes_161",
+    "name": "The Wayne Low-Cut Chelsea Boot - Marrone",
+    "brand": "Paul Evans",
+    "slot": "shoes",
+    "department": "men",
+    "price": 479.0,
+    "colors": [
+      "brown"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0217/3274/products/pau2691_019_h.jpg",
+    "url": "https://www.paulevansny.com/products/the-wayne-low-cut-chelsea-boot-marrone"
+  },
+  {
+    "id": "dress_109",
+    "name": "Black Velvet Cowl Gown With Sheer Beaded Neckline",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 698.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/2449-Black-AB.jpg",
+    "url": "https://www.macduggal.com/products/2449-black"
+  },
+  {
+    "id": "dress_110",
+    "name": "Green One Shoulder Crepe Mermaid Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 159.0,
+    "colors": [
+      "forest-green"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/26266-Emerald-AB.jpg",
+    "url": "https://www.macduggal.com/products/26266_emerald"
+  },
+  {
+    "id": "dress_111",
+    "name": "Black Metallic Faux Wrap Spaghetti Strap Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 159.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/26408-Black-AB.jpg",
+    "url": "https://www.macduggal.com/products/26408_black"
+  },
+  {
+    "id": "dress_112",
+    "name": "Pink Jersey Plunge Neck Evening Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 159.0,
+    "colors": [
+      "pink"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/products/26578-HotPink-AB.jpg",
+    "url": "https://www.macduggal.com/products/26578_hot-pink"
+  },
+  {
+    "id": "dress_113",
+    "name": "Blue Ruffle Sleeve Cutout Pleated Metallic Gown - FINAL SALE",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 199.0,
+    "colors": [
+      "blue"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "bohemian"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/27166-Blue-AB.jpg",
+    "url": "https://www.macduggal.com/products/27166_blue"
+  },
+  {
+    "id": "dress_114",
+    "name": "Black Sequin Halter Bow Midi Dress",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 598.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/27893-Black-AB.jpg",
+    "url": "https://www.macduggal.com/products/27893-black"
+  },
+  {
+    "id": "dress_115",
+    "name": "Black Pleated Embellished Halter Open Back Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 298.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/products/30722-Black-AB.jpg",
+    "url": "https://www.macduggal.com/products/30722"
+  },
+  {
+    "id": "dress_116",
+    "name": "Dark Yellow High Neck Ruffle Hem Cape Mini Dress",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 159.0,
+    "colors": [
+      "yellow"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "bohemian"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/55407-AntiqueGold-AB.jpg",
+    "url": "https://www.macduggal.com/products/55407_antique-gold"
+  },
+  {
+    "id": "dress_117",
+    "name": "Black and Brown Gathered Waist Sequin Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 159.0,
+    "colors": [
+      "black",
+      "brown"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/products/55700-Bronze-AB.jpg",
+    "url": "https://www.macduggal.com/products/55700"
+  },
+  {
+    "id": "dress_118",
+    "name": "Silver Long Sleeve V Neck Beaded Cocktail Dress",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 159.0,
+    "colors": [
+      "gray"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/products/5574-Charcoal-AB.jpg",
+    "url": "https://www.macduggal.com/products/5574_charcoal"
+  },
+  {
+    "id": "dress_119",
+    "name": "Black Strapless Sequin Trumpet Gown With Bow Detail",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 398.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/56288-Black-AB.jpg",
+    "url": "https://www.macduggal.com/products/56288-black"
+  },
+  {
+    "id": "dress_120",
+    "name": "Nude Embellished Long Sleeve Fringe Mini Dress",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 598.0,
+    "colors": [
+      "beige"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money",
+      "y2k"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall"
+    ],
+    "pattern": "small-print",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/6311-Nude-AB.jpg",
+    "url": "https://www.macduggal.com/products/6311-nude"
+  },
+  {
+    "id": "dress_121",
+    "name": "Green Bell Sleeve Floral Embellished Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 198.0,
+    "colors": [
+      "muted-green"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money",
+      "bohemian"
+    ],
+    "season": [
+      "spring",
+      "summer"
+    ],
+    "pattern": "small-print",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/67842-Seafoam-AB.jpg",
+    "url": "https://www.macduggal.com/products/67842"
+  },
+  {
+    "id": "dress_122",
+    "name": "Pink Floral Cut Out Ruffle Tiered Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 159.0,
+    "colors": [
+      "pink"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "soft-girl",
+      "bohemian"
+    ],
+    "season": [
+      "spring",
+      "summer"
+    ],
+    "pattern": "large-print",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/67966-PinkMulti-AB.jpg",
+    "url": "https://www.macduggal.com/products/67966-2"
+  },
+  {
+    "id": "dress_123",
+    "name": "Pink Puff Sleeve w/ Embellished Cuff V Neck A Line Gown (Plus)",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 298.0,
+    "colors": [
+      "pink"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "soft-girl",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/products/68431-AntiqueRose-AB.jpg",
+    "url": "https://www.macduggal.com/products/68431"
+  },
+  {
+    "id": "dress_124",
+    "name": "Black Nude Long Sleeve Sequin Ruffle Mini Dress",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 458.0,
+    "colors": [
+      "black",
+      "beige"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "goth",
+      "soft-girl"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/8398-BlackNude-AB.jpg",
+    "url": "https://www.macduggal.com/products/8398-black-nude"
+  },
+  {
+    "id": "dress_125",
+    "name": "Pink Floral Applique Puff Sleeve High Neck A-Line Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 348.0,
+    "colors": [
+      "pink"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "soft-girl",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall"
+    ],
+    "pattern": "small-print",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/products/93805-Blush-AB.jpg",
+    "url": "https://www.macduggal.com/products/93805_blush"
+  },
+  {
+    "id": "dress_126",
+    "name": "Petite Antique Bronze One Shoulder Bow Midi Dress With Pockets",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 498.0,
+    "colors": [
+      "gold"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money"
+    ],
+    "season": [
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/9967906P-AntiqueBronze-AB.jpg",
+    "url": "https://www.macduggal.com/products/9967906p-antique-bronze"
+  },
+  {
+    "id": "dress_127",
+    "name": "Petite Black Nude Sleeveless Embellished Open Back Column Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 498.0,
+    "colors": [
+      "black",
+      "beige"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money",
+      "goth"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/9968892P-BlackNude-AB.jpg",
+    "url": "https://www.macduggal.com/products/9968892p-black-nude"
+  },
+  {
+    "id": "dress_128",
+    "name": "Petite Black Nude Floral Embroidered High Neck Midi Dress",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 498.0,
+    "colors": [
+      "black",
+      "beige"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/9969192P-BlackNude-AB.jpg",
+    "url": "https://www.macduggal.com/products/9969192p-black-nude"
+  },
+  {
+    "id": "dress_129",
+    "name": "Petite Ivory Nude Mock Neck Long Sleeve Lace Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 498.0,
+    "colors": [
+      "cream"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money",
+      "bohemian"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/9969425P-IvoryNude-AB.jpg",
+    "url": "https://www.macduggal.com/products/9969425p-ivory-nude"
+  },
+  {
+    "id": "dress_130",
+    "name": "White Foldover Off-the-Shoulder Slit Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 159.0,
+    "colors": [
+      "white"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "minimal",
+      "clean-girl"
+    ],
+    "season": [
+      "spring",
+      "summer"
+    ],
+    "pattern": "solid",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/26517-White-AB.jpg",
+    "url": "https://www.macduggal.com/products/foldover-off-the-shoulder-slit-gown-copy"
+  },
+  {
+    "id": "accessory_206",
+    "name": "Black Mini Leather Clutch with Gold Rose Closure",
+    "brand": "Mac Duggal",
+    "slot": "accessory",
+    "department": "women",
+    "price": 168.0,
+    "colors": [
+      "black",
+      "gold"
+    ],
+    "formality": 4,
+    "style_tags": [
+      "minimal",
+      "old-money"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/H90015-Black-G-1-GB.jpg",
+    "url": "https://www.macduggal.com/products/h90015"
+  },
+  {
+    "id": "accessory_207",
+    "name": "Black Leather Hobo Bag With Gold Hardware",
+    "brand": "Mac Duggal",
+    "slot": "accessory",
+    "department": "women",
+    "price": 348.0,
+    "colors": [
+      "black",
+      "gold"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "streetwear",
+      "grunge"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": null,
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/H90037-Black-Lifestyle-Main.jpg",
+    "url": "https://www.macduggal.com/products/h90037"
+  },
+  {
+    "id": "dress_131",
+    "name": "Jersey and Satin Long Sleeve A-Line Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 498.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money",
+      "minimal"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/69083-Black-AB.jpg",
+    "url": "https://www.macduggal.com/products/jersey-and-satin-long-sleeve-a-line-gown"
+  },
+  {
+    "id": "top_205",
+    "name": "Black Off The Shoulder Fringe Knit Sweater",
+    "brand": "Mac Duggal",
+    "slot": "top",
+    "department": "women",
+    "price": 258.0,
+    "colors": [
+      "black"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "bohemian",
+      "western"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/K10025-Black-AB.jpg",
+    "url": "https://www.macduggal.com/products/k10025"
+  },
+  {
+    "id": "top_206",
+    "name": "Multicolor Sleeveless Floral Knit Cropped Tank Top - FINAL SALE",
+    "brand": "Mac Duggal",
+    "slot": "top",
+    "department": "women",
+    "price": 38.0,
+    "colors": [
+      "pink",
+      "orange",
+      "cream"
+    ],
+    "formality": 2,
+    "style_tags": [
+      "y2k",
+      "streetwear"
+    ],
+    "season": [
+      "summer"
+    ],
+    "pattern": "large-print",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/K10038-SunsetMulti-AP.jpg",
+    "url": "https://www.macduggal.com/products/k10038"
+  },
+  {
+    "id": "dress_132",
+    "name": "Pink Short Sleeve Scoop Neck Floral Knit Maxi Dress",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 298.0,
+    "colors": [
+      "pink",
+      "orange"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "bohemian",
+      "y2k"
+    ],
+    "season": [
+      "spring",
+      "summer"
+    ],
+    "pattern": "large-print",
+    "fit": "slim",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/K10045-HotPinkMulti-AB.jpg",
+    "url": "https://www.macduggal.com/products/k10045"
+  },
+  {
+    "id": "top_207",
+    "name": "Ivory Chunky Knit Off The Shoulder Grommet Cropped Sweater",
+    "brand": "Mac Duggal",
+    "slot": "top",
+    "department": "women",
+    "price": 298.0,
+    "colors": [
+      "cream"
+    ],
+    "formality": 3,
+    "style_tags": [
+      "streetwear",
+      "grunge"
+    ],
+    "season": [
+      "spring",
+      "fall",
+      "winter"
+    ],
+    "pattern": "solid",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/K12001-Cream-AB.jpg",
+    "url": "https://www.macduggal.com/products/k12001"
+  },
+  {
+    "id": "dress_133",
+    "name": "Pearl Embellished Cape Sleeve Gown",
+    "brand": "Mac Duggal",
+    "slot": "dress",
+    "department": "women",
+    "price": 698.0,
+    "colors": [
+      "black",
+      "white"
+    ],
+    "formality": 5,
+    "style_tags": [
+      "old-money",
+      "goth"
+    ],
+    "season": [
+      "spring",
+      "summer",
+      "fall",
+      "winter"
+    ],
+    "pattern": "small-print",
+    "fit": "regular",
+    "image": "https://cdn.shopify.com/s/files/1/0511/3783/9283/files/69025-BlackIvory-AB.jpg",
+    "url": "https://www.macduggal.com/products/pearl-embellished-cape-sleeve-gown"
   }
 ]

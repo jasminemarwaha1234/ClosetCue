@@ -279,7 +279,7 @@ LaHacksAI/
 │   ├── test_framing.py   prints the framing for local photos (python -m backend.test_framing <photos>)
 │   └── requirements.txt
 ├── training/
-│   ├── stores.json   the 22 stores the catalog is pulled from
+│   ├── stores.json   the 25 stores the catalog is pulled from
 │   ├── scrape_catalog.py   stores → catalog_raw.json (untagged)
 │   ├── tag_catalog.py      catalog_raw.json → catalog.json, tagged by Gemini (section 5)
 │   ├── catalog.json  the catalog; the server reads it too
@@ -359,7 +359,7 @@ Each occasion has a target formality range that the reward checks against (`OCCA
 
 | Occasion | Formality |
 | --- | --- |
-| `formal` | 5 |
+| `formal` | 4–5 |
 | `semi-formal` | 4–5 |
 | `work` | 3–4 |
 | `everyday` | 2–4 |
@@ -368,13 +368,15 @@ Each occasion has a target formality range that the reward checks against (`OCCA
 | `athletic` | 1–2 |
 | `comfy` | 1 |
 
+`formal` shares `semi-formal`'s range because every outfit needs shoes and no shoe is tagged 5 (heels and dress shoes are 4).
+
 ### Base model
 
 `unsloth/Llama-3.2-3B-Instruct`, an **ungated community mirror** on Hugging Face. Veri's guide warns that gated `meta-llama/*` repos fail after the GPU has booted and started billing. 3B trains on one L4 GPU and serves on one L4. The two smoke runs on Oct 18 confirmed that Veri trains the mirror and pushes its merged weights (`training/JOURNAL.md`), so the `Qwen/Qwen3-4B` fallback isn't needed.
 
 ### Catalog
 
-About 1,000 **real products** (real brand, price, image and retailer link) from 22 online stores, across tops, bottoms, dresses, outerwear, shoes and accessories, menswear and womenswear, in `catalog.json`. Real products make the demo believable and give the reward something concrete to check. A large catalog also matters for training: the 400 training prompts rarely share the same candidates, so the model can't memorize a few safe outfits.
+About 1,000 **real products** (real brand, price, image and retailer link) from 25 online stores, across tops, bottoms, dresses, outerwear, shoes and accessories, menswear and womenswear, in `catalog.json`. Real products make the demo believable and give the reward something concrete to check. A large catalog also matters for training: the 400 training prompts rarely share the same candidates, so the model can't memorize a few safe outfits.
 
 Built by scripts, not by hand:
 
@@ -461,7 +463,7 @@ Every stage gets a tiny version first, because the expensive failures (a bad dat
 
 | Stage | Small version | Proves | Then |
 | --- | --- | --- | --- |
-| Catalog | Scrape and tag 2 stores (~100 items) | The feed works, slot mapping is right, Gemini tags look sensible | All 22 stores |
+| Catalog | Scrape and tag 2 stores (~100 items) | The feed works, slot mapping is right, Gemini tags look sensible | All 25 stores |
 | Reward | The hand-written test outfits (21 tests, passing) | It ranks outfits the way we would | Score real model answers |
 | Data | 20 profiles, 40 prompts | Prompts read well; `veri datasets check` passes; Gemini's SFT answers pass the reward often enough | 400 profiles |
 | Candidate list size | Base Llama on 20 prompts at each size, no training | Whether accuracy already drops at 100–200 before we pay to train on them | The full eval |
@@ -585,7 +587,7 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 
 - The training pipeline: catalog, data, reward with tests, SFT, GRPO, deployed model
 - The eval table with real numbers, and the training journal
-- A catalog of about 1,000 real products, built by script from 22 stores
+- A catalog of about 1,000 real products, built by script from 25 stores
 - Share photos in either of two ways (pick photos, or scan the camera roll with face matching), then a style profile and closet saved in Supabase
 - Optional anchor (catalog item, closet item or none), budget range and occasion, all prefilled, then 2–3 outfit cards from **our** model
 - Max price per item in the API and retrieval (a one-line filter); its Build-screen control is Person B's call
