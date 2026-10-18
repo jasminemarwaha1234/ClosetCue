@@ -689,15 +689,20 @@ export default function PhotosScreen() {
           </Pressable>
         )}
 
-        {phase === 'done' && (
-          <Text
-            accessibilityRole="link"
-            onPress={saving ? undefined : finish}
-            style={[styles.link, styles.linkCenter]}
-          >
-            {saving ? 'Reading your style…' : 'Next: your style'}
-          </Text>
-        )}
+        {phase === 'done' &&
+          (outfitThumbs.length > 0 ? (
+            <Text
+              accessibilityRole="link"
+              onPress={saving ? undefined : finish}
+              style={[styles.link, styles.linkCenter]}
+            >
+              {saving ? 'Reading your style…' : 'Next: your style'}
+            </Text>
+          ) : (
+            <Text style={styles.subtitle}>
+              No outfit photos found. Try scanning again, or share more photos.
+            </Text>
+          ))}
       </ScrollView>
       <StatusBar style="dark" />
     </View>
