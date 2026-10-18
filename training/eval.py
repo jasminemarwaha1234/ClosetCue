@@ -1,4 +1,4 @@
-"""Evaluate one model on held-out prompts (PLAN.md section 6, NEXT_STEPS.md steps 6 and 10).
+"""Evaluate one model on held-out prompts (PLAN.md section 6).
 
     python -m training.eval --model gemini --data training/data/prompts_eval.jsonl --limit 20 --out training/results
 

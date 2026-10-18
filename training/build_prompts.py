@@ -1,4 +1,4 @@
-"""Build the outfit prompts for training and eval (PLAN section 5, NEXT_STEPS step 4).
+"""Build the outfit prompts for training and eval (PLAN section 5, Data).
 
 Run from the repo root:
     python -m training.build_prompts [--profiles training/data/profiles.jsonl]
