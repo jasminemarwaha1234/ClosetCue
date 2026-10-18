@@ -9,7 +9,7 @@
 > Nothing is open on my side. One gap on the app side: `swatches` in `src/theme/index.ts` has no `gold` or `silver` (jewelry will use them), so those fall back to `surfaceMuted`.
 
 > **Status, Oct 18 morning (Jasmine):** thanks, everything above is merged into my branch with no conflicts. `gold` and `silver` are in `swatches` now, and `GeneratedBy`'s spelling is fine as it is. What's open for you:
-> 1. **Supabase backend** (section at the bottom): the project exists now, and the app already signs in anonymously and sends the token.
+> 1. **Supabase: I did it, so you don't have to** (section at the bottom). Your `/profile` and `/rate` routes just call the helpers in `backend/services/supabase.py`.
 > 2. **Keep `image` in `catalog.json`** when you tag it: `/tryon` sends each item's product photo to Gemini. Also make `price` a number (it's the string `"185.0"` in `catalog_raw.json`).
 > 3. **Share the Gemini key** with me privately: `/tryon` is mine and uses Gemini image editing (your NEXT_STEPS item 8).
 
@@ -119,27 +119,40 @@ The receipt's "Demo: no order was placed and no money moved." line is entirely i
 
 ---
 
-# Supabase: the app side is done, the backend side is yours
+# Supabase: done by Jasmine (app and backend)
 
-From Jasmine (app and design). Written 2026-10-18.
+From Jasmine. Written 2026-10-18. PLAN.md gives Supabase to you, but section 10 lets me take it if you're busy, so I built all of it. It's on my branch `jasmine/frontend` until we merge.
 
-PLAN.md gives Supabase to you, so I only built the phone half and left `backend/` alone.
+**The project exists.** I'll send you the URL and secret key privately for your `backend/.env` (`SUPABASE_URL`, `SUPABASE_SECRET_KEY`). `SUPABASE_URL` is the bare `https://<ref>.supabase.co`, not the `/rest/v1/` one.
 
-**The project exists.** I made it and have the URL, publishable key and secret key. I'll send you the URL and secret key privately for your `backend/.env` (`SUPABASE_URL`, `SUPABASE_SECRET_KEY`, the names in `backend/.env.example`). `SUPABASE_URL` is the bare project URL, `https://<ref>.supabase.co`, not the `/rest/v1/` one.
+**What's built:**
 
-**What the app does now** (`src/lib/supabase.ts`):
+| Piece | Where |
+| --- | --- |
+| Anonymous sign-in on launch; every backend call sends `Authorization: Bearer <token>` | `src/lib/supabase.ts`, `api()` in `src/api/client.ts` |
+| Tables `profiles`, `feedback`, `mandates`, RLS on with no policies (only the backend's secret key can touch them), rows deleted with the user | `backend/supabase_schema.sql` (run once in the SQL editor) |
+| Who's calling: `current_user` dependency, 401 without a valid token | `backend/services/supabase.py` |
+| Table helpers | same file |
+| `DELETE /me` and the app's `deleteMe()` | `backend/routes/me.py`, `src/api/client.ts` |
 
-- On launch it signs in anonymously with `supabase.auth.signInAnonymously()`, and keeps the session on the phone, so the same person stays the same user.
-- Every backend call from `src/api/client.ts` (`api()`) sends `Authorization: Bearer <access token>`. The scan and face calls don't yet.
-- It reads `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_KEY` (the publishable key) from the root `.env`, the names already in `.env.example`. Without them it skips sign-in and runs on mocks as before.
+**How to use it in your routes** (`profile.py`, `feedback.py`):
 
-**What the backend needs:**
+```python
+from fastapi import Depends
+from backend.services import supabase
 
-1. In the Supabase dashboard: **Authentication → Sign In / Providers → allow anonymous sign-ins**. Without this the app's sign-in fails.
-2. Read the user from the token on every route that touches user data: `supabase.auth.get_user(token)` with the service key, or verify the JWT with the project's JWT secret. A missing or bad token → 401.
-3. The two tables from PLAN.md section 4, with row level security on (the service key bypasses it, the publishable key then can't read anything):
-   - `profiles`: `user_id uuid primary key references auth.users on delete cascade`, `profile jsonb` (StyleProfile, closet included), `updated_at timestamptz`.
-   - `feedback`: `id bigint identity`, `user_id uuid references auth.users on delete cascade`, `pair_id text`, `choice text`, `pair jsonb` (the RatePair shown), `created_at timestamptz`.
-4. `DELETE /me` is mine. I'll write it once your `services/supabase.py` exists, deleting the user's rows (or the auth user, which cascades). Tell me the helper's name.
+@router.get("/profile")
+async def get_profile(user_id: str = Depends(supabase.current_user)) -> StyleProfile:
+    profile = await supabase.get_profile(user_id)  # dict or None
+    if profile is None:
+        raise HTTPException(404, "No profile yet")
+    return StyleProfile(**profile)
+```
 
-**One shared-file edit coming from me:** `/tryon` is mine, so I'll add `backend/routes/tryon.py` and one `include_router` line in `backend/main.py`. The Gemini call will live in my own `backend/services/tryon.py`, not in your `gemini.py`.
+- `get_profile(user_id)` → dict or None; `save_profile(user_id, profile_dict)` creates or replaces it. Use it for `POST` and `PUT /profile`.
+- `add_feedback(user_id, pair_id, choice, pair_dict, a_model, b_model)` for `POST /rate`. `a_model`/`b_model` are which model made each side (never sent to the app), so the table exports straight to DPO pairs. Rating the same pair twice keeps the last answer.
+- `create_mandate`, `get_mandate`, `set_mandate_spent` are for my checkout.
+- Every helper runs with the secret key, which skips row level security, so always pass the `user_id` from `current_user`, never one from the request body.
+- It loads `backend/.env` with `python-dotenv` (added to `requirements.txt` with `httpx`). Your Gemini and Veri services can read `os.environ` after importing it, or call `load_dotenv` the same way.
+
+**Shared files I touched:** `backend/main.py` (one `include_router` for `me`) and `backend/requirements.txt` (two lines). `/tryon` will add one more `include_router` line later.

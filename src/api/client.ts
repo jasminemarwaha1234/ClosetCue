@@ -1,5 +1,5 @@
 import type { Thumb } from '@/lib/photos';
-import { accessToken } from '@/lib/supabase';
+import { accessToken, signOut } from '@/lib/supabase';
 import * as mocks from './mocks';
 import type {
   Candidate,
@@ -114,4 +114,11 @@ export async function sendRate(choice: RateChoice): Promise<void> {
   ratedCount += 1;
   if (USE_MOCKS) return mock(undefined);
   return api<void>('POST', '/rate', choice);
+}
+
+// "Delete my data" on the Trust screen: the backend deletes the profile, feedback, mandates
+// and the anonymous account, then the app signs out so the next launch starts fresh.
+export async function deleteMe(): Promise<void> {
+  if (!USE_MOCKS) await api<void>('DELETE', '/me');
+  await signOut();
 }
