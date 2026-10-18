@@ -23,6 +23,7 @@ import {
 } from 'react-native';
 
 import { putProfile } from '@/api/client';
+import { AccountCard } from '@/components/AccountCard';
 import { capitalize, useSession } from '@/lib/session';
 import { swatches } from '@/theme';
 
@@ -252,6 +253,8 @@ export default function StyleScreen() {
       <Pressable onPress={() => router.push('/build')} style={styles.cta}>
         <Text style={styles.ctaText}>Build an outfit</Text>
       </Pressable>
+
+      <AccountCard />
     </ScrollView>
   );
 }

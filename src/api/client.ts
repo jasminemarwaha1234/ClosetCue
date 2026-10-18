@@ -53,10 +53,11 @@ export async function classifyBatch(batch: Thumb[], owner: number[] | null): Pro
 // Everything below needs the backend endpoints Person A is building. Until they're live,
 // the app answers from src/api/mocks.ts. Set EXPO_PUBLIC_USE_MOCKS=false in .env to switch.
 const USE_MOCKS = process.env.EXPO_PUBLIC_USE_MOCKS !== 'false';
+export const usingMocks = USE_MOCKS;
 
 // Every call carries the anonymous Supabase user's token, so the backend knows whose data it is.
 async function api<T>(method: string, path: string, body?: unknown): Promise<T> {
-  // If sign-in fails, routes that need a user answer 401; the others still work.
+  // Before sign-in there's no token: routes that need a user answer 401, the others still work.
   const token = await accessToken().catch(() => null);
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method,

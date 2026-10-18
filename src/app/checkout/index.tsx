@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { router, Stack } from 'expo-router';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { checkCart, confirmCart, createMandate, makeItNicer } from '@/api/client';
 import type { CartVerdict, Mandate, Outfit } from '@/api/types';
+import { PayMark, PaySheet } from '@/components/PaySheet';
 import { Header, OutlineButton, PieceImage, PrimaryButton, TextButton, money } from '@/components/ui';
 import { confirmPayment } from '@/lib/confirm';
+import { payMethod } from '@/lib/payment';
 import { capitalize, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
@@ -23,6 +25,8 @@ export default function CheckoutScreen() {
   const [verdict, setVerdict] = useState<CartVerdict | null>(null);
   const [previous, setPrevious] = useState<Outfit | null>(null);
   const [busy, setBusy] = useState<null | 'check' | 'pay' | 'raise' | 'nicer'>('check');
+  const [sheet, setSheet] = useState(false);
+  const method = payMethod(s.payMethodId);
 
   // Make sure there's a mandate (defaulting to the budget max), then check the cart against it.
   async function fetchVerdict(o: Outfit, m: Mandate | null) {
@@ -64,9 +68,10 @@ export default function CheckoutScreen() {
 
   async function pay(m: Mandate, total: number) {
     if (!outfit) return;
-    if (!(await confirmPayment(`Pay ${money(total)}`))) return;
+    if (!(await confirmPayment(`Pay ${money(total)} with ${method.label}`))) return;
     const receipt = await confirmCart({ mandate_id: m.id, item_ids: outfit.items.map((i) => i.id) });
     s.setReceipt(receipt);
+    setSheet(false);
     router.replace('/checkout/receipt');
   }
 
@@ -76,6 +81,7 @@ export default function CheckoutScreen() {
       await pay(mandate, verdict!.total);
     } catch (e) {
       // 409: the cart no longer fits the mandate. Check again so the refusal shows.
+      setSheet(false);
       Alert.alert("Payment didn't go through", e instanceof Error ? e.message : String(e));
       check(outfit!, mandate);
     } finally {
@@ -171,21 +177,26 @@ export default function CheckoutScreen() {
         </View>
 
         {!refused ? (
-          <View style={styles.card}>
-            <View style={styles.visa}>
-              <Text style={styles.visaText}>VISA</Text>
-            </View>
-            <View style={styles.cardText}>
-              <Text style={styles.cardLabel}>{capitalize(mandate.card.label)}</Text>
-              <Text style={styles.muted}>Stripe test mode. No real money moves.</Text>
-            </View>
+          <View style={styles.payWith}>
+            <Pressable style={styles.card} onPress={() => setSheet(true)} accessibilityLabel="Change how you pay">
+              <PayMark id={method.id} />
+              <View style={styles.cardText}>
+                <Text style={styles.cardLabel}>{method.label}</Text>
+                <Text style={styles.muted}>Tap to change how you pay</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+            <Text style={styles.muted}>
+              The agent pays the store with its own card, {capitalize(mandate.card.label)}. Stripe test mode, no
+              real money moves.
+            </Text>
           </View>
         ) : null}
 
         <View style={styles.actions}>
           {!refused ? (
             <>
-              <PrimaryButton label={`Pay ${money(verdict.total)}`} onPress={payNow} loading={busy === 'pay'} />
+              <PrimaryButton label={`Pay ${money(verdict.total)}`} onPress={() => setSheet(true)} />
               <TextButton label="Make it nicer" onPress={nicer} />
             </>
           ) : expired ? (
@@ -212,6 +223,17 @@ export default function CheckoutScreen() {
           )}
         </View>
       </ScrollView>
+
+      <PaySheet
+        visible={sheet}
+        total={verdict.total}
+        limit={mandate.limit}
+        method={method.id}
+        onChange={s.setPayMethodId}
+        onPay={payNow}
+        onClose={() => setSheet(false)}
+        paying={busy === 'pay'}
+      />
     </SafeAreaView>
   );
 }
@@ -246,16 +268,17 @@ const styles = StyleSheet.create({
   rowName: { flex: 1, fontSize: 15, lineHeight: 20, fontWeight: '500', color: colors.text },
   rowPrice: { width: 56, textAlign: 'right', fontSize: 15, lineHeight: 20, fontWeight: '600', color: colors.text },
   ownedNote: { fontSize: 14, lineHeight: 20, color: colors.textMuted, paddingTop: 10 },
-  card: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  visa: {
-    width: 44,
-    height: 30,
-    borderRadius: 6,
-    backgroundColor: '#1a1f71', // Visa card art
+  payWith: { gap: 10 },
+  card: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 12,
+    padding: 14,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: colors.hairline,
   },
-  visaText: { fontSize: 11, fontWeight: '800', fontStyle: 'italic', color: colors.onPrimary },
+  chevron: { fontSize: 24, lineHeight: 26, color: colors.textMuted },
   cardText: { flex: 1, gap: 2 },
   cardLabel: { fontSize: 15, lineHeight: 20, fontWeight: '600', color: colors.text },
   muted: { fontSize: 13, lineHeight: 18, color: colors.textMuted },
