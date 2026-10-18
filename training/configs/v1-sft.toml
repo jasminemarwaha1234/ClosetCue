@@ -1,0 +1,35 @@
+# v1-sft: LoRA SFT on gen_sft.py's answers (training/data/sft_train.jsonl, 251 rows, 25- and
+# 50-candidate prompts only). Upload with `veri datasets upload` and put the id below.
+# Longest row is 2,612 Llama 3.2 tokens (system + user + assistant), so 3072 truncates nothing.
+# 2 epochs at the default batch of 1 is about 500 optimizer steps; 1e-4 is a usual LoRA rate
+# and the one the smoke runs used.
+kind = "train"
+
+[job]
+name = "v1-sft"
+
+[model]
+base = "unsloth/Llama-3.2-3B-Instruct"
+
+[dataset]
+id = "<dataset id from veri datasets upload>"
+
+[method]
+type = "sft_text"
+learning_rate = 1e-4
+num_epochs = 2
+max_seq_length = 3072
+lora_rank = 16
+lora_alpha = 32
+
+[resources]
+gpu_type = "L4-24GB"
+gpu_count = 1
+
+[provider]
+name = "aws"
+
+[huggingface]
+repo = "CharlieBrown364/outfit-llama-v1-sft"
+artifact = "merged"
+private = false
