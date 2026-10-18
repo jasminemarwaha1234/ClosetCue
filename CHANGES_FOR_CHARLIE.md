@@ -8,6 +8,37 @@
 >
 > Nothing is open on my side. One gap on the app side: `swatches` in `src/theme/index.ts` has no `gold` or `silver` (jewelry will use them), so those fall back to `surfaceMuted`.
 
+> **Status, Oct 18 morning (Jasmine):** thanks, everything above is merged into my branch with no conflicts. `gold` and `silver` are in `swatches` now, and `GeneratedBy`'s spelling is fine as it is. What's open for you:
+> 1. **Supabase: I did it, so you don't have to** (section at the bottom). Your `/profile` and `/rate` routes just call the helpers in `backend/services/supabase.py`.
+> 2. **Keep `image` in `catalog.json`** when you tag it: `/tryon` sends each item's product photo to Gemini. Also make `price` a number (it's the string `"185.0"` in `catalog_raw.json`).
+> 3. **Share the Gemini key** with me privately: `/tryon` is mine and uses Gemini image editing (your NEXT_STEPS item 8).
+
+> **What changed since your last push ("Add a handoff of the model and backend next steps", Oct 18 01:30), Jasmine:**
+>
+> **Run after pulling:** `pip install -r backend/requirements.txt` (new: `httpx`, `python-dotenv`, `google-genai`) and `npm install` (new: `@supabase/supabase-js`, `expo-sqlite`).
+>
+> **The contract didn't change:** `backend/schemas.py` and `src/api/types.ts` are untouched.
+>
+> | File | Change |
+> | --- | --- |
+> | `backend/main.py` (shared) | Two `include_router` lines: `me` and `tryon` |
+> | `backend/requirements.txt` (shared) | Added `httpx`, `python-dotenv`, `google-genai` |
+> | `backend/services/supabase.py` (new, your area) | Supabase: `current_user` token check, profile/feedback/mandate helpers, `delete_user`. See "Supabase: done by Jasmine" below |
+> | `backend/supabase_schema.sql` (new) | The `profiles`, `feedback`, `mandates` tables with RLS. Jasmine runs it once in the dashboard |
+> | `backend/routes/me.py` (new) | `DELETE /me` |
+> | `backend/routes/tryon.py`, `backend/services/tryon.py` (new) | `POST /tryon` with Gemini image editing |
+> | `src/api/mocks.ts` | Mock catalog is 18 real items from `catalog_raw.json` (same ids); mock outfits follow the anchor, budget and max per item |
+> | `src/api/client.ts` | Sends the Supabase token; `tryOn` always calls the backend; `deleteMe()`. Your `makeItNicer` is unchanged |
+> | `src/lib/supabase.ts` (new), `src/lib/session.tsx` | Anonymous sign-in on launch |
+> | `src/lib/confirm.ts` | Pay asks with an in-app dialog in Expo Go, Face ID in a dev build |
+> | `src/app/outfits.tsx`, `src/components/ui.tsx` | × to leave a piece out, Swap pill, product photos |
+> | `src/app/(tabs)/build.tsx`, `src/components/RangeSlider.tsx` | Budget slider from $10 with uneven steps |
+> | `src/app/onboarding/photos.tsx`, `src/app/_layout.tsx` | Onboarding can't be swiped back to |
+> | `src/theme/index.ts` | `gold` and `silver` swatches |
+> | `package.json`, `package-lock.json`, `app.json` | `@supabase/supabase-js`, `expo-sqlite` and its config plugin |
+>
+> **Env:** `backend/.env` now needs `SUPABASE_URL` and `SUPABASE_SECRET_KEY`, which I'll send you privately. `GEMINI_API_KEY` needs billing on its Google project for try-on (image models have no free tier). Text tagging works without it.
+
 # Change request: remove "formality" from the style profile
 
 From Jasmine (app and design). Written 2026-10-17.
@@ -111,3 +142,54 @@ The outfit cards and the receipt now have a **View at retailer** link on every i
 3. **Training prompts:** no change. `url` doesn't need to go into the model's input.
 
 The receipt's "Demo: no order was placed and no money moved." line is entirely in the app, so it needs nothing from you.
+
+---
+
+# Supabase: done by Jasmine (app and backend)
+
+From Jasmine. Written 2026-10-18. PLAN.md gives Supabase to you, but section 10 lets me take it if you're busy, so I built all of it. It's on my branch `jasmine/frontend` until we merge.
+
+**The project exists.** I'll send you the URL and secret key privately for your `backend/.env` (`SUPABASE_URL`, `SUPABASE_SECRET_KEY`). `SUPABASE_URL` is the bare `https://<ref>.supabase.co`, not the `/rest/v1/` one.
+
+**What's built:**
+
+| Piece | Where |
+| --- | --- |
+| Anonymous sign-in on launch; every backend call sends `Authorization: Bearer <token>` | `src/lib/supabase.ts`, `api()` in `src/api/client.ts` |
+| Tables `profiles`, `feedback`, `mandates`, RLS on with no policies (only the backend's secret key can touch them), rows deleted with the user | `backend/supabase_schema.sql` (run once in the SQL editor) |
+| Who's calling: `current_user` dependency, 401 without a valid token | `backend/services/supabase.py` |
+| Table helpers | same file |
+| `DELETE /me` and the app's `deleteMe()` | `backend/routes/me.py`, `src/api/client.ts` |
+
+**How to use it in your routes** (`profile.py`, `feedback.py`):
+
+```python
+from fastapi import Depends
+from backend.services import supabase
+
+@router.get("/profile")
+async def get_profile(user_id: str = Depends(supabase.current_user)) -> StyleProfile:
+    profile = await supabase.get_profile(user_id)  # dict or None
+    if profile is None:
+        raise HTTPException(404, "No profile yet")
+    return StyleProfile(**profile)
+```
+
+- `get_profile(user_id)` → dict or None; `save_profile(user_id, profile_dict)` creates or replaces it. Use it for `POST` and `PUT /profile`.
+- `add_feedback(user_id, pair_id, choice, pair_dict, a_model, b_model)` for `POST /rate`. `a_model`/`b_model` are which model made each side (never sent to the app), so the table exports straight to DPO pairs. Rating the same pair twice keeps the last answer.
+- `create_mandate`, `get_mandate`, `set_mandate_spent` are for my checkout.
+- Every helper runs with the secret key, which skips row level security, so always pass the `user_id` from `current_user`, never one from the request body.
+- It loads `backend/.env` with `python-dotenv` (added to `requirements.txt` with `httpx`). Your Gemini and Veri services can read `os.environ` after importing it, or call `load_dotenv` the same way.
+
+**Shared files I touched:** `backend/main.py` (one `include_router` for `me`) and `backend/requirements.txt` (two lines). `/tryon` will add one more `include_router` line later.
+
+---
+
+# Try-on is built (FYI, nothing to do)
+
+From Jasmine, 2026-10-18.
+
+- `POST /tryon` is in `backend/routes/tryon.py` and `backend/services/tryon.py` (Gemini `gemini-nano-banana-2.1`), registered with one line in `main.py`. `google-genai` is in `requirements.txt`.
+- It reads product photos from `training/catalog.json`, or `catalog_raw.json` until that exists, so please keep `image` in the tagged catalog.
+- The app's mock catalog is now 18 real items from `catalog_raw.json` with their real ids, images and URLs, so mocks and the real catalog line up.
+- **Heads-up for your tagging:** the Gemini key's project is on the free tier, where image models have a quota of 0. Text models still work there, with tight per-minute limits. Try-on needs billing turned on for the key's Google project.

@@ -10,3 +10,6 @@ sentry-sdk[fastapi]
 torchvision
 tqdm
 # also install separately: pip install facenet-pytorch --no-deps
+httpx
+python-dotenv
+google-genai

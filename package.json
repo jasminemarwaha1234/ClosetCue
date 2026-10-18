@@ -4,6 +4,7 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@sentry/react-native": "~7.11.0",
+    "@supabase/supabase-js": "^2.118.0",
     "expo": "~57.0.30",
     "expo-constants": "~57.0.22",
     "expo-font": "~57.0.4",
@@ -13,6 +14,7 @@
     "expo-local-authentication": "~57.0.3",
     "expo-media-library": "~57.0.5",
     "expo-router": "~57.0.28",
+    "expo-sqlite": "~57.0.4",
     "expo-status-bar": "~57.0.1",
     "expo-web-browser": "~57.0.3",
     "react": "19.2.3",

@@ -1,4 +1,5 @@
 import type { Thumb } from '@/lib/photos';
+import { accessToken, signOut } from '@/lib/supabase';
 import * as mocks from './mocks';
 import type {
   Candidate,
@@ -53,11 +54,13 @@ export async function classifyBatch(batch: Thumb[], owner: number[] | null): Pro
 // the app answers from src/api/mocks.ts. Set EXPO_PUBLIC_USE_MOCKS=false in .env to switch.
 const USE_MOCKS = process.env.EXPO_PUBLIC_USE_MOCKS !== 'false';
 
-// TODO: send `Authorization: Bearer <token>` once the anonymous Supabase sign-in exists.
+// Every call carries the anonymous Supabase user's token, so the backend knows whose data it is.
 async function api<T>(method: string, path: string, body?: unknown): Promise<T> {
+  // If sign-in fails, routes that need a user answer 401; the others still work.
+  const token = await accessToken().catch(() => null);
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!res.ok) {
@@ -90,10 +93,10 @@ export async function makeItNicer(req: OutfitsRequest, outfit: Outfit): Promise<
   return res.outfits[0];
 }
 
+// Always the real backend, even on mocks: the mock catalog is real scraped products with
+// the same ids, so /tryon can find their photos. Takes 10-20 seconds.
 export const tryOn = (photo: Item, itemIds: string[]) =>
-  USE_MOCKS
-    ? Promise.reject(new Error('Try-on needs the backend. Use the flat lay for now.'))
-    : api<TryOnResponse>('POST', '/tryon', { photo, item_ids: itemIds });
+  api<TryOnResponse>('POST', '/tryon', { photo, item_ids: itemIds });
 
 export const createMandate = (req: MandateRequest) =>
   USE_MOCKS ? mock(mocks.createMandate(req)) : api<Mandate>('POST', '/checkout/mandate', req);
@@ -112,4 +115,11 @@ export async function sendRate(choice: RateChoice): Promise<void> {
   ratedCount += 1;
   if (USE_MOCKS) return mock(undefined);
   return api<void>('POST', '/rate', choice);
+}
+
+// "Delete my data" on the Trust screen: the backend deletes the profile, feedback, mandates
+// and the anonymous account, then the app signs out so the next launch starts fresh.
+export async function deleteMe(): Promise<void> {
+  if (!USE_MOCKS) await api<void>('DELETE', '/me');
+  await signOut();
 }

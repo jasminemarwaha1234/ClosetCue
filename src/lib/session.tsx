@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { getCatalog, getProfile } from '@/api/client';
+import { accessToken } from '@/lib/supabase';
 import type {
   Anchor,
   CatalogItem,
@@ -15,7 +16,10 @@ import type {
 
 // What the user is building, shared by Build, Pick item, Outfits, Try-on and Checkout.
 
-export const BUDGET_RANGE = { min: 25, max: 500, step: 5 };
+// Where the budget slider's handles can stop: $5 steps at the low end, bigger jumps higher up.
+export const BUDGET_STOPS = [
+  10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250, 300, 400, 500,
+];
 
 type Session = {
   profile: StyleProfile | null;
@@ -79,8 +83,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [mandate, setMandate] = useState<Mandate | null>(null);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
 
-  // Load the profile and catalog once, and prefill the anchor with a suggestion.
+  // Sign in (anonymously, the first time), load the profile and catalog once, and prefill
+  // the anchor with a suggestion.
   useEffect(() => {
+    accessToken().catch(() => {});
     Promise.all([getProfile(), getCatalog()])
       .then(([p, c]) => {
         setProfile(p);

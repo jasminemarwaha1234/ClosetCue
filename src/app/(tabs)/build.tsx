@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getOutfits } from '@/api/client';
 import { RangeSlider } from '@/components/RangeSlider';
 import { Chip, Header, PieceImage, PrimaryButton, SectionTitle, money } from '@/components/ui';
-import { BUDGET_RANGE, OCCASIONS, capitalize, useAnchorItem, useSession } from '@/lib/session';
+import { BUDGET_STOPS, OCCASIONS, capitalize, useAnchorItem, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
 const MAX_ITEM_OPTIONS: (number | null)[] = [null, 50, 100];
@@ -88,15 +88,13 @@ export default function BuildScreen() {
             </Text>
           </View>
           <RangeSlider
-            min={BUDGET_RANGE.min}
-            max={BUDGET_RANGE.max}
-            step={BUDGET_RANGE.step}
+            stops={BUDGET_STOPS}
             value={s.budget}
             onChange={s.setBudget}
           />
           <View style={styles.rangeLabels}>
-            <Text style={styles.caption}>{money(BUDGET_RANGE.min)}</Text>
-            <Text style={styles.caption}>{money(BUDGET_RANGE.max)}</Text>
+            <Text style={styles.caption}>{money(BUDGET_STOPS[0])}</Text>
+            <Text style={styles.caption}>{money(BUDGET_STOPS.at(-1)!)}</Text>
           </View>
           <View style={styles.maxRow}>
             <Text style={styles.maxLabel}>Max per item</Text>

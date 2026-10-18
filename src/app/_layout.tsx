@@ -17,7 +17,7 @@ export default function RootLayout() {
       >
         <Stack.Screen name="onboarding/welcome" options={{ title: 'Welcome' }} />
         <Stack.Screen name="onboarding/photos" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="pick-item" options={{ headerShown: false, presentation: 'modal' }} />
         <Stack.Screen name="outfits" options={{ title: '' }} />
         <Stack.Screen name="tryon/[outfitId]" options={{ title: '' }} />

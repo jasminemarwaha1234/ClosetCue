@@ -37,7 +37,8 @@
           "faceIDPermission": "As If uses Face ID so only you can approve a purchase."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true
