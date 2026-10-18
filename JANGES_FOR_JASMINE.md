@@ -23,6 +23,7 @@ Plan changes from Saturday Oct 17 that affect the app, the API contract or your 
 | `Occasion` | Adds `wedding_guest`, `interview`, `brunch`, `travel`, `concert`, `outdoors`, `campus`, `lounge` |
 | `Outfit` | New `owned: ClosetItem[]`: pieces from the user's closet, which are free and never go in the cart. `items` is now only what would be bought, and `total` sums `items` only |
 | `MandateRequest` | Unchanged, but the app should default `limit` to the request's `budget_max` |
+| `Receipt` | New `authorization_id: string \| null`: Stripe's ID for the purchase. `null` means the payment was simulated (the fallback), so label it that way |
 
 ## Screens
 

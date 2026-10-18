@@ -276,7 +276,7 @@ LaHacksAI/
 ├── backend/          FastAPI
 │   ├── main.py       creates the app, includes the routers
 │   ├── routes/       profile.py, outfits.py, catalog.py, tryon.py, checkout.py, feedback.py, me.py, scan.py, faces.py
-│   ├── services/     gemini.py, veri.py, supabase.py, pose.py, faces.py, images.py
+│   ├── services/     gemini.py, veri.py, supabase.py, stripe_issuing.py, pose.py, faces.py, images.py
 │   ├── schemas.py    Pydantic request and response models
 │   ├── test_framing.py   prints the framing for local photos (python -m backend.test_framing <photos>)
 │   └── requirements.txt

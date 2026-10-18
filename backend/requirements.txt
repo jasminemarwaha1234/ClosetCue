@@ -4,6 +4,7 @@ ultralytics
 pillow
 pydantic
 numpy
+stripe
 # facenet-pytorch's own dependencies, since it's installed with --no-deps
 torchvision
 tqdm

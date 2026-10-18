@@ -131,7 +131,7 @@ class MandateRequest(BaseModel):
 
 
 class CardRef(BaseModel):
-    label: str  # "Visa •••• 4242, agent token". The agent never sees the card number.
+    label: str  # "Visa •••• 1234, agent card": the Stripe Issuing card's last 4. The agent never sees the card number.
 
 
 class Mandate(BaseModel):
@@ -176,6 +176,7 @@ class Receipt(BaseModel):
     total: float
     remaining: float
     card: CardRef
+    authorization_id: Optional[str] = None  # Stripe Issuing's iauth_...; None means a simulated payment
     created_at: str  # ISO 8601
 
 

@@ -115,7 +115,7 @@ export type TryOnResponse = { image_base64: string }; // JPEG
 // limit: the app defaults it to the request's budget_max. hours defaults to 24.
 export type MandateRequest = { limit: number; hours?: number };
 
-// "Visa •••• 4242, agent token". The agent never sees the card number.
+// "Visa •••• 1234, agent card": the Stripe Issuing card's last 4. The agent never sees the card number.
 export type CardRef = { label: string };
 
 export type Mandate = {
@@ -149,6 +149,7 @@ export type Receipt = {
   total: number;
   remaining: number;
   card: CardRef;
+  authorization_id: string | null; // Stripe Issuing's iauth_...; null means a simulated payment
   created_at: string; // ISO 8601
 };
 
