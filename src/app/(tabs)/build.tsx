@@ -50,6 +50,7 @@ export default function BuildScreen() {
             <View style={styles.anchorCard}>
               <PieceImage
                 image={anchorItem.catalog?.image}
+                photoId={anchorItem.closet?.photo_id}
                 colorName={(anchorItem.catalog ?? anchorItem.closet)?.colors[0]}
                 style={styles.anchorImage}
               />

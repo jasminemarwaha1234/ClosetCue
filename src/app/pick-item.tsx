@@ -18,7 +18,14 @@ const SLOTS: { value: Slot | 'all'; label: string }[] = [
   { value: 'accessory', label: 'Accessories' },
 ];
 
-type Tile = { anchor: Anchor; name: string; meta: string; image?: string; color?: string };
+type Tile = {
+  anchor: Anchor;
+  name: string;
+  meta: string;
+  image?: string;
+  photoId?: string;
+  color?: string;
+};
 
 // Modal: choose the anchor from the shop, from your closet, or no piece at all.
 // Designed in Paper ("ClosetCue / Pick item").
@@ -50,6 +57,7 @@ export default function PickItemScreen() {
             anchor: { source: 'closet', id: c.id },
             name: capitalize(c.description),
             meta: 'Yours',
+            photoId: c.photo_id,
             color: c.colors[0],
           }));
 
@@ -119,6 +127,7 @@ export default function PickItemScreen() {
             <Pressable style={styles.tile} onPress={() => setPicked(t.anchor)}>
               <PieceImage
                 image={t.image}
+                photoId={t.photoId}
                 colorName={t.color}
                 dashed={t.anchor.source === 'closet'}
                 style={[styles.tileImage, selected && styles.tileSelected]}

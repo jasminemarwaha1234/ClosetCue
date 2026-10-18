@@ -142,7 +142,7 @@ export default function OutfitsScreen() {
                 })}
                 {o.owned.map((c) => (
                   <View key={c.id} style={styles.piece}>
-                    <PieceImage colorName={c.colors[0]} dashed style={styles.pieceImage} />
+                    <PieceImage photoId={c.photo_id} colorName={c.colors[0]} dashed style={styles.pieceImage} />
                     <Text style={styles.pieceName} numberOfLines={2}>
                       {capitalize(c.description)}
                     </Text>
