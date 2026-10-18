@@ -84,6 +84,12 @@ _NAME_STOPWORDS = frozenset({"with", "from", "mens", "women", "womens", "unisex"
 _NOT_A_BREAK = re.compile(r"\b(?:Dr|Mr|Mrs|Ms|St|Jr|Co|Inc|vs)\.|\.(?=\s+[a-z])")
 
 
+def format_output(outfits):
+    """The exact JSON the model is trained to emit for [{"items", "reason"}], parse_output's inverse."""
+    answers = [{"items": o["items"], "reason": o["reason"]} for o in outfits]
+    return json.dumps({"outfits": answers}, separators=(",", ":"), ensure_ascii=False)
+
+
 def parse_output(text):
     """The outfits if `text` is exactly the strict output schema, else None."""
     if not isinstance(text, str):
