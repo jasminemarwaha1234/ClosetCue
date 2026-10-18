@@ -50,6 +50,14 @@ export function AccountCard() {
     router.replace('/onboarding/welcome');
   }
 
+  // A guest who signs out can't get back in, so ask first.
+  function startOver() {
+    Alert.alert('Start over?', "You'll go back to the welcome screen. This guest profile can't be recovered.", [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Start over', style: 'destructive', onPress: leave },
+    ]);
+  }
+
   return (
     <View style={styles.card}>
       <Text style={styles.title}>{guest ? "You're a guest" : `Signed in as ${usernameOf(session)}`}</Text>
@@ -73,9 +81,14 @@ export function AccountCard() {
           </Pressable>
         </View>
       ) : guest ? (
-        <Pressable onPress={() => setSaving(true)} style={({ pressed }) => [styles.outline, pressed && styles.dim]}>
-          <Text style={styles.outlineText}>Save your account</Text>
-        </Pressable>
+        <>
+          <Pressable onPress={() => setSaving(true)} style={({ pressed }) => [styles.outline, pressed && styles.dim]}>
+            <Text style={styles.outlineText}>Save your account</Text>
+          </Pressable>
+          <Pressable onPress={startOver} hitSlop={8} style={styles.startOver}>
+            <Text style={styles.muted}>Not you? Start over</Text>
+          </Pressable>
+        </>
       ) : (
         <Pressable onPress={leave} hitSlop={8}>
           <Text style={styles.link}>Sign out</Text>
@@ -109,5 +122,7 @@ const styles = StyleSheet.create({
   },
   outlineText: { fontSize: 16, lineHeight: 20, fontWeight: '600', color: colors.onPrimarySoft },
   link: { fontSize: 15, lineHeight: 20, fontWeight: '600', color: colors.onPrimarySoft, paddingTop: 4 },
+  startOver: { alignSelf: 'center', paddingTop: 6 },
+  muted: { fontSize: 14, lineHeight: 20, fontWeight: '600', color: colors.textMuted },
   dim: { opacity: 0.6 },
 });
