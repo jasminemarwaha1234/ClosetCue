@@ -38,9 +38,11 @@ export type ProfileRequest = { photos: Item[] };
 // Asset ids, so the app can show the photos again without the server storing them.
 export type Look = { name: string; photo_ids: string[] };
 
+export type ClosetId = `closet_${number}`;
+
 // A garment the user already owns, tagged by Gemini from one of their photos. Never bought.
 export type ClosetItem = {
-  id: string; // "closet_<n>", unique within the user's profile
+  id: ClosetId; // unique within the user's profile
   description: string; // "navy oxford shirt"
   slot: Slot;
   colors: string[];
@@ -77,14 +79,15 @@ export type Occasion =
   | 'lounge';
 export type GeneratedBy = 'our-llama' | 'base-llama' | 'gemini';
 
-// id is a CatalogItem.id or a ClosetItem.id from the user's profile
-export type Anchor = { source: 'catalog' | 'closet'; id: string };
+export type Anchor =
+  | { source: 'catalog'; id: string } // a CatalogItem.id
+  | { source: 'closet'; id: ClosetId }; // a ClosetItem.id from the user's profile
 
 export type OutfitsRequest = {
   anchor: Anchor | null; // null means "I need an outfit for..." with no anchor
-  budget_min: number;
+  budget_min: number; // 0 or more, at most budget_max
   budget_max: number;
-  max_item_price?: number | null; // no single catalog item may cost more
+  max_item_price?: number | null; // above 0; no single catalog item may cost more
   occasion: Occasion;
   // "Make it nicer": ids of the outfit's items and owned pieces. The backend returns one
   // pricier version with the budget range moved up to (that outfit's total, total + $150],
@@ -93,19 +96,21 @@ export type OutfitsRequest = {
 };
 
 export type Outfit = {
-  id: string;
-  items: CatalogItem[]; // what would be bought
+  id: string; // opaque; the backend doesn't store outfits
+  items: CatalogItem[]; // what would be bought, a catalog anchor included
   owned: ClosetItem[]; // pieces from the user's closet; free and never in the cart
-  total: number; // sum of `items` prices only
+  total: number; // sum of `items` prices only, computed by the backend and rounded to cents
   reason: string;
   // Item id -> up to 3 same-slot alternatives that keep the total within the budget range.
-  // The anchor and owned pieces have none. The app swaps locally and re-adds the prices.
+  // The anchor and owned pieces have none. The app swaps locally, re-adds the prices,
+  // and keeps looking up swaps under the original id.
   swaps: Record<string, CatalogItem[]>;
 };
 
+// A 503 when every generator fails, never an empty list.
 export type OutfitsResponse = {
-  outfits: Outfit[];
-  generated_by: GeneratedBy; // label anything that isn't 'our-llama'
+  outfits: Outfit[]; // 1 to 3, normally 2 or 3
+  generated_by: GeneratedBy; // covers every outfit; label anything that isn't 'our-llama'
 };
 
 // POST /tryon (TryOnRequest) -> TryOnResponse
