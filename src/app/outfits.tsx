@@ -1,13 +1,230 @@
-import { Placeholder } from '@/components/Placeholder';
+import { useState } from 'react';
+import { router, Stack } from 'expo-router';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import type { Outfit } from '@/api/types';
+import { Header, PieceImage, money } from '@/components/ui';
+import { capitalize, occasionLabel, useAnchorItem, useSession } from '@/lib/session';
+import { colors, radii, spacing } from '@/theme';
+
+const FALLBACK_LABEL = {
+  'base-llama': 'Made by base Llama, because our trained model is offline.',
+  gemini: 'Made by Gemini, because our trained model is offline.',
+} as const;
+
+// For each outfit, which alternative each item is swapped to (index into [original, ...swaps]).
+type SwapState = Record<string, Record<string, number>>;
+
+// The outfit with the user's swaps applied and the total re-added.
+function applySwaps(o: Outfit, picks: Record<string, number> = {}): Outfit {
+  const items = o.items.map((i) => {
+    const n = picks[i.id] ?? 0;
+    return n === 0 ? i : (o.swaps[i.id]?.[n - 1] ?? i);
+  });
+  return { ...o, items, total: items.reduce((sum, i) => sum + i.price, 0) };
+}
+
+// 5. Outfits. Designed in Paper ("As If / Outfits").
 export default function OutfitsScreen() {
+  const s = useSession();
+  const anchorItem = useAnchorItem();
+  const [open, setOpen] = useState(0);
+  const [swaps, setSwaps] = useState<SwapState>({});
+
+  const anchorId = s.anchor?.id;
+  const shown = s.outfits.map((o) => applySwaps(o, swaps[o.id]));
+  const anchorName =
+    anchorItem?.catalog?.name.split(' ').pop()?.toLowerCase() ??
+    anchorItem?.closet?.description.split(' ').pop();
+
+  // Cycles one piece through [original, ...alternatives]. Swaps are keyed by the original item's id.
+  function swap(o: Outfit, originalId: string) {
+    const count = (o.swaps[originalId]?.length ?? 0) + 1;
+    const now = swaps[o.id]?.[originalId] ?? 0;
+    setSwaps({ ...swaps, [o.id]: { ...swaps[o.id], [originalId]: (now + 1) % count } });
+  }
+
+  function go(o: Outfit, to: 'tryon' | 'checkout') {
+    s.setChosen(o);
+    if (to === 'tryon') router.push({ pathname: '/tryon/[outfitId]', params: { outfitId: o.id } });
+    else router.push('/checkout');
+  }
+
   return (
-    <Placeholder
-      description="2-3 outfit cards with total price and reasons. Swap any piece."
-      links={[
-        { label: 'Try it on', href: '/tryon/demo' },
-        { label: 'Check out', href: '/checkout' },
-      ]}
-    />
+    <>
+      <Stack.Screen
+        options={{ title: `${money(s.budget[0])}–${money(s.budget[1])} · ${occasionLabel(s.occasion)}` }}
+      />
+      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+        <Header
+          eyebrow={`${shown.length} outfits`}
+          title={anchorName ? `Built around your ${anchorName}` : `Ready for ${occasionLabel(s.occasion).toLowerCase()}`}
+        />
+
+        {s.generatedBy && s.generatedBy !== 'our-llama' ? (
+          <Text style={styles.fallback}>{FALLBACK_LABEL[s.generatedBy]}</Text>
+        ) : null}
+
+        {shown.map((o, index) =>
+          index === open ? (
+            <View key={o.id} style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>Outfit {index + 1}</Text>
+                <Text style={styles.total}>{money(o.total)}</Text>
+              </View>
+
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pieces}>
+                {o.items.map((i, n) => {
+                  const original = s.outfits[index].items[n];
+                  const isAnchor = s.anchor?.source === 'catalog' && original.id === anchorId;
+                  const canSwap = !isAnchor && (s.outfits[index].swaps[original.id]?.length ?? 0) > 0;
+                  return (
+                    <View key={original.id} style={styles.piece}>
+                      <View>
+                        <PieceImage image={i.image} colorName={i.colors[0]} style={styles.pieceImage} />
+                        {isAnchor ? (
+                          <View style={styles.badge}>
+                            <Text style={styles.badgeText}>PICKED</Text>
+                          </View>
+                        ) : null}
+                        {canSwap ? (
+                          <Pressable
+                            onPress={() => swap(s.outfits[index], original.id)}
+                            style={styles.swap}
+                            hitSlop={6}
+                            accessibilityLabel={`Swap ${i.name}`}
+                          >
+                            <Text style={styles.swapIcon}>⇄</Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
+                      <Text style={styles.pieceName} numberOfLines={2}>
+                        {i.name}
+                      </Text>
+                      <Text style={styles.piecePrice}>{money(i.price)}</Text>
+                    </View>
+                  );
+                })}
+                {o.owned.map((c) => (
+                  <View key={c.id} style={styles.piece}>
+                    <PieceImage colorName={c.colors[0]} dashed style={styles.pieceImage} />
+                    <Text style={styles.pieceName} numberOfLines={2}>
+                      {capitalize(c.description)}
+                    </Text>
+                    <Text style={styles.owned}>From your closet</Text>
+                  </View>
+                ))}
+              </ScrollView>
+
+              <Text style={styles.reason}>{o.reason}</Text>
+
+              <View style={styles.actions}>
+                <Pressable style={[styles.action, styles.actionPrimary]} onPress={() => go(o, 'tryon')}>
+                  <Text style={[styles.actionText, styles.actionPrimaryText]}>Try it on</Text>
+                </Pressable>
+                <Pressable style={styles.action} onPress={() => go(o, 'checkout')}>
+                  <Text style={styles.actionText}>Check out</Text>
+                </Pressable>
+              </View>
+            </View>
+          ) : (
+            <Pressable key={o.id} style={styles.compact} onPress={() => setOpen(index)}>
+              <View style={styles.swatches}>
+                {[...o.items.map((i) => i.colors[0]), ...o.owned.map((c) => c.colors[0])]
+                  .slice(0, 4)
+                  .map((c, n) => (
+                    <PieceImage key={n} colorName={c} style={styles.swatch} />
+                  ))}
+              </View>
+              <View style={styles.compactText}>
+                <Text style={styles.compactTitle}>Outfit {index + 1}</Text>
+                <Text style={styles.compactMeta}>
+                  {o.items.length} to buy{o.owned.length ? ` + ${o.owned.length} you own` : ''}
+                </Text>
+              </View>
+              <Text style={styles.compactTotal}>{money(o.total)}</Text>
+            </Pressable>
+          ),
+        )}
+
+        <Text style={styles.hint}>Tap the arrows on a piece to swap it.</Text>
+      </ScrollView>
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.lg, paddingTop: 8, gap: 20 },
+  fallback: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.warningText,
+    backgroundColor: colors.warningSurface,
+    padding: spacing.sm,
+    borderRadius: radii.md,
+    overflow: 'hidden',
+  },
+  card: { gap: spacing.md, padding: spacing.md, borderRadius: radii.xl, backgroundColor: colors.surface },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  cardTitle: { fontSize: 20, lineHeight: 24, fontWeight: '700', letterSpacing: -0.2, color: colors.text },
+  total: { fontSize: 24, lineHeight: 28, fontWeight: '800', letterSpacing: -0.72, color: colors.text },
+  pieces: { gap: 8 },
+  piece: { width: 74, gap: 6 },
+  pieceImage: { width: 74, height: 88 },
+  badge: {
+    position: 'absolute',
+    left: 6,
+    top: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    backgroundColor: colors.background,
+  },
+  badgeText: { fontSize: 11, lineHeight: 14, fontWeight: '700', letterSpacing: 0.44, color: colors.onPrimarySoft },
+  swap: {
+    position: 'absolute',
+    right: 6,
+    top: 6,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  swapIcon: { fontSize: 13, fontWeight: '700', color: colors.onPrimarySoft },
+  pieceName: { fontSize: 13, lineHeight: 16, fontWeight: '600', color: colors.text },
+  piecePrice: { fontSize: 13, lineHeight: 16, color: colors.textMuted },
+  owned: { fontSize: 13, lineHeight: 16, fontWeight: '600', color: colors.onPrimarySoft },
+  reason: { fontSize: 15, lineHeight: 22, color: colors.textBody },
+  actions: { flexDirection: 'row', gap: 8 },
+  action: {
+    flex: 1,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionPrimary: { backgroundColor: colors.primary },
+  actionText: { fontSize: 16, lineHeight: 20, fontWeight: '600', color: colors.onPrimarySoft },
+  actionPrimaryText: { color: colors.onPrimary },
+  compact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    paddingVertical: 14,
+    paddingHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: radii.xl,
+  },
+  swatches: { flexDirection: 'row', gap: 4 },
+  swatch: { width: 28, height: 36, borderRadius: 8 },
+  compactText: { flex: 1, gap: 2 },
+  compactTitle: { fontSize: 16, lineHeight: 20, fontWeight: '600', color: colors.text },
+  compactMeta: { fontSize: 14, lineHeight: 18, color: colors.textMuted },
+  compactTotal: { fontSize: 17, lineHeight: 22, fontWeight: '700', color: colors.text },
+  hint: { fontSize: 14, lineHeight: 20, color: colors.textMuted, textAlign: 'center' },
+});

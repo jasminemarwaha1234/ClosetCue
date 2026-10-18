@@ -1,5 +1,23 @@
 import type { Thumb } from '@/lib/photos';
-import type { Candidate, ScanResult } from './types';
+import * as mocks from './mocks';
+import type {
+  Candidate,
+  CartRequest,
+  CartVerdict,
+  CatalogItem,
+  Item,
+  Mandate,
+  MandateRequest,
+  Outfit,
+  OutfitsRequest,
+  OutfitsResponse,
+  RateChoice,
+  RatePair,
+  Receipt,
+  ScanResult,
+  StyleProfile,
+  TryOnResponse,
+} from './types';
 
 // Set in .env as EXPO_PUBLIC_API_BASE_URL (use your laptop's LAN IP on a real phone)
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
@@ -29,4 +47,67 @@ export async function classifyBatch(batch: Thumb[], owner: number[] | null): Pro
   if (!res.ok) throw new Error(`Backend returned ${res.status}`);
   const data: { results: ScanResult[] } = await res.json();
   return data.results.filter((r) => r.has_outfit);
+}
+
+// Everything below needs the backend endpoints Person A is building. Until they're live,
+// the app answers from src/api/mocks.ts. Set EXPO_PUBLIC_USE_MOCKS=false in .env to switch.
+const USE_MOCKS = process.env.EXPO_PUBLIC_USE_MOCKS !== 'false';
+
+// TODO: send `Authorization: Bearer <token>` once the anonymous Supabase sign-in exists.
+async function api<T>(method: string, path: string, body?: unknown): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const detail = await res.json().then((d: { detail?: string }) => d.detail).catch(() => null);
+    throw new Error(detail ?? `Backend returned ${res.status}`);
+  }
+  return res.status === 204 ? (undefined as T) : res.json();
+}
+
+// A short pause so mocked screens show their loading states like the real thing.
+const mock = <T>(value: T) => new Promise<T>((resolve) => setTimeout(() => resolve(value), 400));
+
+export const getCatalog = () =>
+  USE_MOCKS ? mock(mocks.catalog) : api<CatalogItem[]>('GET', '/catalog');
+
+export const getProfile = () =>
+  USE_MOCKS ? mock(mocks.profile) : api<StyleProfile>('GET', '/profile');
+
+export const putProfile = (profile: StyleProfile) =>
+  USE_MOCKS ? mock(profile) : api<StyleProfile>('PUT', '/profile', profile);
+
+export const getOutfits = (req: OutfitsRequest) =>
+  USE_MOCKS ? mock(mocks.outfits(req)) : api<OutfitsResponse>('POST', '/outfits', req);
+
+// "Make it nicer" has no endpoint yet (backend/CHANGES_FOR_CHARLIE.md), so it's mock-only.
+export async function makeItNicer(outfit: Outfit): Promise<Outfit> {
+  if (USE_MOCKS) return mock(mocks.nicer(outfit));
+  throw new Error("Make it nicer isn't available yet.");
+}
+
+export const tryOn = (photo: Item, itemIds: string[]) =>
+  USE_MOCKS
+    ? Promise.reject(new Error('Try-on needs the backend. Use the flat lay for now.'))
+    : api<TryOnResponse>('POST', '/tryon', { photo, item_ids: itemIds });
+
+export const createMandate = (req: MandateRequest) =>
+  USE_MOCKS ? mock(mocks.createMandate(req)) : api<Mandate>('POST', '/checkout/mandate', req);
+
+export const checkCart = (req: CartRequest) =>
+  USE_MOCKS ? mock(mocks.checkCart(req)) : api<CartVerdict>('POST', '/checkout/cart', req);
+
+export const confirmCart = (req: CartRequest) =>
+  USE_MOCKS ? mock(mocks.confirm(req)) : api<Receipt>('POST', '/checkout/confirm', req);
+
+let ratedCount = 0;
+export const getRatePair = () =>
+  USE_MOCKS ? mock(mocks.ratePair(ratedCount)) : api<RatePair>('GET', '/rate/next');
+
+export async function sendRate(choice: RateChoice): Promise<void> {
+  ratedCount += 1;
+  if (USE_MOCKS) return mock(undefined);
+  return api<void>('POST', '/rate', choice);
 }

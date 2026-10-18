@@ -1,3 +1,5 @@
+> **Status, Oct 17 evening (after the Stripe / closet / budget-range push):** both requests below are still open. `StyleProfile.formality` is still in `schemas.py` and `types.ts`, and there's still no way to ask `/outfits` for "make it nicer". The app already follows everything in JANGES_FOR_JASMINE.md. Until "make it nicer" exists, the app fakes it from `src/api/mocks.ts`.
+
 # Change request: remove "formality" from the style profile
 
 From Jasmine (app and design). Written 2026-10-17.
@@ -73,7 +75,7 @@ From Jasmine (app and design). Written 2026-10-17. This came out of the Paper de
 
 ## "Make it nicer" has no way to ask for it (needed for the demo)
 
-PLAN.md section 8 and the demo script: you say "make it nicer", the agent proposes a $90 upgrade that pushes the cart past the $200 limit, and checkout refuses it. Right now nothing in `OutfitsRequest` asks for an upgrade, and the guard drops any outfit over `budget`, so the app can't get an over-limit cart from `/outfits`.
+PLAN.md section 8 and the demo script: you say "make it nicer", the agent proposes a $90 upgrade that pushes the cart past the $200 limit, and checkout refuses it. Right now nothing in `OutfitsRequest` asks for an upgrade, and the guard drops any outfit over `budget_max`, so the app can't get an over-limit cart from `/outfits`.
 
 Options, pick whichever is easiest for you:
 

@@ -34,3 +34,16 @@ export async function makeThumb(asset: MediaLibrary.Asset): Promise<Thumb | null
     return null;
   }
 }
+
+// Shrinks a picked photo for try-on. Bigger than a thumbnail so the result looks good.
+export async function shrinkForTryOn(uri: string): Promise<string | null> {
+  try {
+    const context = ImageManipulator.manipulate(uri);
+    context.resize({ width: 768 });
+    const image = await context.renderAsync();
+    const result = await image.saveAsync({ format: SaveFormat.JPEG, compress: 0.7, base64: true });
+    return result.base64 ?? null;
+  } catch {
+    return null;
+  }
+}

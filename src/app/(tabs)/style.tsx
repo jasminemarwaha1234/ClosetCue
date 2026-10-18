@@ -13,6 +13,7 @@
 import { useState } from 'react';
 import { router } from 'expo-router';
 import {
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -20,6 +21,10 @@ import {
   TextInput,
   View,
 } from 'react-native';
+
+import { putProfile } from '@/api/client';
+import { capitalize, useSession } from '@/lib/session';
+import { swatches } from '@/theme';
 
 // Paper tokens ("As If / Your style"). Same names as my earlier theme file, so once your
 // src/theme/index.ts has them, delete this block and use:
@@ -81,6 +86,20 @@ const PLACEHOLDERS = [colors.placeholderA, colors.placeholderB, colors.placehold
 
 export default function StyleScreen() {
   const profile = mockProfile;
+  const session = useSession();
+  const closet = session.profile?.closet ?? [];
+
+  // Removing a wrongly tagged garment saves the profile without it.
+  async function removeFromCloset(id: string) {
+    if (!session.profile) return;
+    const updated = { ...session.profile, closet: session.profile.closet.filter((c) => c.id !== id) };
+    try {
+      session.setProfile(await putProfile(updated));
+      if (session.anchor?.source === 'closet' && session.anchor.id === id) session.setAnchor(null);
+    } catch (e) {
+      Alert.alert("Couldn't remove it", e instanceof Error ? e.message : String(e));
+    }
+  }
   const [summary, setSummary] = useState(profile.summary);
   const [editingSummary, setEditingSummary] = useState(false);
   const [leaveOut, setLeaveOut] = useState(profile.leaveOut);
@@ -176,6 +195,39 @@ export default function StyleScreen() {
           )}
         </View>
       </View>
+
+      {closet.length ? (
+        <View style={styles.section}>
+          <View style={styles.lookHeader}>
+            <Text style={styles.sectionTitle}>Your closet</Text>
+            <Text style={styles.caption}>Found in your photos</Text>
+          </View>
+          <View>
+            {closet.map((c) => (
+              <View key={c.id} style={styles.closetRow}>
+                <View
+                  style={[
+                    styles.closetThumb,
+                    { backgroundColor: swatches[c.colors[0]?.toLowerCase()] ?? colors.placeholderB },
+                  ]}
+                />
+                <View style={styles.closetText}>
+                  <Text style={styles.closetName}>{capitalize(c.description)}</Text>
+                  <Text style={styles.caption}>{capitalize(c.slot)}</Text>
+                </View>
+                <Pressable
+                  onPress={() => removeFromCloset(c.id)}
+                  hitSlop={8}
+                  style={styles.closetRemove}
+                  accessibilityLabel={`Remove ${c.description}`}
+                >
+                  <Text style={styles.leaveX}>×</Text>
+                </Pressable>
+              </View>
+            ))}
+          </View>
+        </View>
+      ) : null}
 
       <View style={[styles.section, { gap: 20 }]}>
         <Text style={styles.sectionTitle}>Your looks</Text>
@@ -278,6 +330,19 @@ const styles = StyleSheet.create({
   },
   addText: { ...type.chip, color: colors.accentDark },
   addInput: { ...type.chip, color: colors.text, minWidth: 90, padding: 0 },
+
+  closetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  closetThumb: { width: 40, height: 48, borderRadius: 10, borderWidth: 1, borderColor: colors.border },
+  closetText: { flex: 1, gap: 2 },
+  closetName: { fontSize: 15, lineHeight: 20, fontWeight: '600', color: colors.text },
+  closetRemove: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
 
   lookBlock: { gap: 10 },
   lookHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
