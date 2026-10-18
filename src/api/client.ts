@@ -38,8 +38,12 @@ function timeout(ms: number) {
   return controller.signal;
 }
 const unreachable = (e: unknown) =>
-  e instanceof Error && (e.name === 'AbortError' || /network request failed/i.test(e.message))
-    ? new Error(`Couldn't reach the backend at ${API_BASE_URL}. Is it running, on the same Wi-Fi?`)
+  e instanceof Error && (e.name === 'AbortError' || /network request failed|could not connect|fetch failed|timed out/i.test(e.message))
+    ? new Error(
+        API_BASE_URL.includes('localhost')
+          ? "Couldn't reach the backend. With expo start --tunnel, put the backend's own tunnel link in .env as EXPO_PUBLIC_API_BASE_URL."
+          : `Couldn't reach the backend at ${API_BASE_URL}. Is it running, and on the same network as this phone?`,
+      )
     : e;
 
 // Asks the backend for the most common faces in these photos.
