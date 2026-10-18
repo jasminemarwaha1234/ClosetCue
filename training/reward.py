@@ -54,7 +54,7 @@ OCCASION_FORMALITY = {
     "party": (2, 4),
     "casual": (1, 3),
     "athletic": (1, 2),
-    "comfy": (1, 1),
+    "comfy": (1, 2),
 }
 LOUD_PATTERNS = frozenset({"check", "large-print", "graphic"})
 
