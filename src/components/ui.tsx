@@ -11,6 +11,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import { useAssetUri } from '@/components/AssetPhoto';
 import { colors, radii, swatches, type } from '@/theme';
 
 // Building blocks shared by the screens designed in Paper ("ClosetCue / …" frames).
@@ -163,24 +164,29 @@ export function Segmented<T extends string>({
   );
 }
 
-// An item's photo, or a block of its first color when there's no image.
+// An item's photo (a catalog image url, or for a closet item the phone photo it came
+// from), or a block of its first color when there's neither.
 // Shopify's CDN resizes on request, so tiles don't download full-size product photos.
 const thumbnail = (url: string) =>
   url.includes('cdn.shopify.com') ? `${url}${url.includes('?') ? '&' : '?'}width=400` : url;
 
 export function PieceImage({
   image,
+  photoId,
   colorName,
   style,
   dashed,
 }: {
   image?: string;
+  photoId?: string;
   colorName?: string;
   style?: StyleProp<ViewStyle>;
   dashed?: boolean;
 }) {
   const bg = (colorName && swatches[colorName.toLowerCase()]) || colors.surfaceMuted;
   const light = bg === '#ffffff';
+  const photo = useAssetUri(photoId);
+  const uri = image ? thumbnail(image) : photo;
   return (
     <View
       style={[
@@ -191,7 +197,7 @@ export function PieceImage({
         style,
       ]}
     >
-      {image ? <Image source={{ uri: thumbnail(image) }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+      {uri ? <Image source={{ uri }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
     </View>
   );
 }

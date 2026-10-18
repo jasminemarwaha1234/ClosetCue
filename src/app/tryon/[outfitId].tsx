@@ -105,7 +105,7 @@ export default function TryOnScreen() {
             ))}
             {outfit.owned.map((c) => (
               <View key={c.id} style={styles.flatItem}>
-                <PieceImage colorName={c.colors[0]} dashed style={styles.flatImage} />
+                <PieceImage photoId={c.photo_id} colorName={c.colors[0]} dashed style={styles.flatImage} />
                 <Text style={styles.flatName} numberOfLines={1}>
                   {capitalize(c.description)} (yours)
                 </Text>
