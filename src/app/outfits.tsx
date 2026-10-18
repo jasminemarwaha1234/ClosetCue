@@ -193,10 +193,13 @@ export default function OutfitsScreen() {
           ) : (
             <Pressable key={o.id} style={styles.compact} onPress={() => setOpen(index)}>
               <View style={styles.swatches}>
-                {[...o.items.map((i) => i.colors[0]), ...o.owned.map((c) => c.colors[0])]
+                {[
+                  ...o.items.map((i) => ({ image: i.image, colorName: i.colors[0] })),
+                  ...o.owned.map((c) => ({ photoId: c.photo_id, colorName: c.colors[0] })),
+                ]
                   .slice(0, 4)
-                  .map((c, n) => (
-                    <PieceImage key={n} colorName={c} style={styles.swatch} />
+                  .map((p, n) => (
+                    <PieceImage key={n} {...p} style={styles.swatch} />
                   ))}
               </View>
               <View style={styles.compactText}>
