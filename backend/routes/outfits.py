@@ -51,8 +51,10 @@ async def outfits(req: OutfitsRequest, user_id: str = Depends(supabase.current_u
 
     budget_min, budget_max, wanted = req.budget_min, req.budget_max, 3
     if req.upgrade_of:
+        # Pricier than both the current outfit and budget_max, so checkout's mandate refuses it (PLAN.md section 8).
         current = round(sum(_lookup(i, items, closet)["price"] for i in req.upgrade_of), 2)
-        budget_min, budget_max, wanted = round(current + 0.01, 2), current + UPGRADE_RANGE, 1
+        floor = max(current, req.budget_max)
+        budget_min, budget_max, wanted = round(floor + 0.01, 2), floor + UPGRADE_RANGE, 1
 
     messages, columns = build_request(
         profile, list(items.values()), occasion=req.occasion, budget_min=budget_min, budget_max=budget_max,
@@ -112,8 +114,8 @@ def _guard(text: str, ctx: dict, upgrade: bool, swap_pool: list[dict] = (), styl
     reason is templated from the final items unless keep_reasons and nothing was swapped."""
     fenced = re.fullmatch(r"\s*```(?:json)?\s*(.*?)\s*```\s*", text, re.DOTALL)
     parsed = reward.parse_output(fenced.group(1) if fenced else text.strip())
-    if upgrade:  # an upgrade only has to cost more than the outfit it replaces, which the prompt asks for
-        ctx = {**ctx, "budget_min": 0, "budget_max": float("inf")}
+    if upgrade:  # an upgrade only has to cost more than the outfit it replaces (budget_min)
+        ctx = {**ctx, "budget_max": float("inf")}
     kept, seen = [], set()
     for o in parsed or []:
         key = frozenset(o["items"])

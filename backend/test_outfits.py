@@ -219,14 +219,25 @@ def test_closet_anchor_is_owned_and_free(run):
            "closet_1 | navy oxford shirt | top | $0.00 | navy | formality 2 | streetwear" in calls[0][1]
 
 
-def test_upgrade_moves_the_budget_up_and_returns_one_outfit(run):
+def test_upgrade_moves_the_budget_past_budget_max_and_returns_one_outfit(run):
     nicer = ["top_001", "bottom_003", "shoes_001"]  # $320, over the request's $250
     res, calls = run({"OUR_LLAMA": [answer(nicer, B)]}, {**REQUEST, "upgrade_of": A})
     body = res.json()
     assert [ids(o) for o in body["outfits"]] == [nicer]
     assert body["outfits"][0]["total"] == 320.0
-    assert "Budget for the catalog items: $170.01 to $320.00" in calls[0][1]
+    assert "Budget for the catalog items: $250.01 to $400.00" in calls[0][1]
     assert "Build exactly 1 outfit." in calls[0][1]
+
+
+def test_upgrade_drops_outfits_within_budget_max(run):
+    in_budget = B  # $210, pricier than A but under the request's $250
+    nicer = ["top_001", "bottom_003", "shoes_001"]  # $320
+    res, calls = run({"OUR_LLAMA": [answer(A), answer(in_budget)], "gemini": [answer(nicer)]},
+                     {**REQUEST, "upgrade_of": A})
+    body = res.json()
+    assert body["generated_by"] == "gemini"
+    assert [ids(o) for o in body["outfits"]] == [nicer]
+    assert [m for m, _ in calls] == ["OUR_LLAMA", "OUR_LLAMA", "BASE_LLAMA", "gemini"]
 
 
 def test_404_without_a_profile(run, monkeypatch):
