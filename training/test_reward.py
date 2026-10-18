@@ -63,7 +63,7 @@ def score(o, **over):
 
 
 def breakdown(ids, key, **over):
-    return score(outfit(ids), **over)[2][key]
+    return score(outfit(ids), **{"budget_max": 1000.0, **over})[2][key]
 
 
 def text(*outfits, **extra):
@@ -105,11 +105,11 @@ def test_catalog_anchor_missing_costs_one():
     assert ok and b["anchor"] == 0.0 and s == 6.5
 
 
-def test_budget_edges():
-    assert score(GOOD, budget_min=190.0)[2]["budget"] == 1.0
-    assert score(GOOD, budget_max=190.0)[2]["budget"] == 1.0
-    assert score(GOOD, budget_max=189.99)[2]["budget"] == 0.0
-    assert score(GOOD, budget_min=190.01)[2]["budget"] == 0.0
+def test_budget_is_a_gate_with_edges_included():
+    assert score(GOOD, budget_min=190.0)[:2] == (7.5, True)
+    assert score(GOOD, budget_max=190.0)[:2] == (7.5, True)
+    assert score(GOOD, budget_max=189.99) == (0.0, False, {"outside_budget": 190.0})
+    assert score(GOOD, budget_min=190.01) == (0.0, False, {"outside_budget": 190.0})
 
 
 def test_a_stated_total_is_ignored():
@@ -125,7 +125,7 @@ def test_dress_without_bottom_is_complete():
 
 
 def test_incomplete_outfits():
-    assert score(outfit(["dress_001", "bottom_001", "shoes_001"]))[2]["complete"] == 0.0
+    assert score(outfit(["dress_001", "bottom_001", "shoes_001"]), budget_max=300.0)[2]["complete"] == 0.0
     assert score(outfit(["top_001", "bottom_001"]))[2]["complete"] == 0.0
     assert score(outfit(["top_001", "closet_3", "bottom_001", "shoes_001"]))[2]["complete"] == 0.0
     assert score(outfit(["top_001", "top_001", "bottom_001", "shoes_001"]))[2]["complete"] == 0.0
@@ -251,7 +251,7 @@ def test_ranking_and_spread():
         "invented": text(outfit(["top_001", "bottom_999", "shoes_001"])),
         "malformed": text(GOOD)[:-2],
     }
-    scores = {k: R.score_completion(v, ctx()) for k, v in cases.items()}
+    scores = {k: R.score_completion(v, ctx(budget_max=400.0)) for k, v in cases.items()}
     for k, v in scores.items():
         print(f"{v:6.3f}  {k}")
     order = list(scores.values())

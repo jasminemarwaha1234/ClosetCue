@@ -64,8 +64,8 @@ def answer(row: dict, rng: random.Random) -> tuple[str | None, str]:
     if len(outfits) < reward.OUTFITS_WANTED:
         return None, "fewer than 3 outfits"
     for o in outfits:
-        breakdown = reward.score_outfit(o, ctx)[2]
-        if min(breakdown["anchor"], breakdown["complete"], breakdown["budget"]) < 1:
+        _, passed, breakdown = reward.score_outfit(o, ctx)
+        if not passed or min(breakdown["anchor"], breakdown["complete"]) < 1:
             return None, "a top-3 outfit breaks a stated rule"
     best = reward.score_completion(json.dumps({"outfits": outfits}), ctx)
     templates = rng.sample(PAIR_TEMPLATES, len(outfits))

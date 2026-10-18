@@ -103,6 +103,8 @@ def _guard(text: str, ctx: dict, upgrade: bool) -> list[tuple[list[str], str]]:
     """(item ids, reason) for each outfit in the answer that passes the reward's checks."""
     fenced = re.fullmatch(r"\s*```(?:json)?\s*(.*?)\s*```\s*", text, re.DOTALL)
     parsed = reward.parse_output(fenced.group(1) if fenced else text.strip())
+    if upgrade:  # an upgrade only has to cost more than the outfit it replaces, which the prompt asks for
+        ctx = {**ctx, "budget_min": 0, "budget_max": float("inf")}
     kept, seen = [], set()
     for o in parsed or []:
         key = frozenset(o["items"])
@@ -110,7 +112,7 @@ def _guard(text: str, ctx: dict, upgrade: bool) -> list[tuple[list[str], str]]:
             continue
         seen.add(key)
         _, passed, breakdown = reward.score_outfit(o, ctx)
-        if passed and (upgrade or (breakdown["anchor"] and breakdown["budget"])):
+        if passed and (upgrade or breakdown["anchor"]):
             kept.append((o["items"], o["reason"]))
     return kept
 

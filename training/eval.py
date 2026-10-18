@@ -37,10 +37,13 @@ MAX_REWARD = 7.5
 def score_answer(text: str, row: dict) -> dict:
     """The answer scored the way training scores it, plus what the live guard would keep."""
     ctx = reward.prepare_context(row)
+    # The checks other than the budget gate, so an over-budget outfit still counts toward complete %.
+    any_budget = {**ctx, "budget_min": 0, "budget_max": float("inf")}
     outfits = reward.parse_output(text)
     scored = []
     for o in outfits or []:
-        score, passed, breakdown = reward.score_outfit(o, ctx)
+        score, passed, _ = reward.score_outfit(o, ctx)
+        breakdown = reward.score_outfit(o, any_budget)[2]
         real = round(sum(ctx["by_id"][i]["price"] for i in o["items"] if i in ctx["by_id"]), 2)
         in_budget = passed and float(ctx["budget_min"]) - 0.005 <= real <= float(ctx["budget_max"]) + 0.005
         scored.append({**o, "score": score, "passed": passed, "breakdown": breakdown,
@@ -119,8 +122,9 @@ def summarize(records: list[dict], model: str, stopped: str | None) -> dict:
         "stopped": stopped,
         "valid_json_pct": pct(sum(r["valid_json"] for r in answered), n),
         "fenced": sum(r["fenced"] for r in answered),
-        "invented_pct": pct(sum(any(not o["passed"] for o in r["outfits"]) for r in answered), n),
-        "valid_no_invented_pct": pct(sum(r["valid_json"] and all(o["passed"] for o in r["outfits"]) for r in answered), n),
+        "invented_pct": pct(sum(any("invented" in o["breakdown"] for o in r["outfits"]) for r in answered), n),
+        "valid_no_invented_pct": pct(sum(r["valid_json"] and not any("invented" in o["breakdown"] for o in r["outfits"])
+                                         for r in answered), n),
         "outfits": len(outfits),
         "complete_pct": pct(sum(o["breakdown"].get("complete") == 1.0 for o in outfits), len(outfits)),
         "within_budget_pct": pct(sum(o["in_budget"] for o in outfits), len(outfits)),

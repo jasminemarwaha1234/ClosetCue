@@ -132,7 +132,8 @@ def prepare_context(row):
 
 
 def score_outfit(outfit, ctx):
-    """(score, gates_passed, breakdown) for one parsed outfit. Max 7.5; 0 when a gate fails."""
+    """(score, gates_passed, breakdown) for one parsed outfit. Max 7.5; 0 when a gate fails: an
+    invented item, or a real total (from the candidates' prices) outside the budget."""
     if "by_id" not in ctx:
         ctx = prepare_context(ctx)
     by_id = ctx["by_id"]
@@ -141,12 +142,14 @@ def score_outfit(outfit, ctx):
         return 0.0, False, {"invented": invented}
 
     items = [by_id[i] for i in outfit["items"]]
+    if not _budget(items, ctx["budget_min"], ctx["budget_max"]):
+        return 0.0, False, {"outside_budget": round(sum(float(it["price"]) for it in items), 2)}
     anchor = ctx["anchor"]
     others = [it for it in items if not anchor or it["id"] != anchor["id"]]
     breakdown = {
         "anchor": 1.0 if not anchor or anchor["id"] in outfit["items"] else 0.0,
         "complete": _complete(outfit["items"], items),
-        "budget": _budget(items, ctx["budget_min"], ctx["budget_max"]),
+        "budget": 1.0,  # the budget is a gate above; the point keeps the max at 7.5
         "color": _color(items),
         "pattern": _pattern(items),
         "season": _season(items),
