@@ -90,10 +90,23 @@ export default function StyleScreen() {
     }
   }
 
-  if (!profile) {
+  if (!profile && session.profileLoading) {
     return (
       <View style={[styles.screen, styles.center]}>
         <ActivityIndicator color={colors.accent} />
+      </View>
+    );
+  }
+
+  // No profile yet (a new account that skipped the photo step): say so instead of spinning.
+  if (!profile) {
+    return (
+      <View style={[styles.screen, styles.center, styles.empty]}>
+        <Text style={styles.sectionTitle}>No style profile yet</Text>
+        <Text style={[styles.subtitle, styles.emptyText]}>Share a few photos of your outfits and we'll read your style.</Text>
+        <Pressable onPress={() => router.push('/onboarding/photos')} style={[styles.cta, styles.emptyButton]}>
+          <Text style={styles.ctaText}>Share your photos</Text>
+        </Pressable>
       </View>
     );
   }
@@ -300,6 +313,9 @@ export default function StyleScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   center: { alignItems: 'center', justifyContent: 'center' },
+  empty: { padding: spacing.lg, gap: spacing.sm },
+  emptyText: { textAlign: 'center' },
+  emptyButton: { alignSelf: 'stretch', marginTop: spacing.sm },
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: 64,

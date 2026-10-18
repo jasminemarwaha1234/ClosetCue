@@ -1,7 +1,7 @@
 import { getProfile, usingMocks } from '@/api/client';
 
 // Whether this account has finished onboarding, so the app can skip the photo scan next time.
-// Remembered on the phone per account, and with the real backend a saved profile counts too.
+// On mocks it's remembered on the phone per account; with the real backend it's whether a profile is saved.
 
 const key = (userId: string | undefined) => `asif.onboarded.${userId ?? 'local'}`;
 
@@ -12,15 +12,19 @@ export function markOnboarded(userId: string | undefined) {
 }
 
 export async function hasProfile(userId: string | undefined): Promise<boolean> {
+  // With the real backend, only a saved profile counts: the note on the phone can be left over
+  // from testing on mocks. GET /profile answers 404 when there's none yet, and api() throws.
+  if (!usingMocks) {
+    return getProfile().then(
+      () => true,
+      () => false,
+    );
+  }
   try {
-    if (localStorage.getItem(key(userId))) return true;
-  } catch {}
-  if (usingMocks) return false;
-  // GET /profile answers 404 when there's none yet, and api() throws.
-  return getProfile().then(
-    () => true,
-    () => false,
-  );
+    return Boolean(localStorage.getItem(key(userId)));
+  } catch {
+    return false;
+  }
 }
 
 export function forgetOnboarded(userId: string | undefined) {

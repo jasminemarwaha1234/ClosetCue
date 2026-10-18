@@ -24,6 +24,8 @@ export const BUDGET_STOPS = [
 
 type Session = {
   profile: StyleProfile | null;
+  // True while GET /profile is in flight, so screens can tell "loading" from "no profile yet".
+  profileLoading: boolean;
   setProfile: (p: StyleProfile) => void;
   catalog: CatalogItem[];
   // Catalog items the user can see: their departments plus unisex.
@@ -86,13 +88,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [chosen, setChosen] = useState<Outfit | null>(null);
   const [mandate, setMandate] = useState<Mandate | null>(null);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [payMethodId, setPayMethodId] = useState<PayMethodId>('apple_pay');
 
   // Load the profile and catalog. Again after signing in (an account or a guest), since the
   // profile belongs to the account. Separately, so the catalog loads before onboarding makes the profile.
   useEffect(() => {
     const load = () => {
-      getProfile().then(setProfile).catch(() => {});
+      setProfileLoading(true);
+      getProfile()
+        .then(setProfile)
+        .catch(() => {})
+        .finally(() => setProfileLoading(false));
       getCatalog().then(setCatalog).catch(() => {});
     };
     load();
@@ -123,6 +130,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const value: Session = {
     profile,
+    profileLoading,
     setProfile,
     catalog,
     shop,
