@@ -336,7 +336,7 @@
 
 
 import { StatusBar } from 'expo-status-bar';
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -666,9 +666,17 @@ export default function PhotosScreen() {
         )}
 
         {phase === 'done' && (
-          <Link href="/style" style={[styles.link, styles.linkCenter]}>
+          // Onboarding is done, so clear it from the stack: swiping back can't return to it.
+          <Text
+            accessibilityRole="link"
+            onPress={() => {
+              router.dismissAll();
+              router.replace('/style');
+            }}
+            style={[styles.link, styles.linkCenter]}
+          >
             Next: your style
-          </Link>
+          </Text>
         )}
       </ScrollView>
       <StatusBar style="dark" />

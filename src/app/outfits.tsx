@@ -15,14 +15,18 @@ const FALLBACK_LABEL = {
 // For each outfit, which alternative each item is swapped to (index into [original, ...swaps]).
 type SwapState = Record<string, Record<string, number>>;
 
-// The outfit with the user's swaps applied and the total re-added.
-function applySwaps(o: Outfit, picks: Record<string, number> = {}): Outfit {
-  const items = o.items.map((i) => {
-    const n = picks[i.id] ?? 0;
-    return n === 0 ? i : (o.swaps[i.id]?.[n - 1] ?? i);
-  });
+// The outfit with the user's swaps applied, the pieces they removed left out, and the total re-added.
+function applyEdits(o: Outfit, picks: Record<string, number> = {}, removed: string[] = []): Outfit {
+  const items = o.items
+    .filter((i) => !removed.includes(i.id))
+    .map((i) => {
+      const n = picks[i.id] ?? 0;
+      return n === 0 ? i : (o.swaps[i.id]?.[n - 1] ?? i);
+    });
   return { ...o, items, total: items.reduce((sum, i) => sum + i.price, 0) };
 }
+
+const swapped = (o: Outfit, picks: Record<string, number> = {}) => applyEdits(o, picks).items;
 
 // 5. Outfits. Designed in Paper ("As If / Outfits").
 export default function OutfitsScreen() {
@@ -30,9 +34,11 @@ export default function OutfitsScreen() {
   const anchorItem = useAnchorItem();
   const [open, setOpen] = useState(0);
   const [swaps, setSwaps] = useState<SwapState>({});
+  // For each outfit, the original ids of the pieces the user doesn't want to buy.
+  const [removed, setRemoved] = useState<Record<string, string[]>>({});
 
   const anchorId = s.anchor?.id;
-  const shown = s.outfits.map((o) => applySwaps(o, swaps[o.id]));
+  const shown = s.outfits.map((o) => applyEdits(o, swaps[o.id], removed[o.id]));
   const anchorName =
     anchorItem?.catalog?.name.split(' ').pop()?.toLowerCase() ??
     anchorItem?.closet?.description.split(' ').pop();
@@ -42,6 +48,14 @@ export default function OutfitsScreen() {
     const count = (o.swaps[originalId]?.length ?? 0) + 1;
     const now = swaps[o.id]?.[originalId] ?? 0;
     setSwaps({ ...swaps, [o.id]: { ...swaps[o.id], [originalId]: (now + 1) % count } });
+  }
+
+  // Leave a piece out of the cart, or put it back. At least one piece stays.
+  function toggleRemoved(o: Outfit, originalId: string) {
+    const now = removed[o.id] ?? [];
+    const next = now.includes(originalId) ? now.filter((id) => id !== originalId) : [...now, originalId];
+    if (next.length >= o.items.length) return;
+    setRemoved({ ...removed, [o.id]: next });
   }
 
   function go(o: Outfit, to: 'tryon' | 'checkout') {
@@ -74,13 +88,15 @@ export default function OutfitsScreen() {
               </View>
 
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pieces}>
-                {o.items.map((i, n) => {
+                {swapped(s.outfits[index], swaps[o.id]).map((i, n) => {
                   const original = s.outfits[index].items[n];
                   const isAnchor = s.anchor?.source === 'catalog' && original.id === anchorId;
-                  const canSwap = !isAnchor && (s.outfits[index].swaps[original.id]?.length ?? 0) > 0;
+                  const isRemoved = removed[o.id]?.includes(original.id) ?? false;
+                  const canSwap = !isAnchor && !isRemoved && (s.outfits[index].swaps[original.id]?.length ?? 0) > 0;
+                  const canRemove = isRemoved || o.items.length > 1;
                   return (
                     <View key={original.id} style={styles.piece}>
-                      <View>
+                      <View style={isRemoved && styles.removed}>
                         <PieceImage image={i.image} colorName={i.colors[0]} style={styles.pieceImage} />
                         {isAnchor ? (
                           <View style={styles.badge}>
@@ -90,19 +106,35 @@ export default function OutfitsScreen() {
                         {canSwap ? (
                           <Pressable
                             onPress={() => swap(s.outfits[index], original.id)}
-                            style={styles.swap}
+                            style={[styles.corner, styles.swap]}
                             hitSlop={6}
                             accessibilityLabel={`Swap ${i.name}`}
                           >
-                            <Text style={styles.swapIcon}>⇄</Text>
+                            <Text style={styles.cornerIcon}>⇄</Text>
                           </Pressable>
                         ) : null}
                       </View>
-                      <Text style={styles.pieceName} numberOfLines={2}>
+                      {canRemove ? (
+                        <Pressable
+                          onPress={() => toggleRemoved(s.outfits[index], original.id)}
+                          style={[styles.corner, styles.remove]}
+                          hitSlop={6}
+                          accessibilityLabel={isRemoved ? `Add ${i.name} back` : `Don't buy ${i.name}`}
+                        >
+                          <Text style={styles.cornerIcon}>{isRemoved ? '+' : '×'}</Text>
+                        </Pressable>
+                      ) : null}
+                      <Text style={[styles.pieceName, isRemoved && styles.removedText]} numberOfLines={2}>
                         {i.name}
                       </Text>
-                      <Text style={styles.piecePrice}>{money(i.price)}</Text>
-                      <RetailerLink url={i.url} label="View" />
+                      {isRemoved ? (
+                        <Text style={styles.piecePrice}>Not buying</Text>
+                      ) : (
+                        <>
+                          <Text style={styles.piecePrice}>{money(i.price)}</Text>
+                          <RetailerLink url={i.url} label="View" />
+                        </>
+                      )}
                     </View>
                   );
                 })}
@@ -148,7 +180,7 @@ export default function OutfitsScreen() {
           ),
         )}
 
-        <Text style={styles.hint}>Tap the arrows on a piece to swap it.</Text>
+        <Text style={styles.hint}>Tap the arrows to swap a piece, or × to leave it out.</Text>
       </ScrollView>
     </>
   );
@@ -183,10 +215,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   badgeText: { fontSize: 11, lineHeight: 14, fontWeight: '700', letterSpacing: 0.44, color: colors.onPrimarySoft },
-  swap: {
+  corner: {
     position: 'absolute',
     right: 6,
-    top: 6,
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -194,7 +225,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  swapIcon: { fontSize: 13, fontWeight: '700', color: colors.onPrimarySoft },
+  remove: { top: 6 },
+  swap: { bottom: 6 },
+  cornerIcon: { fontSize: 13, fontWeight: '700', color: colors.onPrimarySoft },
+  removed: { opacity: 0.35 },
+  removedText: { color: colors.textMuted, textDecorationLine: 'line-through' },
   pieceName: { fontSize: 13, lineHeight: 16, fontWeight: '600', color: colors.text },
   piecePrice: { fontSize: 13, lineHeight: 16, color: colors.textMuted },
   owned: { fontSize: 13, lineHeight: 16, fontWeight: '600', color: colors.onPrimarySoft },

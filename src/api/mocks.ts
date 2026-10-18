@@ -2,6 +2,7 @@ import type {
   CartRequest,
   CartVerdict,
   CatalogItem,
+  ClosetItem,
   Mandate,
   MandateRequest,
   Outfit,
@@ -9,6 +10,7 @@ import type {
   OutfitsResponse,
   RatePair,
   Receipt,
+  Slot,
   StyleProfile,
 } from './types';
 
@@ -57,6 +59,12 @@ export const catalog: CatalogItem[] = [
   item('shoes_014', 'Lilac low-tops', 'shoes', 45, 'lilac'),
   item('shoes_021', 'Brown leather loafers', 'shoes', 88, 'brown', { formality: 4 }),
   item('accessory_005', 'Canvas tote', 'accessory', 22, 'tan'),
+  // Cheap pieces, so a small budget like $10–$40 still gets outfits.
+  item('top_050', 'Basic white tee', 'top', 12, 'white'),
+  item('top_053', 'Ribbed tank', 'top', 15, 'black'),
+  item('bottom_021', 'Cotton pull-on shorts', 'bottom', 18, 'navy'),
+  item('shoes_030', 'Canvas slip-ons', 'shoes', 24, 'black'),
+  item('accessory_009', 'Ribbed beanie', 'accessory', 14, 'olive'),
 ];
 
 const byId = (id: string) => catalog.find((c) => c.id === id)!;
@@ -115,45 +123,91 @@ function outfit(id: string, itemIds: string[], reason: string, ownedIds: string[
   };
 }
 
+// The slots each outfit fills. A dress replaces the top and bottom.
+const LOOKS: Slot[][] = [
+  ['top', 'bottom', 'outerwear', 'shoes'],
+  ['top', 'bottom', 'shoes'],
+  ['top', 'bottom', 'shoes', 'accessory'],
+];
+const DRESS_LOOKS: Slot[][] = [
+  ['dress', 'outerwear', 'shoes'],
+  ['dress', 'shoes'],
+  ['dress', 'shoes', 'accessory'],
+];
+
+// The catalog anchor of the last request, which the cart suggestion never drops.
+let lastAnchorId: string | null = null;
+
+const sum = (items: CatalogItem[]) => items.reduce((total, i) => total + i.price, 0);
+
+// Outfits built around the picked piece, inside the budget range and the max per item,
+// like the real stylist. Each outfit aims near the middle of the range, picking a
+// different item per slot so the three aren't the same.
 export function outfits(req: OutfitsRequest): OutfitsResponse {
-  const anchor = req.anchor?.source === 'catalog' ? req.anchor.id : null;
-  const list = [
-    outfit(
-      'outfit_1',
-      ['top_012', 'bottom_004', 'outerwear_002'],
-      'The navy jacket keeps it sharp, and your own white sneakers echo the cream knit.',
-      ['closet_2'],
-    ),
-    outfit(
-      'outfit_2',
-      ['top_012', 'bottom_009', 'outerwear_007', 'shoes_014'],
-      'Black trousers dress up the crewneck, and the lilac shoes are the one accent.',
-    ),
-    outfit(
-      'outfit_3',
-      ['top_012', 'bottom_015', 'shoes_009', 'accessory_005'],
-      'Light denim and white canvas keep the cream knit easy for a day out.',
-    ),
-  ];
+  const perItem = req.max_item_price ?? Infinity;
+  const pool = catalog.filter((c) => c.price <= perItem);
+  const anchorItem = req.anchor?.source === 'catalog' ? byId(req.anchor.id) : null;
+  const anchorOwned = req.anchor?.source === 'closet' ? profile.closet.find((c) => c.id === req.anchor!.id) : null;
+  const anchorSlot = anchorItem?.slot ?? anchorOwned?.slot;
+  const target = (req.budget_min + req.budget_max) / 2;
+  lastAnchorId = anchorItem?.id ?? null;
+
+  const looks = anchorSlot === 'dress' ? DRESS_LOOKS : LOOKS;
+  const stamp = Date.now();
+  const seen = new Set<string>();
+  const list: Outfit[] = [];
+
+  looks.forEach((slots, n) => {
+    const items: CatalogItem[] = anchorItem ? [anchorItem] : [];
+    const owned = anchorOwned ? [anchorOwned] : [];
+    // The first outfit wears the user's own sneakers, like the stylist can with the closet.
+    const mine = n === 0 && !anchorOwned ? profile.closet.find((c) => c.slot === 'shoes') : undefined;
+    if (mine) owned.push(mine);
+    const open = slots.filter((slot) => slot !== anchorSlot && slot !== mine?.slot);
+    open.forEach((slot, k) => {
+      const left = req.budget_max - sum(items);
+      const share = (target - sum(items)) / (open.length - k);
+      const options = pool
+        .filter((c) => c.slot === slot && c.price <= left)
+        .sort((a, b) => Math.abs(a.price - share) - Math.abs(b.price - share));
+      if (options.length) items.push(options[n % options.length]);
+    });
+    const key = items.map((i) => i.id).sort().join();
+    if (!items.length || seen.has(key)) return;
+    seen.add(key);
+    list.push({ id: `outfit_${stamp}_${n}`, items, owned, total: sum(items), reason: reasonFor(items, owned), swaps: {} });
+  });
+
   for (const o of list) {
-    // Every non-anchor item gets same-slot alternatives, like the real backend.
+    // Every non-anchor item gets same-slot alternatives that keep it under budget, like the real backend.
     for (const i of o.items) {
-      if (i.id === anchor) continue;
-      o.swaps[i.id] = catalog.filter((c) => c.slot === i.slot && c.id !== i.id).slice(0, 3);
+      if (i.id === lastAnchorId) continue;
+      o.swaps[i.id] = pool
+        .filter((c) => c.slot === i.slot && c.id !== i.id && o.total - i.price + c.price <= req.budget_max)
+        .slice(0, 3);
     }
   }
   return { outfits: list, generated_by: 'our-llama' };
 }
 
+function reasonFor(items: CatalogItem[], owned: ClosetItem[]) {
+  const names = [...items.map((i) => i.name.toLowerCase()), ...owned.map((c) => `your ${c.description}`)];
+  if (names.length === 1) return `Just the ${names[0]}, the only piece that fits this budget.`;
+  return `The ${names[0]} with ${names.slice(1, -1).join(', ')}${names.length > 2 ? ' and ' : ''}${names.at(-1)}.`;
+}
+
 // "Make it nicer" for the checkout demo: the same outfit with the leather jacket, which
 // pushes the cart over a $200 limit. Not in the API yet (backend/CHANGES_FOR_CHARLIE.md).
 export function nicer(o: Outfit): Outfit {
-  const items = o.items.map((i) => (i.slot === 'outerwear' ? byId('outerwear_011') : i));
+  const moto = byId('outerwear_011');
+  const items = o.items.some((i) => i.slot === 'outerwear')
+    ? o.items.map((i) => (i.slot === 'outerwear' ? moto : i))
+    : [...o.items, moto];
   return {
     ...o,
     id: `${o.id}_nicer`,
     items,
-    total: items.reduce((sum, i) => sum + i.price, 0),
+    total: sum(items),
     reason: 'A leather moto jacket makes the whole look sharper.',
     swaps: {},
   };
@@ -175,7 +229,32 @@ export function createMandate(req: MandateRequest): Mandate {
 }
 
 function cartTotal(req: CartRequest) {
-  return req.item_ids.reduce((sum, id) => sum + byId(id).price, 0);
+  return sum(req.item_ids.map(byId));
+}
+
+// The closest cart under `budget`: swap the priciest piece for a cheaper one in the same
+// slot, or drop it, until it fits. The picked piece always stays.
+function closestUnder(ids: string[], budget: number): Outfit | null {
+  const cart = ids.map(byId);
+  while (sum(cart) > budget) {
+    const priciest = cart.filter((i) => i.id !== lastAnchorId).sort((a, b) => b.price - a.price)[0];
+    if (!priciest) return null;
+    const over = sum(cart) - budget;
+    const cheaper = catalog
+      .filter((c) => c.slot === priciest.slot && c.price < priciest.price && !cart.includes(c))
+      .sort((a, b) => b.price - a.price);
+    const replacement = cheaper.find((c) => priciest.price - c.price >= over) ?? cheaper.at(-1);
+    cart.splice(cart.indexOf(priciest), 1, ...(replacement ? [replacement] : []));
+  }
+  if (!cart.length) return null;
+  return {
+    id: `outfit_fit_${Date.now()}`,
+    items: cart,
+    owned: [],
+    total: sum(cart),
+    reason: 'The same look with cheaper pieces where it counts.',
+    swaps: {},
+  };
 }
 
 export function checkCart(req: CartRequest): CartVerdict {
@@ -189,12 +268,7 @@ export function checkCart(req: CartRequest): CartVerdict {
     remaining,
     reason: 'over_limit',
     message: `This cart is $${total - remaining} over your $${limit} limit.`,
-    suggestion: outfit(
-      'outfit_fit',
-      ['top_012', 'bottom_004', 'outerwear_002'],
-      'The chore jacket keeps the same shape for less.',
-      ['closet_2'],
-    ),
+    suggestion: closestUnder(req.item_ids, remaining),
   };
 }
 

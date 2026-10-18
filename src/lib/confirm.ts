@@ -1,20 +1,34 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Alert } from 'react-native';
 
-// Asks the person to approve a payment with Face ID, Touch ID or the device passcode.
-// Expo Go has no Face ID, so it falls back to the passcode. On a phone or simulator with
-// nothing enrolled, it asks with a plain dialog instead, so the demo still works.
+const REFUSED: LocalAuthentication.LocalAuthenticationError[] = [
+  'user_cancel',
+  'system_cancel',
+  'app_cancel',
+  'authentication_failed',
+  'lockout',
+];
+
+// Asks the person to approve a payment. No card is entered: this only checks it's really them.
+// Face ID or Touch ID when it's available (a development build). Expo Go has no Face ID, and
+// we don't want the phone's passcode screen there, so it asks with an in-app dialog instead.
 export async function confirmPayment(message: string): Promise<boolean> {
   const [hasHardware, enrolled] = await Promise.all([
     LocalAuthentication.hasHardwareAsync(),
     LocalAuthentication.isEnrolledAsync(),
   ]);
   if (hasHardware && enrolled) {
-    const result = await LocalAuthentication.authenticateAsync({ promptMessage: message });
-    return result.success;
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: message,
+      disableDeviceFallback: true,
+      fallbackLabel: '',
+    });
+    if (result.success) return true;
+    // Cancelled, or the face didn't match: don't pay. Anything else means Face ID can't run here.
+    if (REFUSED.includes(result.error)) return false;
   }
   return new Promise((resolve) =>
-    Alert.alert(message, 'No Face ID or passcode is set up on this device.', [
+    Alert.alert(message, 'Test payment on the agent card. No real money moves.', [
       { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
       { text: 'Pay', onPress: () => resolve(true) },
     ]),

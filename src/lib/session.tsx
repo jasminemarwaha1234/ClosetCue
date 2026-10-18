@@ -15,7 +15,10 @@ import type {
 
 // What the user is building, shared by Build, Pick item, Outfits, Try-on and Checkout.
 
-export const BUDGET_RANGE = { min: 25, max: 500, step: 5 };
+// Where the budget slider's handles can stop: $5 steps at the low end, bigger jumps higher up.
+export const BUDGET_STOPS = [
+  10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250, 300, 400, 500,
+];
 
 type Session = {
   profile: StyleProfile | null;
