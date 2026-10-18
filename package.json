@@ -35,7 +35,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "phone": "EXPO_PUBLIC_API_BASE_URL=http://$(ipconfig getifaddr en0 || ipconfig getifaddr en1):8000 expo start --tunnel --clear"
   },
   "private": true
 }
