@@ -156,3 +156,14 @@ async def get_profile(user_id: str = Depends(supabase.current_user)) -> StylePro
 - It loads `backend/.env` with `python-dotenv` (added to `requirements.txt` with `httpx`). Your Gemini and Veri services can read `os.environ` after importing it, or call `load_dotenv` the same way.
 
 **Shared files I touched:** `backend/main.py` (one `include_router` for `me`) and `backend/requirements.txt` (two lines). `/tryon` will add one more `include_router` line later.
+
+---
+
+# Try-on is built (FYI, nothing to do)
+
+From Jasmine, 2026-10-18.
+
+- `POST /tryon` is in `backend/routes/tryon.py` and `backend/services/tryon.py` (Gemini `gemini-nano-banana-2.1`), registered with one line in `main.py`. `google-genai` is in `requirements.txt`.
+- It reads product photos from `training/catalog.json`, or `catalog_raw.json` until that exists, so please keep `image` in the tagged catalog.
+- The app's mock catalog is now 18 real items from `catalog_raw.json` with their real ids, images and URLs, so mocks and the real catalog line up.
+- **Heads-up for your tagging:** the Gemini key's project is on the free tier, where image models have a quota of 0. Text models still work there, with tight per-minute limits. Try-on needs billing turned on for the key's Google project.

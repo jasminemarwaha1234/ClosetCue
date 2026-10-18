@@ -164,6 +164,10 @@ export function Segmented<T extends string>({
 }
 
 // An item's photo, or a block of its first color when there's no image.
+// Shopify's CDN resizes on request, so tiles don't download full-size product photos.
+const thumbnail = (url: string) =>
+  url.includes('cdn.shopify.com') ? `${url}${url.includes('?') ? '&' : '?'}width=400` : url;
+
 export function PieceImage({
   image,
   colorName,
@@ -187,7 +191,7 @@ export function PieceImage({
         style,
       ]}
     >
-      {image ? <Image source={{ uri: image }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
+      {image ? <Image source={{ uri: thumbnail(image) }} style={StyleSheet.absoluteFill} resizeMode="cover" /> : null}
     </View>
   );
 }

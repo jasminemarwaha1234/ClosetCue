@@ -56,7 +56,8 @@ const USE_MOCKS = process.env.EXPO_PUBLIC_USE_MOCKS !== 'false';
 
 // Every call carries the anonymous Supabase user's token, so the backend knows whose data it is.
 async function api<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const token = await accessToken();
+  // If sign-in fails, routes that need a user answer 401; the others still work.
+  const token = await accessToken().catch(() => null);
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method,
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
@@ -92,10 +93,10 @@ export async function makeItNicer(req: OutfitsRequest, outfit: Outfit): Promise<
   return res.outfits[0];
 }
 
+// Always the real backend, even on mocks: the mock catalog is real scraped products with
+// the same ids, so /tryon can find their photos. Takes 10-20 seconds.
 export const tryOn = (photo: Item, itemIds: string[]) =>
-  USE_MOCKS
-    ? Promise.reject(new Error('Try-on needs the backend. Use the flat lay for now.'))
-    : api<TryOnResponse>('POST', '/tryon', { photo, item_ids: itemIds });
+  api<TryOnResponse>('POST', '/tryon', { photo, item_ids: itemIds });
 
 export const createMandate = (req: MandateRequest) =>
   USE_MOCKS ? mock(mocks.createMandate(req)) : api<Mandate>('POST', '/checkout/mandate', req);
