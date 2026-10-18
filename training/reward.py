@@ -19,7 +19,6 @@ the object itself or a JSON string of it:
 """
 
 import json
-import math
 import re
 
 # Copied from training/vocab.py because Veri receives this file alone.
@@ -88,17 +87,18 @@ def parse_output(text):
     outfits = data["outfits"]
     if not isinstance(outfits, list) or not 1 <= len(outfits) <= OUTFITS_WANTED:
         return None
+    parsed = []
     for o in outfits:
-        if not isinstance(o, dict) or set(o) != {"items", "total", "reason"}:
+        # A stray "total" (the v1 schema, or a model that adds one anyway) is ignored.
+        if not isinstance(o, dict) or set(o) - {"total"} != {"items", "reason"}:
             return None
-        items, total, reason = o["items"], o["total"], o["reason"]
+        items, reason = o["items"], o["reason"]
         if not isinstance(items, list) or not items or not all(isinstance(i, str) for i in items):
-            return None
-        if isinstance(total, bool) or not isinstance(total, (int, float)) or not math.isfinite(total):
             return None
         if not isinstance(reason, str):
             return None
-    return outfits
+        parsed.append({"items": items, "reason": reason})
+    return parsed
 
 
 def _decode(value):
@@ -146,7 +146,7 @@ def score_outfit(outfit, ctx):
     breakdown = {
         "anchor": 1.0 if not anchor or anchor["id"] in outfit["items"] else 0.0,
         "complete": _complete(outfit["items"], items),
-        "budget": _budget(items, outfit["total"], ctx["budget_min"], ctx["budget_max"]),
+        "budget": _budget(items, ctx["budget_min"], ctx["budget_max"]),
         "color": _color(items),
         "pattern": _pattern(items),
         "season": _season(items),
@@ -172,10 +172,9 @@ def _complete(ids, items):
     return 1.0 if base_ok and count.get("shoes") else 0.0
 
 
-def _budget(items, stated, lo, hi):
+def _budget(items, lo, hi):
     real = round(sum(float(it["price"]) for it in items), 2)
-    in_range = float(lo) - 0.005 <= real <= float(hi) + 0.005
-    return 1.0 if in_range and abs(real - stated) <= 0.01 + 1e-9 else 0.0
+    return 1.0 if float(lo) - 0.005 <= real <= float(hi) + 0.005 else 0.0
 
 
 def _color(items):

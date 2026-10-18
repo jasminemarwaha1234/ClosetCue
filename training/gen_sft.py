@@ -6,7 +6,7 @@ Run from the repo root:
 
 Only rows with at most --max-candidates candidates are used (v1-sft trains on the 25- and
 50-candidate rows, which keeps sequences short). For each one, the answer is the row's 3 best
-distinct outfits (build_prompts.best_outfits), best first, each with its real total and a one-sentence reason from
+distinct outfits (build_prompts.best_outfits), best first, each with a one-sentence reason from
 a seeded template that names 1 or 2 of its items, the occasion and a profile style tag. A row is
 skipped when it has fewer than 3 outfits, when any of them breaks a rule the prompt states (a
 missing anchor, an incomplete outfit, a total outside the budget), or when the answer scores under
@@ -72,7 +72,7 @@ def answer(row: dict, rng: random.Random) -> tuple[str | None, str]:
     answers = []
     for n, (o, template) in enumerate(zip(outfits, templates)):
         others = {i for m, other in enumerate(outfits) if m != n for i in other["items"]}
-        answers.append({"items": o["items"], "total": o["total"],
+        answers.append({"items": o["items"],
                         "reason": _reason(o["items"], others, ctx, row["profile_style_tags"], rng, template)})
     text = json.dumps({"outfits": answers}, separators=(",", ":"), ensure_ascii=False)
     if reward.score_completion(text, ctx) < MIN_SHARE * best:

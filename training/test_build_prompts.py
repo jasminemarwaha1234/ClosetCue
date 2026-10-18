@@ -112,7 +112,8 @@ def test_best_outfits_adds_an_accessory_to_reach_budget_min():
                           item("accessory_1", 20)],
            "profile_style_tags": ["minimal"], "profile_fits": [], "profile_avoid": []}
     best = best_outfits(reward.prepare_context(row))
-    assert [(o["items"], o["total"]) for o in best] == [
+    assert [(o["items"], sum(price for i in o["items"] for c in row["candidates"] if c["id"] == i
+                             for price in [c["price"]])) for o in best] == [
         (["top_2", "bottom_1", "shoes_1"], 150),
         (["top_2", "bottom_1", "shoes_1", "accessory_1"], 170),
         (["top_1", "bottom_1", "shoes_1", "accessory_1"], 160),

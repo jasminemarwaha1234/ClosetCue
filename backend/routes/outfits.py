@@ -2,7 +2,7 @@
 #
 # Retrieval picks the candidates, a model chooses outfits from them, and the reward's checks
 # guard every answer: an outfit is dropped when it fails a gate (bad JSON, an invented item), misses
-# the anchor, or is outside the budget. Totals come from catalog prices, never the model's number.
+# the anchor, or is outside the budget. Totals come from catalog prices; the model doesn't state one.
 # Each model gets a second try when fewer than MIN_OUTFITS survive, then the next model in CHAIN
 # answers. If none reaches MIN_OUTFITS, the best partial answer is returned; a 503 only when no
 # outfit survived at all.
@@ -109,9 +109,7 @@ def _guard(text: str, ctx: dict, upgrade: bool) -> list[tuple[list[str], str]]:
         if key in seen:
             continue
         seen.add(key)
-        # Score with the real total, so the model's arithmetic doesn't matter, only the range.
-        real = sum(ctx["by_id"][i]["price"] for i in o["items"] if i in ctx["by_id"])
-        _, passed, breakdown = reward.score_outfit({**o, "total": round(real, 2)}, ctx)
+        _, passed, breakdown = reward.score_outfit(o, ctx)
         if passed and (upgrade or (breakdown["anchor"] and breakdown["budget"])):
             kept.append((o["items"], o["reason"]))
     return kept

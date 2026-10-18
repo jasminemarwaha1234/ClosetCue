@@ -114,8 +114,7 @@ def best_outfits(ctx: dict, extend: int = 50) -> list[dict]:
 
     def add(ids: list[str]) -> None:
         if frozenset(ids) not in found:
-            outfit = {"items": ids, "total": round(sum(ctx["by_id"][i]["price"] for i in ids), 2),
-                      "reason": f"Built around {ids[0]}."}
+            outfit = {"items": ids, "reason": f"Built around {ids[0]}."}
             found[frozenset(ids)] = (reward.score_outfit(outfit, ctx)[0], outfit)
 
     for slots in (("top", "bottom", "shoes"), ("dress", "shoes")):
