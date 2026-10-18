@@ -1,0 +1,8 @@
+[
+  {"name": "Represent", "domain": "representclo.com", "currency": "USD"},
+  {"name": "Stüssy", "domain": "www.stussy.com", "currency": "USD"},
+  {"name": "Brain Dead", "domain": "wearebraindead.com", "currency": "USD"},
+  {"name": "Princess Polly", "domain": "us.princesspolly.com", "currency": "USD", "department": "women"},
+  {"name": "Rouje", "domain": "www.rouje.com", "currency": "EUR", "usd_rate": 1.16, "department": "women"},
+  {"name": "Lack of Color", "domain": "lackofcolor.com", "currency": "USD"}
+]
