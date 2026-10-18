@@ -39,7 +39,9 @@ Candidates (id | name | slot | price | colors | formality | style tags):
 bottom_004 | Work Pant | bottom | $100.00 | black | formality 2 | streetwear, grunge
 shoes_001 | Canvas Low | shoes | $80.00 | white | formality 2 | streetwear
 
-Build exactly 3 different outfits. Each outfit uses only the anchor and candidate ids above, and `items` lists every piece, the anchor included. It has a top and a bottom, or a dress with neither, plus one pair of shoes, at most one outerwear, and any accessories. Every item's formality fits the occasion. `total` is the sum of the catalog items' prices and must be inside the budget. `reason` is one sentence of at most 40 words that names at least one item.
+Build exactly 3 different outfits. Each outfit uses only the anchor and candidate ids above, and `items` lists every piece, the anchor included. It has a top and a bottom, or a dress with neither, plus one pair of shoes, at most one outerwear, and any accessories. Every item's formality fits the occasion. `total` is the sum of the catalog items' prices. `reason` is one sentence of at most 40 words that names at least one item.
+
+Budget: every outfit's `total` must be between $100.00 and $250.00, the anchor's $60.00 included. An outfit over $250.00 is rejected.
 
 Reply with only this JSON:
 {"outfits": [{"items": ["<id>", "<id>"], "total": <number>, "reason": "<one sentence>"}]}"""}
@@ -50,9 +52,11 @@ def test_no_anchor_closet_anchor_and_one_outfit():
                             anchor=None, candidates=CANDIDATES, outfits=1)
     assert "Occasion: formal (formality 5)\nBudget for the catalog items: $0.00 to $80.00\nAnchor: none.\n" in none["content"]
     assert "Build exactly 1 outfit." in none["content"]
+    assert "\n\nBudget: every outfit's `total` must be between $0.00 and $80.00. An outfit over $80.00 is rejected.\n\n" in none["content"]
 
     shirt = {**TEE, "id": "closet_3", "name": "navy oxford shirt", "price": 0.0}
     _, closet = render_prompt(PROFILE, occasion="work", budget_min=0, budget_max=80,
                               anchor=shirt, candidates=CANDIDATES)
     assert "Anchor (they own it; it costs $0), which every outfit must include:\n" \
            "closet_3 | navy oxford shirt | top | $0.00 | gray | formality 2 | streetwear\n" in closet["content"]
+    assert "must be between $0.00 and $80.00. An outfit" in closet["content"]
