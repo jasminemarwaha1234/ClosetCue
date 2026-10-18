@@ -217,9 +217,9 @@ trust screen ──────────────────────�
 
 - **App:** this repo. Expo SDK 57, TypeScript, Expo Router (see [AGENTS.md](AGENTS.md)). `src/api/client.ts` answers from `src/api/mocks.ts` unless `EXPO_PUBLIC_USE_MOCKS=false`; `/tryon` always calls the real backend.
 - **Backend:** FastAPI in `backend/`, run from the repo root with `uvicorn backend.main:app --host 0.0.0.0 --port 8000`. For the demo it runs on a laptop behind a tunnel. The pose and face models run in the server process, on CPU.
-- **Supabase** stores accounts, profiles, feedback and mandates ([backend/supabase_schema.sql](backend/supabase_schema.sql)):
+- **Supabase** stores accounts, profiles, feedback, preferences and mandates ([backend/supabase_schema.sql](backend/supabase_schema.sql)):
   - **Sign-in:** username and password, or anonymous for guests. Needs "Confirm email" **off** and "Allow manual linking" **on** in the Supabase dashboard; the app checks the first and shows an error if it's on.
-  - Tables: `profiles` (the style profile and closet as JSON), `feedback` (A/B choices, with the pair shown and which model made each side), `mandates`.
+  - Tables: `profiles` (the style profile and closet as JSON), `feedback` (A/B choices, with the pair shown and which model made each side), `preferences` ("try again with Gemini" presses, one DPO pair each), `mandates`.
   - The phone only talks to Supabase to sign in. Reads and writes go through the backend, which checks the access token and holds the service key. Delete my data deletes the user's rows and the account.
 - **Secrets:** Gemini, Veri, Supabase service and Stripe secret keys live only in `backend/.env` (template: `backend/.env.example`). The app's settings go in the root `.env`, and everything in it ships inside the app. The repo goes public for submission.
 - **The guard:** the backend runs the reward's checks on every model answer (section 5).

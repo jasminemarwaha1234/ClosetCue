@@ -1,4 +1,4 @@
-# Supabase: who the caller is, and the profiles, feedback and mandates tables.
+# Supabase: who the caller is, and the profiles, feedback, preferences and mandates tables.
 # PLAN.md section 4 has the design, and backend/supabase_schema.sql creates the tables.
 #
 # The phone signs in anonymously and sends its access token on every call. Routes take
@@ -126,6 +126,16 @@ async def add_feedback(user_id: str, pair_id: str, choice: str, pair: dict, a_mo
     )
 
 
+async def add_preference(user_id: str, row: dict) -> None:
+    """Saves a "try again with Gemini" pair: prompt, chosen, rejected, rejected_model, request."""
+    await _rest("POST", "preferences", json={**row, "user_id": user_id}, prefer="return=minimal")
+
+
+async def list_preferences() -> list[dict]:
+    """Every user's preference rows, oldest first, for training/build_dpo.py."""
+    return await _rest("GET", "preferences", params={"select": "*", "order": "id"})
+
+
 async def create_mandate(user_id: str, mandate: dict) -> dict:
     """Saves a new mandate: id, limit, spent, expires_at (ISO 8601), card_id, card_label."""
     rows = await _rest("POST", "mandates", json={**mandate, "user_id": user_id}, prefer="return=representation")
@@ -153,9 +163,9 @@ async def set_mandate_spent(user_id: str, mandate_id: str, spent: float) -> None
 
 async def delete_user(user_id: str) -> None:
     """Deletes everything we keep about the user (PLAN.md section 8): their profile,
-    feedback and mandates, then the anonymous account itself. Photos are never stored,
+    feedback, preferences and mandates, then the anonymous account itself. Photos are never stored,
     so there's nothing else. The app signs in again as a new anonymous user afterwards."""
-    for table in ("profiles", "feedback", "mandates"):
+    for table in ("profiles", "feedback", "preferences", "mandates"):
         await _rest("DELETE", table, params={"user_id": f"eq.{user_id}"}, prefer="return=minimal")
     res = await _request("DELETE", f"{URL}/auth/v1/admin/users/{user_id}", headers=_headers())
     if res.status_code not in (200, 204, 404):

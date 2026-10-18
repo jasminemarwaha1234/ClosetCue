@@ -153,7 +153,7 @@ export async function sendRate(choice: RateChoice): Promise<void> {
   return api<void>('POST', '/rate', choice);
 }
 
-// "Delete my data" on the Trust screen: the backend deletes the profile, feedback, mandates
+// "Delete my data" on the Trust screen: the backend deletes the profile, feedback, preferences, mandates
 // and the anonymous account, then the app signs out so the next launch starts fresh.
 export async function deleteMe(): Promise<void> {
   if (!USE_MOCKS) await api<void>('DELETE', '/me');

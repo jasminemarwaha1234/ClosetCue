@@ -5,12 +5,13 @@ import json
 
 import httpx
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 from backend.routes import outfits
 from backend.schemas import CatalogItem
 from backend.services import catalog, gemini, supabase, veri
+from training.prompt import SYSTEM
 
 
 def item(id, price, color, fit="regular", tags=("streetwear",), department="men"):
@@ -238,6 +239,65 @@ def test_upgrade_drops_outfits_within_budget_max(run):
     assert body["generated_by"] == "gemini"
     assert [ids(o) for o in body["outfits"]] == [nicer]
     assert [m for m, _ in calls] == ["OUR_LLAMA", "OUR_LLAMA", "BASE_LLAMA", "gemini"]
+
+
+C = ["top_001", "bottom_004", "shoes_001"]  # $180
+RETRY = {**REQUEST, "retry": {"generated_by": "our-llama", "outfits": [A]}}
+
+
+@pytest.fixture
+def saved(monkeypatch):
+    """The preference rows the route saves."""
+    rows = []
+
+    async def add(user_id, row):
+        rows.append((user_id, row))
+
+    monkeypatch.setattr(supabase, "add_preference", add)
+    return rows
+
+
+def test_retry_asks_only_gemini(run, saved):
+    res, calls = run({"OUR_LLAMA": [answer(B, C)], "BASE_LLAMA": [answer(B, C)], "gemini": [answer(B, C)]}, RETRY)
+    assert res.json()["generated_by"] == "gemini"
+    assert [m for m, _ in calls] == ["gemini"]
+
+
+def test_retry_drops_the_outfits_the_user_turned_down_in_any_order(run, saved):
+    res, _ = run({"gemini": [answer(list(reversed(A)), B, C)]}, RETRY)
+    assert [ids(o) for o in res.json()["outfits"]] == [B, C]
+
+
+def test_retry_saves_the_prompt_gemini_saw_with_both_sides_in_the_model_format(run, saved):
+    res, calls = run({"gemini": [answer(B, C)]}, RETRY)
+    assert res.status_code == 200
+    assert saved == [("user-1", {
+        "prompt": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": calls[0][1]}],
+        "chosen": '{"outfits":[{"items":["top_001","bottom_002","shoes_002"],"reason":"Wear the black top with the '
+                  'olive bottom for a streetwear look that fits a casual day."},{"items":["top_001","bottom_004",'
+                  '"shoes_001"],"reason":"Built around the black top, this streetwear outfit adds the white shoes for '
+                  'a casual day."}]}',
+        "rejected": '{"outfits":[{"items":["top_001","bottom_001","shoes_001"],"reason":"' + A_REASON + '"}]}',
+        "rejected_model": "our-llama",
+        "request": {**RETRY, "max_item_price": None, "upgrade_of": None},
+    })]
+
+
+def test_retry_saves_nothing_when_a_turned_down_item_left_the_prompt(run, saved):
+    drifted = {**RETRY, "retry": {"generated_by": "base-llama", "outfits": [["top_001", "bottom_999", "shoes_001"]]}}
+    res, _ = run({"gemini": [answer(B, C)]}, drifted)
+    assert res.status_code == 200
+    assert saved == []
+
+
+def test_retry_still_answers_when_saving_fails(run, monkeypatch):
+    async def down(user_id, row):
+        raise HTTPException(502, "Supabase preferences: 404")
+
+    monkeypatch.setattr(supabase, "add_preference", down)
+    res, _ = run({"gemini": [answer(B, C)]}, RETRY)
+    assert res.status_code == 200
+    assert [ids(o) for o in res.json()["outfits"]] == [B, C]
 
 
 def test_404_without_a_profile(run, monkeypatch):

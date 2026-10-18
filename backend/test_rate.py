@@ -42,7 +42,7 @@ def outfit(ids, total, reason="Black on black."):
 def pair(pair_id):
     shown = {"pair_id": pair_id, "profile_summary": "Mostly black, minimal.",
              "request": {"anchor": None, "budget_min": 50.0, "budget_max": 150.0, "max_item_price": None,
-                         "occasion": "casual", "upgrade_of": None},
+                         "occasion": "casual", "upgrade_of": None, "retry": None},
              "a": {**outfit(["top_1", "shoes_1"], 120.0), "id": "o1"},
              "b": {**outfit(["top_2", "shoes_1"], 140.0), "id": "o2"}}
     return {"pair": shown, "a_model": "gemini", "b_model": "base-llama"}
@@ -147,7 +147,7 @@ def test_build_skips_rows_where_either_side_has_no_usable_outfit():
     shown = built["pair"]
     assert shown["request"] == {"anchor": {"source": "closet", "id": "closet_1"}, "budget_min": 100.0,
                                 "budget_max": 150.0, "max_item_price": None, "occasion": "everyday",
-                                "upgrade_of": None}
+                                "upgrade_of": None, "retry": None}
     assert shown["profile_summary"] == "Mostly black, minimal."
     by_model = {built["a_model"]: shown["a"], built["b_model"]: shown["b"]}
     assert {k: {**v, "id": None} for k, v in by_model.items()} == {

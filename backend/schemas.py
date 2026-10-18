@@ -103,6 +103,14 @@ class ClosetAnchor(BaseModel):
 Anchor = Annotated[Union[CatalogAnchor, ClosetAnchor], Field(discriminator="source")]
 
 
+# "Try again with Gemini" on the Outfits screen: the outfits the user turned down, as the model
+# returned them (item and owned ids, before any swaps). Gemini answers instead, and the pair is
+# saved as a preference row for DPO training (training/build_dpo.py).
+class Retry(BaseModel):
+    generated_by: Literal["our-llama", "base-llama"]
+    outfits: list[list[str]] = Field(min_length=1)
+
+
 # An anchor id missing from the catalog or the user's closet is a 422 from the route.
 class OutfitsRequest(BaseModel):
     anchor: Optional[Anchor] = None  # None means "I need an outfit for..." with no anchor
@@ -114,6 +122,7 @@ class OutfitsRequest(BaseModel):
     # pricier version with the budget range moved up to (that outfit's total, total + $150],
     # so it can exceed budget_max. The checkout mandate is what refuses it.
     upgrade_of: Optional[list[str]] = None
+    retry: Optional[Retry] = None
 
     @model_validator(mode="after")
     def _check_budget(self) -> "OutfitsRequest":
@@ -223,4 +232,4 @@ class RateChoice(BaseModel):
     choice: Literal["a", "b"]
 
 
-# DELETE /me -> 204, after deleting the user's profile, feedback and mandates
+# DELETE /me -> 204, after deleting the user's profile, feedback, preferences and mandates

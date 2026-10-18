@@ -175,4 +175,4 @@ export type RatePair = {
 
 export type RateChoice = { pair_id: string; choice: 'a' | 'b' };
 
-// DELETE /me -> 204, after deleting the user's profile, feedback and mandates
+// DELETE /me -> 204, after deleting the user's profile, feedback, preferences and mandates
