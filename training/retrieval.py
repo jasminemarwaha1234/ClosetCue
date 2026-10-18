@@ -14,7 +14,11 @@ Rules, in order:
    - its department isn't unisex and isn't in profile["departments"] (an empty list allows all);
    - the profile is men-only and the item is a dress;
    - any of its style_tags or colors is in profile["avoid"];
-   - its formality is more than one level outside the occasion's range (vocab.OCCASION_FORMALITY);
+   - its formality is outside the occasion's range (vocab.OCCASION_FORMALITY), by any amount for
+     EXACT_FORMALITY occasions and by more than one level for the rest, which keeps a few
+     formality distractors for the model to turn down, as IMPERFECT_SHARE does for style.
+     Semi-formal and formal keep the slack because the catalog has too few formality 4-5 tops,
+     bottoms and shoes (men: 3 tops and 7 shoes; women: no bottoms);
    - it breaks the occasion's rule (vocab.OCCASION_RULES, checked by reward.occasion_allows).
 2. Score: number of style_tags shared with the profile, plus COLOR_BONUS if any of its colors
    is one the profile wears, plus FIT_BONUS if its fit is one of profile["fits"]. Ties break by id.
@@ -44,6 +48,8 @@ COLOR_BONUS = 0.5
 FIT_BONUS = 0.5
 IMPERFECT_SHARE = 0.15
 DIVERSITY_CAP = 2
+# A casual piece at work reads as wrong, so these get no formality slack.
+EXACT_FORMALITY = frozenset({"work"})
 
 
 def retrieve(
@@ -97,7 +103,8 @@ def _allowed(item, profile, anchor, budget_max, max_item_price, occasion) -> boo
     if avoid & set(item["style_tags"]) or avoid & set(item["colors"]):
         return False
     low, high = OCCASION_FORMALITY[occasion]
-    return low - 1 <= item["formality"] <= high + 1 and occasion_allows(item, occasion)
+    slack = 0 if occasion in EXACT_FORMALITY else 1
+    return low - slack <= item["formality"] <= high + slack and occasion_allows(item, occasion)
 
 
 def _excluded_slots(anchor_slot: str) -> set[str]:

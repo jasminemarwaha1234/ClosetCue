@@ -117,9 +117,10 @@ def test_avoid_style_tags_and_colors():
     assert not [item for item in items if "y2k" in item["style_tags"] or "red" in item["colors"]]
 
 
-def test_formality_within_one_level_of_occasion():
+def test_formality_within_one_level_of_the_occasion_and_exact_for_work():
     assert {item["formality"] for item in run(occasion="formal", n=40)} == {3, 4, 5}
     assert {item["formality"] for item in run(occasion="athletic", n=40)} == {1, 2, 3}
+    assert {item["formality"] for item in run(occasion="work", n=40)} == {3, 4}
 
 
 def test_athletic_rule():
