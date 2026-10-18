@@ -15,7 +15,7 @@ name = "v2-grpo"
 base = "CharlieBrown364/outfit-llama-v2-sft"
 
 [dataset]
-id = "<dataset id>"
+id = "68bb74db11b5"
 
 [reward]
 file = "../reward.py"
