@@ -26,3 +26,26 @@ Entry template:
 - Data: `training/data/sft_train.jsonl` from `gen_sft.py` @ 8f70014 (251 rows: 25- and 50-candidate train prompts only; solver answers + templated reasons, every row at 100% of its best possible reward). Veri dataset e6447f2e5a33.
 - Veri job: 23ac2f782f62, `training/configs/v1-sft-smoke.toml` (sft_text, LoRA 16/32, lr 1e-4, max_seq_length 3072, 5 steps), L4 x1. ~6 min wall clock (about 5 min setup and model download), cost not yet reported by Veri (estimate $0.09).
 - Result: completed. 5 steps in 47 s: the first step took 35 s (warm-up), then about 3 s per step at batch size 1. Loss 2.29 → 2.17 (train_loss 2.06). ~2,000 tokens per step, so the loss appears to cover the whole sequence (prompt included), not just the answer. Projection for v1-sft.toml (2 epochs = 502 steps): ~25–30 min of training plus ~5 min setup and the merge and Hugging Face push, so ~40 min, about $0.70.
+
+### 2026-10-18 07:01, v1-sft (full run)
+- Changed: nothing from the smoke config except 2 epochs (502 steps) and the [huggingface] push.
+- Data: Veri dataset e6447f2e5a33 (251 rows, see the smoke entry).
+- Veri job: 93db1eb64b94, `training/configs/v1-sft.toml`, L4 x1. Training 17 min (about 2 s per step), ~23 min wall clock, $0.65.
+- Result: completed and pushed to https://huggingface.co/CharlieBrown364/outfit-llama-v1-sft. Loss 2.2 → about 0.2 by the end (train_loss 0.48), mean token accuracy about 95%.
+
+### 2026-10-18 07:45, eval: Gemini vs base Llama (v0) vs v1-sft, same 20 eval rows
+- Changed: Gemini rerun on the regenerated prompts (comfy = formality 1–2); v0 and v1-sft deployed on Veri (L4, vLLM, max-model-len 8192, scale to zero).
+- Data: first 20 rows of `training/data/prompts_eval.jsonl` (20 different held-out profiles, candidate sizes 25–100).
+- Veri deployments: base-llama 19cbd2e67a0f, our-llama 8cf7ae4c5843, both stopped after the evals. My eval wrapper waited for the wrong status name ("running"; Veri says "serving") and both sat idle through one scale-to-zero window, then the first eval attempt sent every request to `<endpoint_url>/chat/completions` twice over (Veri's endpoint_url already ends in /chat/completions; OUR_LLAMA_URL / BASE_LLAMA_URL must be the deployment URL without it). About $0.70 of deployment time was wasted on these two mistakes. Balance after everything: $16.56.
+- Result:
+
+  | Metric | Gemini | v0 base Llama | v1-sft |
+  | --- | --- | --- | --- |
+  | Valid JSON, nothing invented | 100% | 25% | 90% |
+  | Answers with 2+ outfits kept by the live guard | 100% | 10% | 50% |
+  | Mean reward, % of each row's best | 94.6% | 17.8% | 72.8% |
+  | Within budget (real prices) | 100% | 53.3% | 56.7% |
+  | Complete outfits | 94.4% | 40% | 86.7% |
+  | Median latency | 27 s (2 timeouts at 60 s) | 5.2 s | 4.9 s |
+
+- Reading: SFT took the 3B model from mostly unusable (25% valid JSON) to valid structured outfits 90% of the time, at 5x Gemini's speed. Its two failures: it can't add (the stated total is wrong in 55 of its 57 non-invented outfits, which zeroes the reward's budget point; the live route recomputes totals, so users never see this), and it really does overspend (20 of 57 outfits over budget_max). It also invented an item in 2 answers. Gemini passes every bar except speed; v1-sft fails the 80% and 85% bars.

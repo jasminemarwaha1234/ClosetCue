@@ -1,0 +1,22 @@
+{
+  "model": "our-llama",
+  "answers": 20,
+  "errors": 0,
+  "stopped": null,
+  "valid_json_pct": 100.0,
+  "fenced": 0,
+  "invented_pct": 10.0,
+  "valid_no_invented_pct": 90.0,
+  "outfits": 60,
+  "complete_pct": 86.7,
+  "within_budget_pct": 56.7,
+  "anchor_pct": 95.0,
+  "mean_reward": 5.179,
+  "mean_reward_of_max_pct": 69.1,
+  "mean_best_possible": 6.875,
+  "mean_reward_of_best_pct": 72.8,
+  "live_outfits_pct": 56.7,
+  "live_answers_ok_pct": 50.0,
+  "latency_median_s": 4.92,
+  "latency_p90_s": 5.51
+}
