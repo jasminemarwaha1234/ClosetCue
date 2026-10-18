@@ -112,7 +112,7 @@ The judges' likely question is "Why not just prompt GPT or Gemini?" The answer h
    - **Budget range:** a slider with two handles, a minimum and a maximum. Default $50–$200. The checkout spending limit defaults to the maximum.
    - **Max price per item (optional):** "no single piece over $80". The backend enforces it by never showing the model pricier items.
    - **Occasion:** default `everyday` (full list in section 5).
-4. **Outfit cards.** The trained stylist returns 2–3 complete outfits built around the anchor, each with a total price and a one-line reason ("the cream knit picks up the off-white sneaker sole"). An owned anchor shows as "from your closet" and costs nothing. Swap any single piece you'd buy.
+4. **Outfit cards.** The trained stylist returns 2–3 complete outfits built around the anchor, each with a total price and a one-line reason ("the cream knit picks up the off-white sneaker sole"). An owned anchor shows as "from your closet" and costs nothing. Swap any single piece you'd buy, or open it with **View at retailer**.
 5. **Try it on.** See the outfit on your own full-body photo. The flat-lay view is the fallback.
 6. **Checkout under a limit.** The agent proposes a cart. You approve it against a spending limit you set, and the backend refuses anything over it. Confirm with Face ID or the passcode, then see a receipt (section 8).
 7. **Feedback.** "How did it fit?" updates your profile right away and becomes training data for the next model.
@@ -546,10 +546,12 @@ A **mandate** is a set of rules you give the agent before it can buy: how much i
 3. `POST /checkout/cart` checks every cart against the mandate in our code first, so the refusal comes back fast with a clear reason.
 4. You confirm the final cart with a biometric prompt (`expo-local-authentication`; Face ID needs a development build, and Expo Go falls back to the device passcode).
 5. `POST /checkout/confirm` makes a simulated purchase on the card for the cart total (Stripe's test helper for Issuing authorizations). Stripe approves it or declines it against the card's own limit, so the limit holds even if our check had a bug.
-6. The receipt shows what was bought, what it cost, what's left of the mandate and the Stripe authorization ID.
+6. The receipt shows what was bought, what it cost, what's left of the mandate and the Stripe authorization ID. It says "Demo: no order was placed and no money moved," and each item has a **View at retailer** link to its real product page (the catalog's `url`).
 7. Stripe's spending intervals don't go below a day, so the 24-hour expiry is ours: the backend cancels the card after a purchase or when the mandate expires.
 
 The app needs no Stripe SDK: the user never enters a card, and every Stripe call happens on the backend. The Stripe secret key lives in `backend/.env` with the other keys.
+
+**What's simulated, and the production design.** No order reaches a store. Stripe only handles the payment: it creates the card, enforces its limit and approves or declines. Placing the order (cart, size, shipping, the store's checkout) is a separate problem Stripe doesn't solve, and test-mode Issuing cards can't be charged by real stores anyway. In production the agent would order through each store's **Agentic Commerce Protocol (ACP)** checkout, the open standard from Stripe and OpenAI, and pay with a Stripe **Shared Payment Token**, which is limited to one store, a maximum amount and an expiry. The mandate maps onto those limits almost one-to-one, so the trust model stays the same and only the payment mechanism changes. ACP only works with stores that have joined, so it can't be built this weekend. Browser automation of each store's checkout was ruled out as too fragile for a live demo.
 
 **Fallback.** If Issuing isn't available on our Stripe account, the mandate stays enforced in our code only, the card reference is a fixed test card (`Visa •••• 4242`), and the payment is labeled as simulated.
 
@@ -634,7 +636,7 @@ Times are PDT. Shift them if we start late, but keep the 10 PM track decision an
 2. *Profile (10 s):* share photos, show the style summary.
 3. *Outfits (15 s):* tap a jacket, set $200, three outfits appear with reasons.
 4. *Try-on (10 s):* the outfit on your photo.
-5. *Checkout (10 s):* "make it nicer", the mandate refuses, approve the version that fits.
+5. *Checkout (10 s):* "make it nicer", the mandate refuses, approve the version that fits. One line on the boundary: "Stripe enforces the limit on the card. In production the agent orders through each store's ACP checkout; here the order is simulated and no money moves."
 6. *The model (25 s):* the eval chart and the A/B win rate. "This is a 3B Llama we post-trained on Veri. Base Llama breaks budget or invents items X% of the time; ours, Y%. People preferred ours Z% of the time. And when it gamed our reward, here's how we caught it."
 
 **The 3-minute stage version** walks through the five-step training story from the journal and the trust screen, and leaves time for questions.
@@ -644,7 +646,8 @@ Times are PDT. Shift them if we start late, but keep the 10 PM track decision an
 - *Why train a model instead of prompting a big one?* The eval numbers, plus latency, cost, and a path to running on the phone.
 - *Isn't Gemini doing the real work?* Gemini handles vision, images and writing training data. Every outfit on screen comes from our model, and the fallback is labeled.
 - *Is the reward gameable?* It was, and the journal shows how we found and fixed it. The gates (schema, no invented items) zero out the score.
-- *What's real and what's simulated?* Say it plainly: the catalog and prices are real, payment runs on a real Stripe Issuing virtual card in Stripe's sandbox, so the card's limit is enforced by Stripe but no real money moves, try-on is a hosted image model.
+- *What's real and what's simulated?* Say it plainly: the catalog and prices are real, payment runs on a real Stripe Issuing virtual card in Stripe's sandbox, so the card's limit is enforced by Stripe but no real money moves, no order reaches the store (the receipt links to each item's real product page), try-on is a hosted image model.
+- *Could it really buy things?* In production, through ACP: the agent places the order at stores that support it and pays with a Stripe Shared Payment Token limited to that store, amount and expiry, the same limits as our mandate (section 8).
 - *Privacy?* You choose what to share, photos aren't stored, delete my data, and face matching asks you to confirm your face, says what it computes, and keeps nothing.
 
 ---
@@ -674,6 +677,7 @@ Not urgent right now. Each has an owner and a time it must be answered by.
 | --- | --- | --- |
 | Does Veri's trainer accept an ungated Llama 3.2 3B community mirror? If not, we use Qwen3-4B. | `veri jobs estimate` on a config with the mirror; ask at the Veri table if unclear. | Person A, before the first run |
 | Can our Stripe sandbox account use Issuing by API? Stripe's developer docs say yes with test keys; a Stripe support article says to talk to sales first. Also check that the card's `brand` is Visa. | Turn on Issuing in the sandbox dashboard and create one card with `sk_test`. If it's blocked, use the fallback in section 8. | Person B, Saturday, before building `/checkout` |
+| Is a sandbox payment with a simulated order fine for the Visa track? | Ask the Visa mentors at the event, showing the mandate refusal and the Stripe decline. | Person B, Saturday, before building `/checkout` |
 | Which ~20 stores publish a usable `products.json` feed? | Try each candidate store's feed with the small scrape (section 5). | Person A, before the full scrape |
 | What candidate list size should the live app use? | The candidate-size table in section 6. Start at 50. | Person A, Sunday morning |
 
