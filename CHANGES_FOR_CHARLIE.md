@@ -8,6 +8,11 @@
 >
 > Nothing is open on my side. One gap on the app side: `swatches` in `src/theme/index.ts` has no `gold` or `silver` (jewelry will use them), so those fall back to `surfaceMuted`.
 
+> **Status, Oct 18 morning (Jasmine):** thanks, everything above is merged into my branch with no conflicts. `gold` and `silver` are in `swatches` now, and `GeneratedBy`'s spelling is fine as it is. What's open for you:
+> 1. **Supabase backend** (section at the bottom): the project exists now, and the app already signs in anonymously and sends the token.
+> 2. **Keep `image` in `catalog.json`** when you tag it: `/tryon` sends each item's product photo to Gemini. Also make `price` a number (it's the string `"185.0"` in `catalog_raw.json`).
+> 3. **Share the Gemini key** with me privately: `/tryon` is mine and uses Gemini image editing (your NEXT_STEPS item 8).
+
 # Change request: remove "formality" from the style profile
 
 From Jasmine (app and design). Written 2026-10-17.
@@ -119,6 +124,8 @@ The receipt's "Demo: no order was placed and no money moved." line is entirely i
 From Jasmine (app and design). Written 2026-10-18.
 
 PLAN.md gives Supabase to you, so I only built the phone half and left `backend/` alone.
+
+**The project exists.** I made it and have the URL, publishable key and secret key. I'll send you the URL and secret key privately for your `backend/.env` (`SUPABASE_URL`, `SUPABASE_SECRET_KEY`, the names in `backend/.env.example`). `SUPABASE_URL` is the bare project URL, `https://<ref>.supabase.co`, not the `/rest/v1/` one.
 
 **What the app does now** (`src/lib/supabase.ts`):
 
