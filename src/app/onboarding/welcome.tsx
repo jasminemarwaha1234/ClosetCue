@@ -10,7 +10,8 @@
 //     />
 //   );
 // }
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
 import {
@@ -27,7 +28,16 @@ import {
 
 import { AccountFields } from '@/components/AccountFields';
 import { hasProfile } from '@/lib/onboarding';
-import { continueAsGuest, createAccount, getSession, signIn, usernameError } from '@/lib/supabase';
+import {
+  continueAsGuest,
+  createAccount,
+  getSession,
+  isGuest,
+  signIn,
+  signOut,
+  usernameError,
+  usernameOf,
+} from '@/lib/supabase';
 import { colors, radii, type } from '@/theme';
 
 // Welcome + sign-in. Designed in Paper ("As If / Welcome – sign in"), with a username and
@@ -37,8 +47,16 @@ export default function WelcomeScreen() {
   const [mode, setMode] = useState<'signin' | 'create'>('signin');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [busy, setBusy] = useState<null | 'account' | 'guest'>(null);
+  const [busy, setBusy] = useState<null | 'account' | 'guest' | 'continue'>(null);
+  // Already signed in (an account or a guest), from an earlier launch. Undefined while checking.
+  const [current, setCurrent] = useState<Session | null | undefined>(undefined);
   const creating = mode === 'create';
+
+  useEffect(() => {
+    getSession()
+      .then(setCurrent)
+      .catch(() => setCurrent(null));
+  }, []);
 
   // Someone who already finished onboarding goes straight to Build.
   async function next() {
@@ -52,7 +70,8 @@ export default function WelcomeScreen() {
   }
 
   async function submit() {
-    const problem = usernameError(username) ?? (password.length < 6 ? 'Use a password of at least 6 characters.' : null);
+    const problem =
+      usernameError(username) ?? (password.length < 6 ? 'Use a password of at least 6 characters.' : null);
     if (problem) {
       Alert.alert(creating ? "Couldn't create your account" : "Couldn't sign in", problem);
       return;
@@ -63,10 +82,31 @@ export default function WelcomeScreen() {
       setPassword('');
       await next();
     } catch (e) {
-      Alert.alert(creating ? "Couldn't create your account" : "Couldn't sign in", e instanceof Error ? e.message : String(e));
+      Alert.alert(
+        creating ? "Couldn't create your account" : "Couldn't sign in",
+        e instanceof Error ? e.message : String(e),
+      );
     } finally {
       setBusy(null);
     }
+  }
+
+  async function resume() {
+    setBusy('continue');
+    await next().finally(() => setBusy(null));
+  }
+
+  // Signs out so someone else can sign in. A guest's profile can't be recovered, so ask first.
+  function switchAccount() {
+    const out = async () => {
+      await signOut();
+      setCurrent(null);
+    };
+    if (!isGuest(current ?? null)) return void out();
+    Alert.alert('Start over?', "This guest profile can't be recovered after you leave it.", [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Start over', style: 'destructive', onPress: out },
+    ]);
   }
 
   async function guest() {
@@ -91,46 +131,72 @@ export default function WelcomeScreen() {
 
         <View style={styles.actions}>
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Sign in once, keep your style</Text>
+            <Text style={styles.cardTitle}>{current ? 'Welcome back' : 'Sign in once, keep your style'}</Text>
             <Text style={styles.cardText}>
-              Your profile and closet are saved to your account, so you only share photos once.
-              Photos themselves are never stored.
+              {current
+                ? 'Your profile and closet are saved, so you can pick up where you left off.'
+                : 'Your profile and closet are saved to your account, so you only share photos once. Photos themselves are never stored.'}
             </Text>
           </View>
 
-          <AccountFields
-            username={username}
-            password={password}
-            onUsername={setUsername}
-            onPassword={setPassword}
-            onSubmit={submit}
-            newPassword={creating}
-          />
+          {current === undefined ? (
+            <ActivityIndicator color={colors.primary} />
+          ) : current ? (
+            <>
+              <Pressable style={styles.button} onPress={resume} disabled={busy !== null}>
+                {busy === 'continue' ? (
+                  <ActivityIndicator color={colors.onPrimary} />
+                ) : (
+                  <Text style={styles.buttonText}>
+                    {isGuest(current) ? 'Continue as guest' : `Continue as ${usernameOf(current)}`}
+                  </Text>
+                )}
+              </Pressable>
+              <Pressable onPress={switchAccount} hitSlop={8} style={styles.switch}>
+                <Text style={styles.switchLink}>
+                  {isGuest(current) ? 'Not you? Start over' : 'Use a different account'}
+                </Text>
+              </Pressable>
+            </>
+          ) : (
+            <>
+              <AccountFields
+                username={username}
+                password={password}
+                onUsername={setUsername}
+                onPassword={setPassword}
+                onSubmit={submit}
+                newPassword={creating}
+              />
 
-          <Pressable style={styles.button} onPress={submit} disabled={busy !== null}>
-            {busy === 'account' ? (
-              <ActivityIndicator color={colors.onPrimary} />
-            ) : (
-              <Text style={styles.buttonText}>{creating ? 'Create account' : 'Sign in'}</Text>
-            )}
-          </Pressable>
-          <Pressable onPress={() => setMode(creating ? 'signin' : 'create')} hitSlop={8} style={styles.switch}>
-            <Text style={styles.switchText}>
-              {creating ? 'Have an account? ' : 'New here? '}
-              <Text style={styles.switchLink}>{creating ? 'Sign in' : 'Create an account'}</Text>
-            </Text>
-          </Pressable>
+              <Pressable style={styles.button} onPress={submit} disabled={busy !== null}>
+                {busy === 'account' ? (
+                  <ActivityIndicator color={colors.onPrimary} />
+                ) : (
+                  <Text style={styles.buttonText}>{creating ? 'Create account' : 'Sign in'}</Text>
+                )}
+              </Pressable>
+              <Pressable onPress={() => setMode(creating ? 'signin' : 'create')} hitSlop={8} style={styles.switch}>
+                <Text style={styles.switchText}>
+                  {creating ? 'Have an account? ' : 'New here? '}
+                  <Text style={styles.switchLink}>{creating ? 'Sign in' : 'Create an account'}</Text>
+                </Text>
+              </Pressable>
+            </>
+          )}
 
-          <View style={styles.guest}>
-            <Pressable style={styles.guestButton} onPress={guest} disabled={busy !== null}>
-              {busy === 'guest' ? (
-                <ActivityIndicator color={colors.primary} />
-              ) : (
-                <Text style={styles.guestText}>Continue as guest</Text>
-              )}
-            </Pressable>
-            <Text style={styles.note}>Guests stay on this phone. Save an account later to keep it.</Text>
-          </View>
+          {current === null ? (
+            <View style={styles.guest}>
+              <Pressable style={styles.guestButton} onPress={guest} disabled={busy !== null}>
+                {busy === 'guest' ? (
+                  <ActivityIndicator color={colors.primary} />
+                ) : (
+                  <Text style={styles.guestText}>Continue as guest</Text>
+                )}
+              </Pressable>
+              <Text style={styles.note}>Guests stay on this phone. Save an account later to keep it.</Text>
+            </View>
+          ) : null}
         </View>
       </ScrollView>
       <StatusBar style="dark" />
@@ -151,7 +217,13 @@ const styles = StyleSheet.create({
   hero: { gap: 16 },
   wordmark: { ...type.wordmark, color: colors.text },
   dot: { color: colors.primary },
-  tagline: { ...type.lead, fontSize: 20, lineHeight: 28, color: colors.textMuted, maxWidth: 340 },
+  tagline: {
+    ...type.lead,
+    fontSize: 20,
+    lineHeight: 28,
+    color: colors.textMuted,
+    maxWidth: 340,
+  },
   actions: { gap: 14 },
   card: {
     backgroundColor: colors.surface,
@@ -159,7 +231,12 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 8,
   },
-  cardTitle: { fontSize: 16, fontWeight: '600', lineHeight: 22, color: colors.text },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 22,
+    color: colors.text,
+  },
   cardText: { fontSize: 15, lineHeight: 22, color: colors.textBody },
   button: {
     height: 56,
@@ -184,5 +261,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   guestText: { ...type.button, color: colors.onPrimarySoft },
-  note: { fontSize: 13, lineHeight: 18, color: colors.textMuted, textAlign: 'center' },
+  note: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
 });
