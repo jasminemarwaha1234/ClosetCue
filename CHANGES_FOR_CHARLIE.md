@@ -4,7 +4,9 @@
 > - The scraper will fill `url` with each product's page (PLAN.md section 5).
 > - `/fit`, its types and the fit placeholder screen are gone.
 >
-> Still open on my side: the final list of allowed color names and `style_tags`.
+> - The color names and `style_tags` are final, in `training/vocab.py` (also listed in PLAN.md section 5, Catalog). Colors: white, cream, beige, tan, khaki, brown, gray, charcoal, black, navy, denim, blue, green, olive, yellow, orange, red, burgundy, pink, lilac, purple, gold, silver. Style tags: minimal, classic, relaxed, tailored, smart-casual, preppy, streetwear, graphic, workwear, outdoors, athleisure, vintage, bohemian, romantic, edgy, trendy, logos.
+>
+> Nothing is open on my side. One gap on the app side: `swatches` in `src/theme/index.ts` has no `gold` or `silver` (jewelry will use them), so those fall back to `surfaceMuted`.
 
 # Change request: remove "formality" from the style profile
 

@@ -54,4 +54,22 @@ Closet items as candidates, not only as the anchor ("you already own shoes that 
 
 ## Not changed
 
-The scan (`/scan`, `/faces/find-owner`), `/tryon`'s response, `/checkout/cart` and `/checkout/confirm`, `RateChoice`, `/fit`, `DELETE /me`, and the timeline's integration checkpoints (Sat 10 PM, Sun 6 AM).
+The scan (`/scan`, `/faces/find-owner`), `/tryon`'s response, `/checkout/cart` and `/checkout/confirm`, `RateChoice`, `DELETE /me`, and the timeline's integration checkpoints (Sat 10 PM, Sun 6 AM).
+
+## Update, Sunday Oct 18
+
+Your three change requests in [CHANGES_FOR_CHARLIE.md](CHANGES_FOR_CHARLIE.md) are in, and the contract got stricter. `types.ts` and `schemas.py` already match.
+
+| Type | Change |
+| --- | --- |
+| `StyleProfile` | `formality` is removed |
+| `OutfitsRequest` | New optional `upgrade_of: string[] \| null` for "make it nicer": the ids of the current outfit's `items` and `owned`. `/outfits` then returns one pricier outfit, in the range (that outfit's total, total + $150], which may go past `budget_max`. `makeItNicer(req, outfit)` in `client.ts` sends it when mocks are off. The backend rejects `budget_min` below 0 or above `budget_max`, and `max_item_price` of 0 or less, with a 422 |
+| `Anchor` | Now a union: `{ source: 'catalog', id }` or `{ source: 'closet', id: ClosetId }`. An id that isn't in the catalog or the user's closet is a 422 |
+| `ClosetItem` | `id` is typed `ClosetId` (`closet_<n>`) |
+| `Outfit` | `id` is opaque, because the backend doesn't store outfits. `items` includes a catalog anchor. `total` is computed by the backend and rounded to cents. After a swap, keep looking up swaps under the original item's id |
+| `OutfitsResponse` | `outfits` holds 1 to 3 (normally 2 or 3), never 0: when every generator fails, `/outfits` returns a 503. `generated_by` covers every outfit in the response |
+| `/fit` | Removed, with `FitFeedback`, `ItemFit`, `FitRating` and the `fit/[orderId]` screen |
+
+**Vocabularies.** The color names and style tags are final, in `training/vocab.py` (listed in PLAN.md section 5, Catalog). `swatches` in `src/theme/index.ts` covers every color except `gold` and `silver`, which jewelry will use.
+
+**Catalog.** The first pull has 930 real products from 21 stores, each with `url` set to its own product page. They still need tagging before `/catalog` can serve them.
