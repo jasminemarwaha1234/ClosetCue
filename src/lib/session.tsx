@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { getCatalog, getProfile } from '@/api/client';
 import type { PayMethodId } from '@/lib/payment';
@@ -64,18 +64,6 @@ function forDepartments(catalog: CatalogItem[], profile: StyleProfile | null) {
   );
 }
 
-// The catalog item that best matches the profile's style tags, picked with some
-// randomness among the closest matches so the suggestion isn't always the same.
-function suggestAnchor(shop: CatalogItem[], profile: StyleProfile): Anchor | null {
-  const scored = shop
-    .filter((c) => c.slot !== 'accessory' && !profile.avoid.some((a) => c.style_tags.includes(a)))
-    .map((c) => ({ c, score: c.style_tags.filter((t) => profile.style_tags.includes(t)).length }))
-    .sort((a, b) => b.score - a.score);
-  const top = scored.filter((s) => s.score === scored[0]?.score).slice(0, 5);
-  if (top.length === 0) return null;
-  return { source: 'catalog', id: top[Math.floor(Math.random() * top.length)].c.id };
-}
-
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<StyleProfile | null>(null);
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
@@ -113,18 +101,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return () => sub?.data.subscription.unsubscribe();
   }, []);
 
-  // Prefill the anchor with a suggestion once per signed-in profile, whichever of the profile
-  // and catalog arrives last. Not on later profile edits, so clearing the anchor sticks.
-  const suggested = useRef(false);
-  useEffect(() => {
-    if (!profile) {
-      suggested.current = false;
-      return;
-    }
-    if (suggested.current || catalog.length === 0) return;
-    suggested.current = true;
-    setAnchorState((current) => current ?? suggestAnchor(forDepartments(catalog, profile), profile));
-  }, [profile, catalog]);
+  // Build starts with no piece picked, so people choose their own first. Signing out (above)
+  // clears the piece, so the next account starts empty too.
 
   const shop = useMemo(() => forDepartments(catalog, profile), [catalog, profile]);
 
