@@ -8,6 +8,8 @@ import { Header, PieceImage, TextButton, money } from '@/components/ui';
 import { occasionLabel, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
+const NO_PAIRS = /no outfits to compare/i;
+
 // 8. Which is better? Two outfits for the same request, one from base Llama and one from our
 // model, in random order with no labels. Designed in Paper ("Fitly / Rate").
 export default function RateScreen() {
@@ -21,11 +23,10 @@ export default function RateScreen() {
     setPair(null);
     setPicked(null);
     setError(null);
-    try {
-      setPair(await getRatePair());
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
+    // Keep the spinner up briefly, so tapping "Check again" visibly does something.
+    const [result] = await Promise.allSettled([getRatePair(), new Promise((r) => setTimeout(r, 600))]);
+    if (result.status === 'fulfilled') setPair(result.value);
+    else setError(result.reason instanceof Error ? result.reason.message : String(result.reason));
   }, []);
 
   useEffect(() => {
@@ -68,7 +69,16 @@ export default function RateScreen() {
           lead="Same request, two stylists. We won't say which is which."
         />
 
-        {error ? (
+        {error && NO_PAIRS.test(error) ? (
+          // GET /rate/next answers 503 until the A/B pairs from both models are built.
+          <View style={styles.center}>
+            <Text style={styles.emptyTitle}>Nothing to rate yet</Text>
+            <Text style={styles.muted}>
+              The outfits to compare are being made. Check back in a bit.
+            </Text>
+            <TextButton label="Check again" onPress={load} />
+          </View>
+        ) : error ? (
           <View style={styles.center}>
             <Text style={styles.muted}>{error}</Text>
             <TextButton label="Try again" onPress={load} />
@@ -127,6 +137,7 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, paddingTop: 8, gap: spacing.md },
   center: { alignItems: 'center', gap: spacing.sm, paddingTop: 60 },
   muted: { fontSize: 15, lineHeight: 22, color: colors.textMuted, textAlign: 'center' },
+  emptyTitle: { fontSize: 20, lineHeight: 24, fontWeight: '700', color: colors.text },
   request: {
     alignSelf: 'flex-start',
     paddingHorizontal: 14,
