@@ -94,3 +94,15 @@ The vocabulary and the occasions were reworked, so the contract changed again. `
 **Mocks.** I kept your 18 real products and gave them `pattern` and `fit`: the `item()` helper defaults to `solid` and `regular` (`null` for shoes and accessories), with `relaxed` or `oversized` on the wide-leg pant, hoodie and baggy jeans, and `graphic` on the Brain Dead tote.
 
 **Catalog.** `training/catalog.json` is tagged and committed: 1,040 items from 24 stores, including your 18 mock ids, so `/tryon` reads it now. Three formal-wear stores were added (Jack Victor, Paul Evans, Mac Duggal), and `formal` now means formality 4–5, the same as `semi-formal`.
+
+## Update 3, Sunday Oct 18 (after merging your accounts and Your style work)
+
+Your branch merged with no conflicts. One change touches your code: nothing in the app called `POST /profile`, so with mocks off a new account finished onboarding with no profile (`GET /profile` answered 404 and Your style was empty).
+
+- **`client.ts`:** new `createProfile(photos)`, which sends `{ photos: [{ id, base64 }] }` to `POST /profile`. On mocks it returns `mocks.profile`.
+- **`onboarding/photos.tsx`:** "Next: your style" now sends the 30 newest outfit photos to `createProfile` (the route's maximum), puts the result in the session with `setProfile`, and only then calls `markOnboarded` and opens Your style. The link reads "Reading your style…" while it waits (Gemini takes a few seconds). If the call fails, the error shows on the screen and onboarding isn't marked done, so tapping again retries.
+
+Open questions, your call:
+
+- With zero outfit photos, the backend's "Send at least one photo" error shows. A friendlier message, or hiding the link until the scan finds a photo, would be nicer.
+- The suggested anchor is only picked when the session first loads a profile, so right after onboarding Build has no anchor prefilled.
