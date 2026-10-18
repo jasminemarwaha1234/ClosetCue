@@ -82,3 +82,9 @@ Entry template:
 ### 2026-10-18 09:12, v2-grpo
 - Veri job: 6b526a12fd19, `training/configs/v2-grpo.toml`: from v2-sft, 50 GRPO steps, 8 rollouts, LoRA 16/32, lr 1e-5, max_response_length 384, reward = `training/reward.py` with the budget gate, 100-row dataset 68bb74db11b5 (311 rows failed to upload: multipart parse error at 5.5 MB). Training 24 min, $0.78. Pushed to https://huggingface.co/CharlieBrown364/outfit-llama-v2-grpo.
 - Result: mean reward per 10 steps 1.75 → 2.70 → 2.61 → 2.26 → 3.15 (noisy, up overall). Training rollouts are unconstrained (no JSON schema), so these are lower than the constrained eval scores. Eval pending.
+
+### 2026-10-18 09:30, v2-grpo eval and live /outfits test (with the reason, catalog and work-formality fixes)
+- Deployment f33e028bb9c0. Same 20 eval rows as the v2-sft eval; results in `training/results/v2-grpo/`. Live test output in `training/results/live/v2-grpo.txt` (same 3 profiles; backend from the worktree at 52f4ed2).
+- Result: GRPO made the model worse than v2-sft on every metric: within budget 60.0% (v2-sft 71.7%), complete 90% (95%), live guard keeps 55.0% (66.7%), answers with 2+ kept 45% (65%), mean reward 53.4% of each row's best (64.7%). Valid JSON with nothing invented stays 100%; median latency 4.9 s.
+- Likely causes: only 50 prompts (one per step) and a noisy reward trend; lr 1e-5 may be too high for 50 steps; training rollouts were unconstrained while the eval uses the JSON schema. Decision: v2-sft stays the best trained model.
+- Live test: all requests answered by our-llama in 2.6–9.6 s; reasons now always name the outfit's own items. New bug found: "make it nicer" can return the original outfit unchanged ($141.00 → $141.00, $155.80 → $155.80), because upgrades skip the budget gate, so nothing requires the upgrade to cost more than the current outfit.
