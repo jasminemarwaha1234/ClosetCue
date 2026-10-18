@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 
+import { BuildIcon, RateIcon, StyleIcon, TrustIcon } from '@/components/TabIcons';
 import { colors } from '@/theme';
 
 export default function TabsLayout() {
@@ -12,10 +13,10 @@ export default function TabsLayout() {
         tabBarStyle: { borderTopColor: colors.hairline },
       }}
     >
-      <Tabs.Screen name="style" options={{ title: 'Style' }} />
-      <Tabs.Screen name="build" options={{ title: 'Build' }} />
-      <Tabs.Screen name="rate" options={{ title: 'Rate' }} />
-      <Tabs.Screen name="trust" options={{ title: 'Trust' }} />
+      <Tabs.Screen name="style" options={{ title: 'Style', tabBarIcon: StyleIcon }} />
+      <Tabs.Screen name="build" options={{ title: 'Build', tabBarIcon: BuildIcon }} />
+      <Tabs.Screen name="rate" options={{ title: 'Rate', tabBarIcon: RateIcon }} />
+      <Tabs.Screen name="trust" options={{ title: 'Trust', tabBarIcon: TrustIcon }} />
     </Tabs>
   );
 }
