@@ -64,6 +64,9 @@ async def outfits(req: OutfitsRequest, user_id: str = Depends(supabase.current_u
         anchor=anchor, n=CANDIDATES, max_item_price=req.max_item_price, outfits=wanted,
     )
     ctx = reward.prepare_context(columns)
+    if req.anchor and req.anchor.id in closet and not req.upgrade_of:
+        # An owned anchor costs $0, so the rest of the outfit may come in under budget_min.
+        budget_min = ctx["budget_min"] = 0
 
     swap_pool = [i for i in items.values() if _allowed(i, profile, None, budget_max, req.max_item_price, req.occasion)]
     swap_pool.sort(key=lambda i: (-_score(i, profile), i["id"]))

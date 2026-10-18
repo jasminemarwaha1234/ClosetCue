@@ -220,6 +220,15 @@ def test_closet_anchor_is_owned_and_free(run):
            "closet_1 | navy oxford shirt | top | $0.00 | navy | formality 2 | streetwear" in calls[0][1]
 
 
+def test_closet_anchor_outfits_under_budget_min_are_kept(run):
+    cheap = ["closet_1", "bottom_006", "shoes_001"]  # $125
+    res, _ = run({"OUR_LLAMA": [answer(cheap, ["closet_1", "bottom_001", "shoes_001"])]},
+                 {**REQUEST, "anchor": {"source": "closet", "id": "closet_1"}, "budget_min": 150})
+    body = res.json()
+    assert body["generated_by"] == "our-llama"
+    assert [o["total"] for o in body["outfits"]] == [125.0, 130.0]
+
+
 def test_upgrade_moves_the_budget_past_budget_max_and_returns_one_outfit(run):
     nicer = ["top_001", "bottom_003", "shoes_001"]  # $320, over the request's $250
     res, calls = run({"OUR_LLAMA": [answer(nicer, B)]}, {**REQUEST, "upgrade_of": A})

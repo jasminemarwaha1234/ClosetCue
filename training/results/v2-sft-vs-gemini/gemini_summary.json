@@ -1,0 +1,22 @@
+{
+  "model": "gemini",
+  "answers": 18,
+  "errors": 2,
+  "stopped": null,
+  "valid_json_pct": 100.0,
+  "fenced": 0,
+  "invented_pct": 0.0,
+  "valid_no_invented_pct": 100.0,
+  "outfits": 54,
+  "complete_pct": 94.4,
+  "within_budget_pct": 98.1,
+  "anchor_pct": 100.0,
+  "mean_reward": 6.687,
+  "mean_reward_of_max_pct": 89.2,
+  "mean_best_possible": 6.711,
+  "mean_reward_of_best_pct": 95.6,
+  "live_outfits_pct": 98.1,
+  "live_answers_ok_pct": 100.0,
+  "latency_median_s": 26.93,
+  "latency_p90_s": 38.19
+}
