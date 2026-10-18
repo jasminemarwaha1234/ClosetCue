@@ -84,10 +84,12 @@ export const putProfile = (profile: StyleProfile) =>
 export const getOutfits = (req: OutfitsRequest) =>
   USE_MOCKS ? mock(mocks.outfits(req)) : api<OutfitsResponse>('POST', '/outfits', req);
 
-// "Make it nicer" has no endpoint yet (backend/CHANGES_FOR_CHARLIE.md), so it's mock-only.
-export async function makeItNicer(outfit: Outfit): Promise<Outfit> {
+// One pricier version of the outfit, which may go over budget_max (OutfitsRequest.upgrade_of).
+export async function makeItNicer(req: OutfitsRequest, outfit: Outfit): Promise<Outfit> {
   if (USE_MOCKS) return mock(mocks.nicer(outfit));
-  throw new Error("Make it nicer isn't available yet.");
+  const upgrade_of = [...outfit.items, ...outfit.owned].map((i) => i.id);
+  const res = await api<OutfitsResponse>('POST', '/outfits', { ...req, upgrade_of });
+  return res.outfits[0];
 }
 
 export const tryOn = (photo: Item, itemIds: string[]) =>

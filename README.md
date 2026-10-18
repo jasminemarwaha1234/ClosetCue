@@ -74,6 +74,16 @@ Scan the QR code with Expo Go, or press `i` to open the iOS Simulator. After pul
 npm run lint                                 # ESLint
 npx tsc --noEmit                             # TypeScript
 python -m backend.test_framing <photo> …     # prints the outfit framing the backend sees in each photo
+python -m training.test_retrieval            # retrieval tests
+python -m training.test_reward               # reward tests
+```
+
+## Training
+
+Everything for the stylist model lives in `training/`; [PLAN.md](PLAN.md) section 5 explains it, and [training/JOURNAL.md](training/JOURNAL.md) records every run. Run these from the repo root:
+
+```sh
+python -m training.scrape_catalog            # re-pulls training/catalog_raw.json from training/stores.json (slow on purpose: one request every 3.5 s)
 ```
 
 Add packages with `npx expo install <package>`, not `npm install`, so they match Expo SDK 57.

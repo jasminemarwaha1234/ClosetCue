@@ -100,7 +100,16 @@ export default function CheckoutScreen() {
   async function nicer() {
     setBusy('nicer');
     try {
-      const upgraded = await makeItNicer(outfit!);
+      const upgraded = await makeItNicer(
+        {
+          anchor: s.anchor,
+          budget_min: s.budget[0],
+          budget_max: s.budget[1],
+          max_item_price: s.maxItemPrice,
+          occasion: s.occasion,
+        },
+        outfit!,
+      );
       setPrevious(outfit);
       s.setChosen(upgraded);
     } catch (e) {

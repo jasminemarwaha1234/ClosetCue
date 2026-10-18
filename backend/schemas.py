@@ -1,6 +1,6 @@
-from typing import Literal, Optional, Union
+from typing import Annotated, Literal, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 # The API contract between the app and the backend. src/api/types.ts mirrors this file.
 # Every route except /health, /scan and /faces/find-owner needs the header
@@ -53,9 +53,12 @@ class Look(BaseModel):
     photo_ids: list[str]
 
 
+ClosetId = Annotated[str, StringConstraints(pattern=r"^closet_\d+$")]
+
+
 class ClosetItem(BaseModel):
     """A garment the user already owns, tagged by Gemini from one of their photos. Never bought."""
-    id: str  # "closet_<n>", unique within the user's profile
+    id: ClosetId  # unique within the user's profile
     description: str  # "navy oxford shirt"
     slot: Slot
     colors: list[str]
@@ -68,7 +71,6 @@ class StyleProfile(BaseModel):
     summary: str
     style_tags: list[str]  # same vocabulary as CatalogItem.style_tags
     colors: list[str]  # colors the user wears most
-    formality: int  # 1-5, what they usually wear
     avoid: list[str]  # style tags or colors to leave out, such as "logos"
     departments: list[Literal["men", "women"]]  # catalog sections to show; unisex items always show
     looks: list[Look]
@@ -83,33 +85,54 @@ Occasion = Literal[
 GeneratedBy = Literal["our-llama", "base-llama", "gemini"]
 
 
-class Anchor(BaseModel):
-    source: Literal["catalog", "closet"]
-    id: str  # a CatalogItem.id or a ClosetItem.id from the user's profile
+class CatalogAnchor(BaseModel):
+    source: Literal["catalog"]
+    id: str  # a CatalogItem.id
 
 
+class ClosetAnchor(BaseModel):
+    source: Literal["closet"]
+    id: ClosetId  # a ClosetItem.id from the user's profile
+
+
+Anchor = Annotated[Union[CatalogAnchor, ClosetAnchor], Field(discriminator="source")]
+
+
+# An anchor id missing from the catalog or the user's closet is a 422 from the route.
 class OutfitsRequest(BaseModel):
     anchor: Optional[Anchor] = None  # None means "I need an outfit for..." with no anchor
-    budget_min: float
-    budget_max: float
-    max_item_price: Optional[float] = None  # no single catalog item may cost more
+    budget_min: float = Field(ge=0)
+    budget_max: float = Field(gt=0)
+    max_item_price: Optional[float] = Field(default=None, gt=0)  # no single catalog item may cost more
     occasion: Occasion
+    # "Make it nicer": ids of the outfit's items and owned pieces. The backend returns one
+    # pricier version with the budget range moved up to (that outfit's total, total + $150],
+    # so it can exceed budget_max. The checkout mandate is what refuses it.
+    upgrade_of: Optional[list[str]] = None
+
+    @model_validator(mode="after")
+    def _check_budget(self) -> "OutfitsRequest":
+        if self.budget_min > self.budget_max:
+            raise ValueError("budget_min is above budget_max")
+        return self
 
 
 class Outfit(BaseModel):
-    id: str
-    items: list[CatalogItem]  # what would be bought
+    id: str  # opaque; the backend doesn't store outfits
+    items: list[CatalogItem]  # what would be bought, a catalog anchor included
     owned: list[ClosetItem]  # pieces from the user's closet; free and never in the cart
-    total: float  # sum of `items` prices only
+    total: float  # sum of `items` prices only, computed by the backend and rounded to cents
     reason: str
     # Item id -> up to 3 same-slot alternatives that keep the total within the budget range.
-    # The anchor and owned pieces have none. The app swaps locally and re-adds the prices.
+    # The anchor and owned pieces have none. The app swaps locally, re-adds the prices,
+    # and keeps looking up swaps under the original id.
     swaps: dict[str, list[CatalogItem]]
 
 
+# A 503 when every generator fails, never an empty list.
 class OutfitsResponse(BaseModel):
-    outfits: list[Outfit]
-    generated_by: GeneratedBy  # the app labels anything that isn't "our-llama"
+    outfits: list[Outfit] = Field(min_length=1, max_length=3)
+    generated_by: GeneratedBy  # covers every outfit; the app labels anything that isn't "our-llama"
 
 
 # POST /tryon (TryOnRequest) -> TryOnResponse
@@ -193,21 +216,6 @@ class RatePair(BaseModel):
 class RateChoice(BaseModel):
     pair_id: str
     choice: Literal["a", "b"]
-
-
-# POST /fit (FitFeedback) -> StyleProfile, updated from the ratings
-FitRating = Literal["too_small", "right", "too_big"]
-
-
-class ItemFit(BaseModel):
-    item_id: str
-    fit: FitRating
-    liked: bool
-
-
-class FitFeedback(BaseModel):
-    order_id: str
-    items: list[ItemFit]
 
 
 # DELETE /me -> 204, after deleting the user's profile, feedback and mandates
