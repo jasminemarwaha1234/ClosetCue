@@ -9,6 +9,6 @@ router = APIRouter()
 
 @router.delete("/me", status_code=204)
 async def delete_me(user_id: str = Depends(supabase.current_user)) -> Response:
-    # Profile, feedback, mandates and the anonymous account. Photos are never stored.
+    # Profile, feedback, preferences, mandates and the anonymous account. Photos are never stored.
     await supabase.delete_user(user_id)
     return Response(status_code=204)

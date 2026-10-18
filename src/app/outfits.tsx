@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { router, Stack } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import type { Outfit } from '@/api/types';
-import { Header, PieceImage, RetailerLink, money } from '@/components/ui';
-import { capitalize, occasionLabel, useAnchorItem, useSession } from '@/lib/session';
+import { getOutfits } from '@/api/client';
+import type { Outfit, Retry } from '@/api/types';
+import { Header, OutlineButton, PieceImage, RetailerLink, money } from '@/components/ui';
+import { capitalize, occasionLabel, outfitsRequest, useAnchorItem, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
 const FALLBACK_LABEL = {
@@ -36,8 +37,12 @@ export default function OutfitsScreen() {
   const [swaps, setSwaps] = useState<SwapState>({});
   // For each outfit, the original ids of the pieces the user doesn't want to buy.
   const [removed, setRemoved] = useState<Record<string, string[]>>({});
+  const [retrying, setRetrying] = useState(false);
+  // True once these outfits came from the user asking for Gemini, not from a fallback.
+  const [retried, setRetried] = useState(false);
 
   const anchorId = s.anchor?.id;
+  const turnedDown = s.generatedBy === 'our-llama' || s.generatedBy === 'base-llama' ? s.generatedBy : null;
   const shown = s.outfits.map((o) => applyEdits(o, swaps[o.id], removed[o.id]));
   const anchorName =
     anchorItem?.catalog?.name.split(' ').pop()?.toLowerCase() ??
@@ -58,6 +63,27 @@ export default function OutfitsScreen() {
     setRemoved({ ...removed, [o.id]: next });
   }
 
+  // Gemini answers instead, never with an outfit shown here (OutfitsRequest.retry). Takes ~30 s, up to 60.
+  async function retry(generatedBy: Retry['generated_by']) {
+    setRetrying(true);
+    try {
+      const res = await getOutfits({
+        ...outfitsRequest(s),
+        retry: { generated_by: generatedBy, outfits: s.outfits.map((o) => [...o.items, ...o.owned].map((i) => i.id)) },
+      });
+      s.setOutfits(res.outfits);
+      s.setGeneratedBy(res.generated_by);
+      setOpen(0);
+      setSwaps({});
+      setRemoved({});
+      setRetried(true);
+    } catch (e) {
+      Alert.alert("Couldn't ask Gemini", e instanceof Error ? e.message : String(e));
+    } finally {
+      setRetrying(false);
+    }
+  }
+
   function go(o: Outfit, to: 'tryon' | 'checkout') {
     s.setChosen(o);
     if (to === 'tryon') router.push({ pathname: '/tryon/[outfitId]', params: { outfitId: o.id } });
@@ -75,7 +101,9 @@ export default function OutfitsScreen() {
           title={anchorName ? `Built around your ${anchorName}` : `Ready for ${occasionLabel(s.occasion).toLowerCase()}`}
         />
 
-        {s.generatedBy && s.generatedBy !== 'our-llama' ? (
+        {retried ? (
+          <Text style={styles.asked}>Made by Gemini, as you asked.</Text>
+        ) : s.generatedBy && s.generatedBy !== 'our-llama' ? (
           <Text style={styles.fallback}>{FALLBACK_LABEL[s.generatedBy]}</Text>
         ) : null}
 
@@ -183,6 +211,17 @@ export default function OutfitsScreen() {
         )}
 
         <Text style={styles.hint}>Tap × to leave a piece out, or Swap to change it.</Text>
+
+        {turnedDown ? (
+          <View style={styles.retry}>
+            <OutlineButton
+              label={retrying ? 'Asking Gemini…' : 'Try again with Gemini'}
+              onPress={() => retry(turnedDown)}
+              disabled={retrying}
+            />
+            {retrying ? <Text style={styles.hint}>This can take up to a minute.</Text> : null}
+          </View>
+        ) : null}
       </ScrollView>
     </>
   );
@@ -200,6 +239,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     overflow: 'hidden',
   },
+  asked: { fontSize: 14, lineHeight: 20, color: colors.textMuted },
   card: { gap: spacing.md, padding: spacing.md, borderRadius: radii.xl, backgroundColor: colors.surface },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   cardTitle: { fontSize: 20, lineHeight: 24, fontWeight: '700', letterSpacing: -0.2, color: colors.text },
@@ -278,4 +318,5 @@ const styles = StyleSheet.create({
   compactMeta: { fontSize: 14, lineHeight: 18, color: colors.textMuted },
   compactTotal: { fontSize: 17, lineHeight: 22, fontWeight: '700', color: colors.text },
   hint: { fontSize: 14, lineHeight: 20, color: colors.textMuted, textAlign: 'center' },
+  retry: { gap: spacing.sm },
 });

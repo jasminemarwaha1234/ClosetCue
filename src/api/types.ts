@@ -85,6 +85,14 @@ export type Anchor =
   | { source: 'catalog'; id: string } // a CatalogItem.id
   | { source: 'closet'; id: ClosetId }; // a ClosetItem.id from the user's profile
 
+// "Try again with Gemini" on the Outfits screen: the outfits the user turned down, as the model
+// returned them (item and owned ids, before any swaps). Gemini answers instead, and the pair is
+// saved as a preference row for DPO training (training/build_dpo.py).
+export type Retry = {
+  generated_by: 'our-llama' | 'base-llama';
+  outfits: string[][]; // at least 1
+};
+
 export type OutfitsRequest = {
   anchor: Anchor | null; // null means "I need an outfit for..." with no anchor
   budget_min: number; // 0 or more, at most budget_max
@@ -95,6 +103,7 @@ export type OutfitsRequest = {
   // pricier version with the budget range moved up to (that outfit's total, total + $150],
   // so it can exceed budget_max. The checkout mandate is what refuses it.
   upgrade_of?: string[] | null;
+  retry?: Retry | null;
 };
 
 export type Outfit = {
@@ -175,4 +184,4 @@ export type RatePair = {
 
 export type RateChoice = { pair_id: string; choice: 'a' | 'b' };
 
-// DELETE /me -> 204, after deleting the user's profile, feedback and mandates
+// DELETE /me -> 204, after deleting the user's profile, feedback, preferences and mandates

@@ -9,7 +9,7 @@ import { PayMark, PaySheet } from '@/components/PaySheet';
 import { Header, OutlineButton, PieceImage, PrimaryButton, TextButton, money } from '@/components/ui';
 import { confirmPayment } from '@/lib/confirm';
 import { payMethod } from '@/lib/payment';
-import { capitalize, useSession } from '@/lib/session';
+import { capitalize, outfitsRequest, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
 function hoursLeft(m: Mandate) {
@@ -106,16 +106,7 @@ export default function CheckoutScreen() {
   async function nicer() {
     setBusy('nicer');
     try {
-      const upgraded = await makeItNicer(
-        {
-          anchor: s.anchor,
-          budget_min: s.budget[0],
-          budget_max: s.budget[1],
-          max_item_price: s.maxItemPrice,
-          occasion: s.occasion,
-        },
-        outfit!,
-      );
+      const upgraded = await makeItNicer(outfitsRequest(s), outfit!);
       setPrevious(outfit);
       s.setChosen(upgraded);
     } catch (e) {

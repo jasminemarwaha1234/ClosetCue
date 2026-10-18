@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getOutfits } from '@/api/client';
 import { RangeSlider } from '@/components/RangeSlider';
 import { Chip, Header, PieceImage, PrimaryButton, SectionTitle, money } from '@/components/ui';
-import { BUDGET_STOPS, OCCASIONS, capitalize, useAnchorItem, useSession } from '@/lib/session';
+import { BUDGET_STOPS, OCCASIONS, capitalize, outfitsRequest, useAnchorItem, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
 const MAX_ITEM_OPTIONS: (number | null)[] = [null, 50, 100];
@@ -20,13 +20,7 @@ export default function BuildScreen() {
   async function build() {
     setLoading(true);
     try {
-      const res = await getOutfits({
-        anchor: s.anchor,
-        budget_min: s.budget[0],
-        budget_max: s.budget[1],
-        max_item_price: s.maxItemPrice,
-        occasion: s.occasion,
-      });
+      const res = await getOutfits(outfitsRequest(s));
       s.setOutfits(res.outfits);
       s.setGeneratedBy(res.generated_by);
       s.setChosen(null);

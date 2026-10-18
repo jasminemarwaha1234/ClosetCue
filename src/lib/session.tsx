@@ -11,6 +11,7 @@ import type {
   Mandate,
   Occasion,
   Outfit,
+  OutfitsRequest,
   Receipt,
   StyleProfile,
 } from '@/api/types';
@@ -165,6 +166,17 @@ export const OCCASIONS: { value: Occasion; label: string }[] = [
   { value: 'athletic', label: 'Athletic' },
   { value: 'comfy', label: 'Comfy' },
 ];
+
+// POST /outfits for what the user picked on Build.
+export function outfitsRequest(s: Pick<Session, 'anchor' | 'budget' | 'maxItemPrice' | 'occasion'>): OutfitsRequest {
+  return {
+    anchor: s.anchor,
+    budget_min: s.budget[0],
+    budget_max: s.budget[1],
+    max_item_price: s.maxItemPrice,
+    occasion: s.occasion,
+  };
+}
 
 export const occasionLabel = (o: Occasion) => OCCASIONS.find((x) => x.value === o)?.label ?? o;
 

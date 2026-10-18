@@ -118,8 +118,10 @@ export const createProfile = (photos: Thumb[]) =>
 export const putProfile = (profile: StyleProfile) =>
   USE_MOCKS ? mock(profile) : api<StyleProfile>('PUT', '/profile', profile);
 
-export const getOutfits = (req: OutfitsRequest) =>
-  USE_MOCKS ? mock(mocks.outfits(req)) : api<OutfitsResponse>('POST', '/outfits', req);
+export const getOutfits = (req: OutfitsRequest): Promise<OutfitsResponse> =>
+  USE_MOCKS
+    ? mock({ ...mocks.outfits(req), ...(req.retry ? { generated_by: 'gemini' as const } : {}) })
+    : api<OutfitsResponse>('POST', '/outfits', req);
 
 // One pricier version of the outfit, which may go over budget_max (OutfitsRequest.upgrade_of).
 export async function makeItNicer(req: OutfitsRequest, outfit: Outfit): Promise<Outfit> {
@@ -153,7 +155,7 @@ export async function sendRate(choice: RateChoice): Promise<void> {
   return api<void>('POST', '/rate', choice);
 }
 
-// "Delete my data" on the Trust screen: the backend deletes the profile, feedback, mandates
+// "Delete my data" on the Trust screen: the backend deletes the profile, feedback, preferences, mandates
 // and the anonymous account, then the app signs out so the next launch starts fresh.
 export async function deleteMe(): Promise<void> {
   if (!USE_MOCKS) await api<void>('DELETE', '/me');

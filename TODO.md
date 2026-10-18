@@ -11,9 +11,7 @@ Status as of Sun Oct 18, 10:00 AM PDT. Feature freeze 11:00, submit by 11:30, ju
 
 ### Before the 11:00 freeze
 
-- [ ] **Decide on "make it nicer".** Charlie wants to remove it for simplicity. Catch: the PLAN.md section 8 demo uses it to push the cart past the $200 limit so checkout refuses it. Options:
-  - Remove it: backend `upgrade_of` in `backend/schemas.py` and `backend/routes/outfits.py`; app `upgrade_of` in `src/api/types.ts`, `makeItNicer` in `src/api/client.ts` and its button in `src/app/outfits.tsx`. Then show the over-limit refusal another way.
-  - Or keep it and fix its bug: an upgrade can come back identical to the original outfit ($141.00 → $141.00), because upgrades skip the budget check and nothing requires a higher total. Fix: drop upgrade outfits that don't cost more than the current one.
+- [x] **"Make it nicer" kept and fixed.** An upgrade could come back identical to the original outfit ($141.00 → $141.00), or still fit the $200 limit, so checkout wouldn't refuse it. Upgrades are now priced above both the current total and `budget_max` (`backend/routes/outfits.py`), and the guard drops any that aren't.
 - [ ] **Decide on a "try again with Gemini" button** for when the user doesn't like a Llama outfit.
   - Backend: an optional `prefer: "gemini"` field in `OutfitsRequest` (`schemas.py` and `types.ts` together) that skips Llama. About 15 min.
   - App (Jasmine): the button, plus a loading state for the ~27 s wait.

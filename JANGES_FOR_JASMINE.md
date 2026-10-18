@@ -130,3 +130,23 @@ Decisions since Update 3:
 - **`/rate` is built** (`backend/routes/rate.py`, pushed). It serves pairs from `backend/data/rate_pairs.jsonl`, which Charlie builds from two models' eval answers around 9:30. Until then, `GET /rate/next` answers 503 "There are no outfits to compare yet", which the Rate screen shows as is. No app changes needed.
 - **Two fixes in your files, both pushed:** the photos screen shows "No outfit photos found…" instead of "Next: your style" when a scan finds none, and `session.tsx` now suggests an anchor once per profile (so Build is prefilled right after onboarding; clearing it sticks) and loads the catalog even when `GET /profile` answers 404 for a new user. Before that fix, new users had an empty catalog until they restarted the app.
 - **`comfy` is now formality 1–2** (was 1). Only the reward and retrieval changed; nothing in the app.
+
+## Update 5, Sunday Oct 18: "Try again with Gemini"
+
+New on branch `gemini-retry`. When the user doesn't like the outfits our Llama made, a button asks Gemini instead. Each press is saved as a training pair for the next round of our model (DPO: Gemini's outfits are the preferred answer, the turned-down ones the rejected answer). One step is yours: the new Supabase table.
+
+**Supabase: one new table, `preferences`.** Paste `backend/supabase_schema.sql` into the SQL editor and run it again. Running it twice is safe, and it only adds `preferences` with the same rules as `feedback` (RLS on, no app access, `on delete cascade`). Each row is one press: the prompt, Gemini's outfits, the turned-down outfits, which Llama made them and the request. It's in Supabase for the same reasons as `feedback`: it has to outlast the request until `python -m training.build_dpo` exports it, and "Delete my data" has to remove it (`delete_user` now deletes from `preferences` too). Until the table exists, retries still work but nothing is saved; the backend logs a warning and the user never sees an error.
+
+**API contract.** `OutfitsRequest` has a new optional `retry: Retry | null`, where `Retry = { generated_by: 'our-llama' | 'base-llama', outfits: string[][] }`: the ids (items, then owned) of each outfit the user turned down, as the model returned them, before any swaps. With `retry` set, the backend skips both Llamas, asks only Gemini, never returns an outfit from `retry.outfits`, and `generated_by` comes back `'gemini'`. On mocks, `getOutfits` returns the usual mock outfits with `generated_by: 'gemini'`.
+
+**Changes in your files:**
+
+- **`outfits.tsx`:** a "Try again with Gemini" `OutlineButton` under the hint, shown only when `generatedBy` is `our-llama` or `base-llama`. While it waits, it reads "Asking Gemini…" (disabled) with "This can take up to a minute." under it; Gemini takes about 30 s. On success the outfits are replaced and `open`, swaps and removed pieces reset. Afterwards the screen shows "Made by Gemini, as you asked." in muted text instead of the yellow "our trained model is offline" label, which would be wrong here. Errors show in an Alert, like Build.
+- **`session.tsx`:** new `outfitsRequest(s)`, which builds the `OutfitsRequest` from the Build choices. Build, Outfits and Checkout's "make it nicer" all use it now instead of three copies of the same object.
+
+**Not tested on a phone yet.** Typecheck, lint and the backend tests pass, but nobody has tapped the button. Please add it to the demo-path run: Build → Outfits → "Try again with Gemini" → new outfits with the "as you asked" label → Try-on or Checkout on one of them.
+
+Your call:
+
+- The button's placement and style aren't in Paper yet. Move or restyle it as you like; the request is the only part that has to stay.
+- A retry can't be undone: the Llama outfits are gone once Gemini answers. A "Back to the first outfits" link is possible if you want it.

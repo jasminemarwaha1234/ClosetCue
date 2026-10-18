@@ -48,7 +48,7 @@ def answer(row: dict, rng: random.Random) -> tuple[str | None, str]:
         others = {i for m, other in enumerate(outfits) if m != n for i in other["items"]}
         answers.append({"items": o["items"],
                         "reason": reason(o["items"], others, ctx, row["profile_style_tags"], rng, template)})
-    text = json.dumps({"outfits": answers}, separators=(",", ":"), ensure_ascii=False)
+    text = reward.format_output(answers)
     if reward.score_completion(text, ctx) < MIN_SHARE * best:
         return None, "scores under 95% of the best possible"
     return text, "ok"

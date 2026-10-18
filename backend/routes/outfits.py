@@ -9,6 +9,9 @@
 # Each model gets a second try when fewer than MIN_OUTFITS survive, then the next model in CHAIN
 # answers. If none reaches MIN_OUTFITS, the best partial answer is returned; a 503 only when no
 # outfit survived at all.
+#
+# "Try again with Gemini" (OutfitsRequest.retry) asks only Gemini, never letting it repeat an outfit
+# the user turned down, and saves the pair as a DPO preference row (training/build_dpo.py).
 
 import logging
 import re
@@ -51,8 +54,10 @@ async def outfits(req: OutfitsRequest, user_id: str = Depends(supabase.current_u
 
     budget_min, budget_max, wanted = req.budget_min, req.budget_max, 3
     if req.upgrade_of:
+        # Pricier than both the current outfit and budget_max, so checkout's mandate refuses it (PLAN.md section 8).
         current = round(sum(_lookup(i, items, closet)["price"] for i in req.upgrade_of), 2)
-        budget_min, budget_max, wanted = round(current + 0.01, 2), current + UPGRADE_RANGE, 1
+        floor = max(current, req.budget_max)
+        budget_min, budget_max, wanted = round(floor + 0.01, 2), floor + UPGRADE_RANGE, 1
 
     messages, columns = build_request(
         profile, list(items.values()), occasion=req.occasion, budget_min=budget_min, budget_max=budget_max,
@@ -62,8 +67,14 @@ async def outfits(req: OutfitsRequest, user_id: str = Depends(supabase.current_u
 
     swap_pool = [i for i in items.values() if _allowed(i, profile, None, budget_max, req.max_item_price, req.occasion)]
     swap_pool.sort(key=lambda i: (-_score(i, profile), i["id"]))
+    chain, exclude = CHAIN, frozenset()
+    if req.retry:
+        chain = [(name, ask) for name, ask in CHAIN if name == "gemini"]
+        exclude = frozenset(frozenset(ids) for ids in req.retry.outfits)
     generated_by, chosen = await _generate(messages, ctx, wanted, upgrade=bool(req.upgrade_of), swap_pool=swap_pool,
-                                           style_tags=profile["style_tags"])
+                                           style_tags=profile["style_tags"], chain=chain, exclude=exclude)
+    if req.retry:
+        await _save_preference(user_id, req, messages, ctx, [ids for ids, _ in chosen], profile["style_tags"])
     return OutfitsResponse(
         outfits=[
             _outfit(ids, why, items, closet, req.anchor.id if req.anchor else None, swap_pool, budget_min, budget_max)
@@ -82,11 +93,11 @@ def _lookup(item_id: str, items: dict[str, dict], closet: dict[str, dict]) -> di
     raise HTTPException(422, f"{item_id} isn't in the catalog or your closet")
 
 
-async def _generate(messages, ctx, wanted: int, upgrade: bool, swap_pool: list[dict],
-                    style_tags: list[str]) -> tuple[GeneratedBy, list[tuple[list[str], str]]]:
+async def _generate(messages, ctx, wanted: int, upgrade: bool, swap_pool: list[dict], style_tags: list[str],
+                    chain=CHAIN, exclude=frozenset()) -> tuple[GeneratedBy, list[tuple[list[str], str]]]:
     needed = min(MIN_OUTFITS, wanted)
     best: tuple[GeneratedBy, list] | None = None
-    for name, ask in CHAIN:
+    for name, ask in chain:
         for _ in range(2):
             try:
                 text = await ask(messages, list(ctx["by_id"]), wanted)
@@ -95,7 +106,8 @@ async def _generate(messages, ctx, wanted: int, upgrade: bool, swap_pool: list[d
                 break
             if text is None:  # not configured
                 break
-            kept = _guard(text, ctx, upgrade, swap_pool, style_tags, keep_reasons=name == "gemini")[:wanted]
+            kept = _guard(text, ctx, upgrade, swap_pool, style_tags, keep_reasons=name == "gemini",
+                          exclude=exclude)[:wanted]
             if len(kept) >= needed:
                 return name, kept
             if kept and (best is None or len(kept) > len(best[1])):
@@ -106,15 +118,16 @@ async def _generate(messages, ctx, wanted: int, upgrade: bool, swap_pool: list[d
 
 
 def _guard(text: str, ctx: dict, upgrade: bool, swap_pool: list[dict] = (), style_tags: list[str] = (),
-           keep_reasons: bool = True) -> list[tuple[list[str], str]]:
-    """(item ids, reason) for each outfit in the answer that passes the reward's checks. An outfit
-    over budget_max first gets its priciest swappable item replaced (_repair), when that fits. The
-    reason is templated from the final items unless keep_reasons and nothing was swapped."""
+           keep_reasons: bool = True, exclude=frozenset()) -> list[tuple[list[str], str]]:
+    """(item ids, reason) for each outfit in the answer that passes the reward's checks and isn't in
+    exclude (frozensets of item ids). An outfit over budget_max first gets its priciest swappable item
+    replaced (_repair), when that fits. The reason is templated from the final items unless
+    keep_reasons and nothing was swapped."""
     fenced = re.fullmatch(r"\s*```(?:json)?\s*(.*?)\s*```\s*", text, re.DOTALL)
     parsed = reward.parse_output(fenced.group(1) if fenced else text.strip())
-    if upgrade:  # an upgrade only has to cost more than the outfit it replaces, which the prompt asks for
-        ctx = {**ctx, "budget_min": 0, "budget_max": float("inf")}
-    kept, seen = [], set()
+    if upgrade:  # an upgrade only has to cost more than the outfit it replaces (budget_min)
+        ctx = {**ctx, "budget_max": float("inf")}
+    kept, seen = [], set(exclude)
     for o in parsed or []:
         key = frozenset(o["items"])
         if key in seen:
@@ -133,6 +146,32 @@ def _guard(text: str, ctx: dict, upgrade: bool, swap_pool: list[dict] = (), styl
             why = o["reason"] if keep_reasons and used is ctx else reasons.describe(o["items"], used, style_tags)
             kept.append((o["items"], why))
     return kept
+
+
+async def _save_preference(user_id: str, req: OutfitsRequest, messages: list[dict], ctx: dict,
+                           chosen: list[list[str]], style_tags: list[str]) -> None:
+    """Saves (the prompt, Gemini's outfits as chosen, the turned-down ones as rejected) for DPO. Both
+    sides get templated reasons, so the pair differs only in the items the user judged. Best-effort:
+    the user still gets their outfits when this fails."""
+    unknown = {i for ids in [*chosen, *req.retry.outfits] for i in ids} - set(ctx["by_id"])
+    if unknown:  # a repair's swap, or a profile edited since the first answer
+        log.warning("not saving the retry's preference: %s aren't in the prompt", sorted(unknown))
+        return
+
+    def answer(outfits: list[list[str]]) -> str:
+        return reward.format_output([{"items": ids, "reason": reasons.describe(ids, ctx, style_tags)} for ids in outfits])
+
+    row = {
+        "prompt": messages,
+        "chosen": answer(chosen),
+        "rejected": answer(req.retry.outfits),
+        "rejected_model": req.retry.generated_by,
+        "request": req.model_dump(),
+    }
+    try:
+        await supabase.add_preference(user_id, row)
+    except Exception as e:
+        log.warning("couldn't save the retry's preference: %r", e)
 
 
 def _repair(outfit: dict, ctx: dict, swap_pool: list[dict]) -> tuple[dict, dict] | None:

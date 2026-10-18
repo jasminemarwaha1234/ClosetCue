@@ -1,0 +1,36 @@
+# v3-dpo: DPO on v2-sft from "try again with Gemini" presses: Gemini's outfits chosen over the ones
+# the user turned down from our model, for the same prompt.
+# Data: `python -m training.build_dpo` (training/data/dpo_train.jsonl), then
+# `veri datasets upload training/data/dpo_train.jsonl --name outfit-dpo-v3` and put the id below.
+# lr and beta are Veri's DPO defaults. max_length as v2-sft's max_seq_length: prompt plus answer
+# reach ~2.6k Llama 3.2 tokens, so a shorter default would cut the answers.
+kind = "train"
+
+[job]
+name = "v3-dpo"
+
+[model]
+base = "CharlieBrown364/outfit-llama-v2-sft"
+
+[dataset]
+id = "<dataset id from veri datasets upload>"
+
+[method]
+type = "dpo"
+learning_rate = 5e-6
+beta = 0.1
+max_length = 3072
+lora_rank = 16
+lora_alpha = 32
+
+[resources]
+gpu_type = "L4-24GB"
+gpu_count = 1
+
+[provider]
+name = "aws"
+
+[huggingface]
+repo = "CharlieBrown364/outfit-llama-v3-dpo"
+artifact = "merged"
+private = false

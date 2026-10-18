@@ -217,9 +217,9 @@ trust screen ──────────────────────�
 
 - **App:** this repo. Expo SDK 57, TypeScript, Expo Router (see [AGENTS.md](AGENTS.md)). `src/api/client.ts` answers from `src/api/mocks.ts` unless `EXPO_PUBLIC_USE_MOCKS=false`; `/tryon` always calls the real backend.
 - **Backend:** FastAPI in `backend/`, run from the repo root with `uvicorn backend.main:app --host 0.0.0.0 --port 8000`. For the demo it runs on a laptop behind a tunnel. The pose and face models run in the server process, on CPU.
-- **Supabase** stores accounts, profiles, feedback and mandates ([backend/supabase_schema.sql](backend/supabase_schema.sql)):
+- **Supabase** stores accounts, profiles, feedback, preferences and mandates ([backend/supabase_schema.sql](backend/supabase_schema.sql)):
   - **Sign-in:** username and password, or anonymous for guests. Needs "Confirm email" **off** and "Allow manual linking" **on** in the Supabase dashboard; the app checks the first and shows an error if it's on.
-  - Tables: `profiles` (the style profile and closet as JSON), `feedback` (A/B choices, with the pair shown and which model made each side), `mandates`.
+  - Tables: `profiles` (the style profile and closet as JSON), `feedback` (A/B choices, with the pair shown and which model made each side), `preferences` ("try again with Gemini" presses, one DPO pair each), `mandates`.
   - The phone only talks to Supabase to sign in. Reads and writes go through the backend, which checks the access token and holds the service key. Delete my data deletes the user's rows and the account.
 - **Secrets:** Gemini, Veri, Supabase service and Stripe secret keys live only in `backend/.env` (template: `backend/.env.example`). The app's settings go in the root `.env`, and everything in it ships inside the app. The repo goes public for submission.
 - **The guard:** the backend runs the reward's checks on every model answer (section 5).
@@ -555,7 +555,7 @@ The "Pay with" picker in checkout (Apple Pay, Visa, PayPal) is a separate, simul
 
 **Production design.** No order reaches a store. In production the agent would order through each store's **Agentic Commerce Protocol (ACP)** checkout and pay with a Stripe **Shared Payment Token**, limited to one store, a maximum amount and an expiry. The mandate maps onto those limits almost one to one.
 
-**Demo moment:** you say "make it nicer", the agent proposes an upgrade that pushes the cart past your $200 limit, and the backend refuses it and says why. "Make it nicer" is `POST /outfits` with `upgrade_of` set to the current outfit's item ids: one outfit priced in (that outfit's total, total + $150], the one request allowed past `budget_max`, because the mandate is what's supposed to refuse it.
+**Demo moment:** you say "make it nicer", the agent proposes an upgrade that pushes the cart past your $200 limit, and the backend refuses it and says why. "Make it nicer" is `POST /outfits` with `upgrade_of` set to the current outfit's item ids: one outfit priced in (F, F + $150], where F is the larger of that outfit's total and `budget_max`. It's the one request allowed past `budget_max`, and it always goes past it, so the mandate (which defaults to `budget_max`) refuses it.
 
 **Merchant impact panel:** outfit-level selling raises basket size, and trying an outfit on should cut returns. Cite a real source for return rates. Don't invent numbers.
 
