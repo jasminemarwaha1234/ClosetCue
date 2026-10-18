@@ -271,7 +271,7 @@
 //           </View>
 //         )}
 
-//         {owner && !scanning && (
+//         {owner && !scanning && !limited && (
 //           <Pressable onPress={() => setOwner(null)}>
 //             <Text style={styles.link}>Not you? Reset my face</Text>
 //           </Pressable>
@@ -438,7 +438,10 @@ export default function PhotosScreen() {
       );
       return;
     }
-    setLimited(access.accessPrivileges === 'limited');
+    // "Limit Access" in iOS's prompt means the person picked these photos themselves, so use
+    // all of them: no face matching and no outfit check (PLAN.md section 3, Pick photos).
+    const picked = access.accessPrivileges === 'limited';
+    setLimited(picked);
 
     setPhase('scanning');
     try {
@@ -467,6 +470,10 @@ export default function PhotosScreen() {
       }
       setUnreadable(failed);
       setChecked(made.length);
+      if (picked) {
+        setOutfitThumbs(made);
+        return;
+      }
 
       // Step 2: find the user's face (first time only), then ask "is this you?"
       let ownerEmb = owner;
@@ -551,6 +558,8 @@ export default function PhotosScreen() {
     ? { eyebrow: 'FIRST SCAN', title: 'Is this you?' }
     : scanning
     ? { eyebrow: 'SCANNING', title: 'Finding your outfits' }
+    : phase === 'done' && limited
+    ? { eyebrow: 'PICKED', title: `${outfitThumbs.length} ${outfitThumbs.length === 1 ? 'photo' : 'photos'}` }
     : phase === 'done'
     ? { eyebrow: 'DONE', title: `${outfitThumbs.length} outfit photos` }
     : { eyebrow: 'YOUR PHOTOS', title: 'Find your outfits' };
@@ -561,6 +570,8 @@ export default function PhotosScreen() {
       : null
     : scanning
     ? null
+    : phase === 'done' && limited
+    ? 'You picked these yourself, so there was no face scan.'
     : phase === 'done'
     ? `Checked ${checked} photos and skipped ${screenshots} screenshots.`
     : 'Find the photos of you in outfits.';
@@ -582,6 +593,10 @@ export default function PhotosScreen() {
               small thumbnail. The first time, it finds the face that shows up most and asks if it's
               you. Then it keeps only photos where you're wearing a visible outfit. Thumbnails are
               checked on our server and not stored. Full-size photos never leave your phone.
+            </Text>
+            <Text style={styles.cardText}>
+              Rather choose? Tap Limit Access when asked and pick the photos yourself. Then only those are used,
+              with no face scan.
             </Text>
           </View>
         )}
@@ -635,18 +650,23 @@ export default function PhotosScreen() {
         {message && <Text style={styles.error}>{message}</Text>}
         {faceNote && <Text style={styles.subtitle}>{faceNote}</Text>}
 
-        {limited && (
+        {limited && !scanning && (
           <View style={styles.notice}>
             <Text style={styles.noticeText}>
-              You shared only some of your photos. As If works best with more of them.
+              Only the photos you picked are used. Pick a few outfit photos of you, up to {PROFILE_PHOTOS}.
             </Text>
-            <Pressable onPress={() => MediaLibrary.presentPermissionsPickerAsync()}>
-              <Text style={styles.link}>Choose more photos</Text>
+            <Pressable
+              onPress={async () => {
+                await MediaLibrary.presentPermissionsPickerAsync();
+                scan();
+              }}
+            >
+              <Text style={styles.link}>Change my photos</Text>
             </Pressable>
           </View>
         )}
 
-        {phase === 'done' && (
+        {phase === 'done' && !limited && (
           <View style={styles.stats}>
             <View style={styles.stat}>
               <Text style={styles.statNumber}>{framingCounts.full}</Text>
@@ -679,7 +699,9 @@ export default function PhotosScreen() {
 
         {(phase === 'idle' || phase === 'done') && (
           <Pressable onPress={scan} style={styles.button}>
-            <Text style={styles.buttonText}>{phase === 'done' ? 'Scan again' : 'Scan my photos'}</Text>
+            <Text style={styles.buttonText}>
+              {phase === 'idle' ? 'Scan my photos' : limited ? 'Use my picked photos' : 'Scan again'}
+            </Text>
           </Pressable>
         )}
 
@@ -700,7 +722,9 @@ export default function PhotosScreen() {
             </Text>
           ) : (
             <Text style={styles.subtitle}>
-              No outfit photos found. Try scanning again, or share more photos.
+              {limited
+                ? 'No photos picked yet. Tap Change my photos and pick a few of you in outfits.'
+                : 'No outfit photos found. Try scanning again, or share more photos.'}
             </Text>
           ))}
       </ScrollView>
