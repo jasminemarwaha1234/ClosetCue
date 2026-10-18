@@ -220,7 +220,7 @@ trust screen ──────────────────────�
 ```
 
 - **App:** this repo. Expo SDK 57, TypeScript, Expo Router with routes in `src/app/` (see [AGENTS.md](AGENTS.md)). Photos are shrunk on the phone with `expo-image-manipulator` before upload.
-- **Backend:** FastAPI in `server/`. It's in `backend/` today and gets renamed when we move to the repo layout below. For the demo it runs on a laptop behind a tunnel, or on a small cloud VM if time allows. The pose and face models run inside the server process, on CPU.
+- **Backend:** FastAPI in `backend/`. For the demo it runs on a laptop behind a tunnel, or on a small cloud VM if time allows. The pose and face models run inside the server process, on CPU.
 - **Supabase** stores accounts, style profiles and feedback:
   - **Anonymous sign-in** gives every user an account with no sign-up screen, so judges and friends can start in one tap. Email sign-in can come later.
   - Tables: `profiles` (one per user, the style profile as JSON), `feedback` (A/B choices and fit ratings, with the outfits shown). The `feedback` table exports straight to the DPO dataset.
@@ -231,7 +231,7 @@ trust screen ──────────────────────�
 
 ### Repo layout
 
-Everything lives in this one repo. The Expo app stays at the root, which is what [AGENTS.md](AGENTS.md) and the Expo commands expect. Today the app is one file ([App.tsx](App.tsx)) and the server is one file in `backend/`. When we move to this layout, `backend/` becomes `server/`, and the code in `backend/main.py` splits into the files below.
+Everything lives in this one repo. The Expo app stays at the root, which is what [AGENTS.md](AGENTS.md) and the Expo commands expect. Today the app is one file ([App.tsx](App.tsx)) and the server is one file in `backend/`. When we move to this layout, the code in `backend/main.py` splits into the files below.
 
 ```
 LaHacksAI/
@@ -243,7 +243,7 @@ LaHacksAI/
 │   ├── lib/          supabase.ts, sentry.ts, photos.ts (the shrink and scan helpers now in App.tsx)
 │   └── theme/        colors, type and spacing from the Paper style guide
 ├── assets/
-├── server/           FastAPI
+├── backend/          FastAPI
 │   ├── main.py       creates the app, includes the routers
 │   ├── routes/       profile.py, outfits.py, tryon.py, checkout.py, feedback.py, me.py, scan.py, faces.py
 │   ├── services/     gemini.py, veri.py, supabase.py, retrieval.py, pose.py, faces.py
@@ -263,9 +263,9 @@ LaHacksAI/
 
 Rules that matter more than the exact folders:
 
-- **One copy of `catalog.json` and of `reward.py`.** The same reward trains the model and guards live answers, so a second copy that drifts means the guard rejects answers the model was trained to give. Run the server from the repo root (`uvicorn server.main:app`) so it can `import training.reward`. If `reward.py` embeds the catalog for Veri (section 5), generate that copy from `catalog.json` instead of editing it by hand.
-- **API shapes in two places:** `server/schemas.py` and `src/api/types.ts`. Freeze both in the first hour. `src/api/mocks.ts` returns fake data in those shapes, so the app can be built before the server is ready.
-- **One file per endpoint in `server/routes/`**, so both of us can work on the server without merge conflicts (section 10).
+- **One copy of `catalog.json` and of `reward.py`.** The same reward trains the model and guards live answers, so a second copy that drifts means the guard rejects answers the model was trained to give. Run the server from the repo root (`uvicorn backend.main:app`) so it can `import training.reward`. If `reward.py` embeds the catalog for Veri (section 5), generate that copy from `catalog.json` instead of editing it by hand.
+- **API shapes in two places:** `backend/schemas.py` and `src/api/types.ts`. Freeze both in the first hour. `src/api/mocks.ts` returns fake data in those shapes, so the app can be built before the server is ready.
+- **One file per endpoint in `backend/routes/`**, so both of us can work on the server without merge conflicts (section 10).
 
 ---
 
@@ -481,7 +481,7 @@ The split works because training runs take 30–60 minutes of waiting. Person A 
 
 ### Staying unblocked
 
-1. **Contract first (Sat 2–4 PM, together).** Agree on the outfit JSON schema, the request and response of every endpoint, and the `catalog.json` fields. Write them into `server/schemas.py` and `src/api/types.ts`, and have B write `src/api/mocks.ts` from them. After that, neither of us waits on the other.
+1. **Contract first (Sat 2–4 PM, together).** Agree on the outfit JSON schema, the request and response of every endpoint, and the `catalog.json` fields. Write them into `backend/schemas.py` and `src/api/types.ts`, and have B write `src/api/mocks.ts` from them. After that, neither of us waits on the other.
 2. **Split the server by file.** A owns `profile.py`, `outfits.py`, `feedback.py` and the `services/` files for Gemini, Veri and Supabase. B owns `tryon.py`, `checkout.py`, `me.py`, `scan.py`, `faces.py`, and the pose and face `services/`. `main.py` and `schemas.py` are shared: keep edits there small and pull before touching them.
 3. **Integration checkpoints**, where the app swaps a mock for the real endpoint:
    - **Sat 10 PM:** `/profile` live, and `/outfits` against v0.
