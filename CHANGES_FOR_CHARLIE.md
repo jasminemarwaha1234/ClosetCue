@@ -4,9 +4,9 @@
 > - The scraper will fill `url` with each product's page (PLAN.md section 5).
 > - `/fit`, its types and the fit placeholder screen are gone.
 >
-> - The color names and `style_tags` are final, in `training/vocab.py` (also listed in PLAN.md section 5, Catalog). Colors: white, cream, beige, tan, khaki, brown, gray, charcoal, black, navy, denim, blue, green, olive, yellow, orange, red, burgundy, pink, lilac, purple, gold, silver. Style tags: minimal, classic, relaxed, tailored, smart-casual, preppy, streetwear, graphic, workwear, outdoors, athleisure, vintage, bohemian, romantic, edgy, trendy, logos.
+> - The color names and `style_tags` were reworked after this note. The final lists, with the 8 occasions and the new `pattern`, `fit` and `fits` fields, are in [JANGES_FOR_JASMINE.md](JANGES_FOR_JASMINE.md) ("Update 2, Sunday Oct 18"), `training/vocab.py` and PLAN.md section 5.
 >
-> Nothing is open on my side. One gap on the app side: `swatches` in `src/theme/index.ts` has no `gold` or `silver` (jewelry will use them), so those fall back to `surfaceMuted`.
+> `swatches` in `src/theme/index.ts` now covers all 25 colors, with your `gold` and `silver` values.
 
 > **Status, Oct 18 morning (Jasmine):** thanks, everything above is merged into my branch with no conflicts. `gold` and `silver` are in `swatches` now, and `GeneratedBy`'s spelling is fine as it is. What's open for you:
 > 1. **Supabase: I did it, so you don't have to** (section at the bottom). Your `/profile` and `/rate` routes just call the helpers in `backend/services/supabase.py`.
