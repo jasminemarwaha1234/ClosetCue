@@ -7,6 +7,7 @@
 # Env (backend/.env): GEMINI_API_KEY.
 
 import asyncio
+import logging
 import base64
 import io
 import json
@@ -24,6 +25,7 @@ from PIL import Image
 from backend.services.images import decode
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+log = logging.getLogger(__name__)
 
 # Nano Banana 2.1, Gemini's main image-editing model. It takes up to 10 garment images
 # alongside the person, which covers a whole outfit.
@@ -128,8 +130,19 @@ async def try_on(photo_b64: str, item_ids: list[str]) -> str:
     except errors.APIError as e:
         raise HTTPException(502, f"Gemini couldn't make the try-on: {e.message}")
 
-    images = [p.inline_data.data for c in res.candidates or [] for p in (c.content.parts if c.content else []) if p.inline_data]
+    candidates = res.candidates or []
+    # A candidate can come back with no content or no parts, e.g. when Gemini declines the photo.
+    parts = [p for c in candidates for p in ((c.content.parts if c.content else None) or [])]
+    images = [p.inline_data.data for p in parts if p.inline_data and p.inline_data.data]
     if not images:
-        # Usually a safety refusal; the app falls back to the flat lay.
-        raise HTTPException(502, "Gemini didn't return an image. Try a different photo.")
+        reasons = {str(c.finish_reason).split(".")[-1] for c in candidates if c.finish_reason}
+        blocked = res.prompt_feedback.block_reason if res.prompt_feedback else None
+        text = " ".join(p.text for p in parts if p.text).strip()
+        log.warning("Try-on returned no image: finish=%s blocked=%s text=%r", reasons, blocked, text[:200])
+        # Usually Gemini declining the photo; the app keeps the flat lay.
+        raise HTTPException(
+            502,
+            "Gemini couldn't dress this photo. Try a different one: a full-body photo of just you, "
+            "standing, in good light.",
+        )
     return _jpeg(images[0])
