@@ -193,3 +193,15 @@ From Jasmine, 2026-10-18.
 - It reads product photos from `training/catalog.json`, or `catalog_raw.json` until that exists, so please keep `image` in the tagged catalog.
 - The app's mock catalog is now 18 real items from `catalog_raw.json` with their real ids, images and URLs, so mocks and the real catalog line up.
 - **Heads-up for your tagging:** the Gemini key's project is on the free tier, where image models have a quota of 0. Text models still work there, with tight per-minute limits. Try-on needs billing turned on for the key's Google project.
+
+---
+
+# Accounts and the payment picker (FYI, nothing to do)
+
+From Jasmine, 2026-10-18. App-only; no backend or contract changes. Merged your vocab/occasion push into my branch with no conflicts.
+
+- **Sign-in:** the welcome screen has a username and password (Supabase email/password, with each username mapped to `<username>@users.asif.app` and "Confirm email" off) and Continue as guest (anonymous). Google is postponed. A guest can save an account later from Your style (`updateUser`) and keeps the same user id, so your `profiles` row stays attached. The app no longer signs in silently on launch; `index.tsx` opens Build when the account already finished onboarding.
+- **Payment picker:** checkout's "Pay with" sheet (Apple Pay, Visa, PayPal) is simulated and labeled as a demo. The mandate check, refusal and agent card are unchanged.
+- **Files:** `src/lib/supabase.ts`, `src/lib/onboarding.ts` (new), `src/lib/payment.ts` (new), `src/lib/session.tsx`, `src/app/index.tsx`, `src/app/onboarding/welcome.tsx`, `src/app/onboarding/photos.tsx`, `src/app/_layout.tsx` (welcome header hidden), `src/app/(tabs)/style.tsx` (account card), `src/app/checkout/index.tsx`, `src/app/checkout/receipt.tsx`, `src/components/AccountCard.tsx`, `src/components/AccountFields.tsx`, `src/components/PaySheet.tsx`, `src/components/logos.tsx` (all new), `src/api/client.ts` (`usingMocks`), `src/theme/index.ts` (`brands`, `scrim`), `package.json` (`react-native-svg`).
+
+- **Your style uses the real profile now** (`src/app/(tabs)/style.tsx`): summary, style tags, colors, fits, Leave out (`avoid`), closet and looks all come from `StyleProfile`. Editing the summary, Leave out or the new **Fits you wear** chips saves with `PUT /profile`, so your route gets the whole profile back each time.

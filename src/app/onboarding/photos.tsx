@@ -337,6 +337,8 @@
 
 import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
+import { markOnboarded } from '@/lib/onboarding';
+import { getSession } from '@/lib/supabase';
 import { useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -669,8 +671,9 @@ export default function PhotosScreen() {
           // Onboarding is done, so clear it from the stack: swiping back can't return to it.
           <Text
             accessibilityRole="link"
-            onPress={() => {
-              router.dismissAll();
+            onPress={async () => {
+              markOnboarded((await getSession())?.user.id);
+              if (router.canDismiss()) router.dismissAll();
               router.replace('/style');
             }}
             style={[styles.link, styles.linkCenter]}

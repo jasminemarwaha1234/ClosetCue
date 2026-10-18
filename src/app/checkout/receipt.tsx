@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PieceImage, PrimaryButton, RetailerLink, money } from '@/components/ui';
+import { payMethod } from '@/lib/payment';
 import { capitalize, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
@@ -10,7 +11,7 @@ import { colors, radii, spacing } from '@/theme';
 // authorization ID (or a "simulated" label when there is none). Designed in Paper ("As If / Receipt").
 // No order reaches the store (PLAN.md section 8), so it says so and links each item to its real page.
 export default function ReceiptScreen() {
-  const { receipt, mandate, chosen } = useSession();
+  const { receipt, mandate, chosen, payMethodId } = useSession();
 
   if (!receipt) {
     return (
@@ -62,7 +63,8 @@ export default function ReceiptScreen() {
 
         <View>
           <Row label="Bought" value={`${receipt.items.length} ${receipt.items.length === 1 ? 'piece' : 'pieces'}`} />
-          <Row label="Paid with" value={capitalize(receipt.card.label)} />
+          <Row label="Paid with" value={`${payMethod(payMethodId).label} (demo)`} />
+          <Row label="Agent card" value={capitalize(receipt.card.label)} />
           <Row
             label={receipt.authorization_id ? 'Stripe authorization' : 'Payment'}
             value={receipt.authorization_id ?? 'Simulated, no card charged'}

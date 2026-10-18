@@ -13,6 +13,7 @@
 import { useState } from 'react';
 import { router } from 'expo-router';
 import {
+  ActivityIndicator,
   Alert,
   Pressable,
   ScrollView,
@@ -23,6 +24,8 @@ import {
 } from 'react-native';
 
 import { putProfile } from '@/api/client';
+import type { Fit, StyleProfile } from '@/api/types';
+import { AccountCard } from '@/components/AccountCard';
 import { capitalize, useSession } from '@/lib/session';
 import { swatches } from '@/theme';
 
@@ -57,60 +60,71 @@ const type = {
   button: { fontSize: 17, lineHeight: 22, fontWeight: '600' },
 } as const;
 
-type StyleProfile = {
-  summary: string;
-  tags: string[];
-  colors: { name: string; hex: string }[];
-  leaveOut: string[];
-  looks: { name: string; photoCount: number }[];
-};
-
-// Placeholder data from the Paper design. Swap for the real backend response later.
-const mockProfile: StyleProfile = {
-  summary: 'Mostly neutrals with one accent color, relaxed fits, minimal and preppy. Avoids y2k.',
-  tags: ['minimal', 'preppy', 'old-money'],
-  colors: [
-    { name: 'cream', hex: '#EFE4CC' },
-    { name: 'black', hex: '#1A1A1A' },
-    { name: 'olive', hex: '#6B7440' },
-    { name: 'navy', hex: '#1F2A4A' },
-  ],
-  leaveOut: ['y2k', 'orange'],
-  looks: [
-    { name: 'Weekend errands', photoCount: 14 },
-    { name: 'Work casual', photoCount: 9 },
-  ],
-};
-
 const PLACEHOLDERS = [colors.placeholderA, colors.placeholderB, colors.placeholderC];
 
-export default function StyleScreen() {
-  const profile = mockProfile;
-  const session = useSession();
-  const closet = session.profile?.closet ?? [];
+const FITS: { value: Fit; label: string }[] = [
+  { value: 'slim', label: 'Slim' },
+  { value: 'regular', label: 'Regular' },
+  { value: 'relaxed', label: 'Relaxed' },
+  { value: 'oversized', label: 'Oversized' },
+];
 
-  // Removing a wrongly tagged garment saves the profile without it.
-  async function removeFromCloset(id: string) {
-    if (!session.profile) return;
-    const updated = { ...session.profile, closet: session.profile.closet.filter((c) => c.id !== id) };
-    try {
-      session.setProfile(await putProfile(updated));
-      if (session.anchor?.source === 'closet' && session.anchor.id === id) session.setAnchor(null);
-    } catch (e) {
-      Alert.alert("Couldn't remove it", e instanceof Error ? e.message : String(e));
-    }
-  }
-  const [summary, setSummary] = useState(profile.summary);
-  const [editingSummary, setEditingSummary] = useState(false);
-  const [leaveOut, setLeaveOut] = useState(profile.leaveOut);
+export default function StyleScreen() {
+  const session = useSession();
+  const profile = session.profile;
+  const closet = profile?.closet ?? [];
+  const [summary, setSummary] = useState<string | null>(null); // the draft while editing
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState('');
 
+  // Every edit saves the whole profile (PUT /profile). It shows right away and goes back if
+  // the save fails.
+  async function save(updated: StyleProfile) {
+    if (!profile) return;
+    session.setProfile(updated);
+    try {
+      session.setProfile(await putProfile(updated));
+    } catch (e) {
+      session.setProfile(profile);
+      Alert.alert("Couldn't save that", e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  if (!profile) {
+    return (
+      <View style={[styles.screen, styles.center]}>
+        <ActivityIndicator color={colors.accent} />
+      </View>
+    );
+  }
+
+  // Removing a wrongly tagged garment saves the profile without it.
+  function removeFromCloset(id: string) {
+    if (!profile) return;
+    save({ ...profile, closet: profile.closet.filter((c) => c.id !== id) });
+    if (session.anchor?.source === 'closet' && session.anchor.id === id) session.setAnchor(null);
+  }
+
+  function toggleSummary() {
+    if (!profile) return;
+    if (summary === null) return setSummary(profile.summary);
+    const text = summary.trim();
+    if (text && text !== profile.summary) save({ ...profile, summary: text });
+    setSummary(null);
+  }
+
   function addLeaveOut() {
+    if (!profile) return;
     const word = draft.trim().toLowerCase();
-    if (word && !leaveOut.includes(word)) setLeaveOut([...leaveOut, word]);
+    if (word && !profile.avoid.includes(word)) save({ ...profile, avoid: [...profile.avoid, word] });
     setDraft('');
     setAdding(false);
+  }
+
+  function toggleFit(fit: Fit) {
+    if (!profile) return;
+    const fits = profile.fits.includes(fit) ? profile.fits.filter((f) => f !== fit) : [...profile.fits, fit];
+    save({ ...profile, fits });
   }
 
   return (
@@ -122,7 +136,7 @@ export default function StyleScreen() {
       </View>
 
       <View style={styles.summaryCard}>
-        {editingSummary ? (
+        {summary !== null ? (
           <TextInput
             value={summary}
             onChangeText={setSummary}
@@ -131,17 +145,17 @@ export default function StyleScreen() {
             style={[styles.cardTitle, styles.summaryInput]}
           />
         ) : (
-          <Text style={styles.cardTitle}>{summary}</Text>
+          <Text style={styles.cardTitle}>{profile.summary}</Text>
         )}
-        <Pressable onPress={() => setEditingSummary(!editingSummary)} style={styles.linkRow}>
-          <Text style={styles.link}>{editingSummary ? 'Done' : 'Edit summary'}</Text>
+        <Pressable onPress={toggleSummary} style={styles.linkRow}>
+          <Text style={styles.link}>{summary !== null ? 'Done' : 'Edit summary'}</Text>
         </Pressable>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Style tags</Text>
         <View style={styles.wrap}>
-          {profile.tags.map((tag) => (
+          {profile.style_tags.map((tag) => (
             <View key={tag} style={styles.tagChip}>
               <Text style={styles.tagText}>{tag}</Text>
             </View>
@@ -152,22 +166,45 @@ export default function StyleScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Colors you wear most</Text>
         <View style={styles.swatchRow}>
-          {profile.colors.map((c) => (
-            <View key={c.name} style={styles.swatchItem}>
-              <View style={[styles.swatch, { backgroundColor: c.hex }]} />
-              <Text style={styles.caption}>{c.name}</Text>
+          {profile.colors.map((name) => (
+            <View key={name} style={styles.swatchItem}>
+              <View style={[styles.swatch, { backgroundColor: swatches[name] ?? colors.placeholderB }]} />
+              <Text style={styles.caption}>{name}</Text>
             </View>
           ))}
         </View>
       </View>
 
       <View style={styles.section}>
+        <View style={styles.lookHeader}>
+          <Text style={styles.sectionTitle}>Fits you wear</Text>
+          <Text style={styles.caption}>Tap to change</Text>
+        </View>
+        <View style={styles.wrap}>
+          {FITS.map((f) => {
+            const on = profile.fits.includes(f.value);
+            return (
+              <Pressable
+                key={f.value}
+                onPress={() => toggleFit(f.value)}
+                style={[styles.fitChip, on && styles.tagChip]}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: on }}
+              >
+                <Text style={on ? styles.tagText : styles.leaveText}>{f.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>Leave out</Text>
         <View style={styles.wrap}>
-          {leaveOut.map((word) => (
+          {profile.avoid.map((word) => (
             <Pressable
               key={word}
-              onPress={() => setLeaveOut(leaveOut.filter((w) => w !== word))}
+              onPress={() => save({ ...profile, avoid: profile.avoid.filter((w) => w !== word) })}
               style={styles.leaveChip}
             >
               <Text style={styles.leaveText}>{word}</Text>
@@ -235,7 +272,9 @@ export default function StyleScreen() {
           <View key={look.name} style={styles.lookBlock}>
             <View style={styles.lookHeader}>
               <Text style={styles.itemTitle}>{look.name}</Text>
-              <Text style={styles.caption}>{look.photoCount} photos</Text>
+              <Text style={styles.caption}>
+                {look.photo_ids.length} {look.photo_ids.length === 1 ? 'photo' : 'photos'}
+              </Text>
             </View>
             <View style={styles.thumbRow}>
               {[0, 1, 2].map((i) => (
@@ -252,12 +291,15 @@ export default function StyleScreen() {
       <Pressable onPress={() => router.push('/build')} style={styles.cta}>
         <Text style={styles.ctaText}>Build an outfit</Text>
       </Pressable>
+
+      <AccountCard />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
+  center: { alignItems: 'center', justifyContent: 'center' },
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: 64,
@@ -292,6 +334,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tagText: { ...type.chip, color: colors.accentDark },
+  fitChip: {
+    height: 40,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.chip,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.white,
+    justifyContent: 'center',
+  },
 
   swatchRow: { flexDirection: 'row', gap: 20 },
   swatchItem: { alignItems: 'center', gap: spacing.xs },

@@ -57,6 +57,7 @@ export const colors = {
   errorText: '#8c2a1f',
   ink: '#17132b', // selected filter chip
   dashed: '#c9b8ff', // closet pieces, add buttons
+  scrim: 'rgba(23, 19, 43, 0.42)', // behind sheets
   warningSurface: '#fff6e5',
   warningText: '#6b4e00',
 } as const;
@@ -107,6 +108,14 @@ export const swatches: Record<string, string> = {
   gold: '#c9a54c',
   silver: '#c0c0c8',
 };
+
+// Payment brands' own colors, for the payment picker's marks.
+export const brands = {
+  applePay: '#000000',
+  visa: '#1a1f71',
+  paypal: '#ffc439',
+  paypalText: '#003087',
+} as const;
 
 export const type = {
   // Paper scale

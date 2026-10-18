@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { getCatalog, getProfile } from '@/api/client';
-import { accessToken } from '@/lib/supabase';
+import type { PayMethodId } from '@/lib/payment';
+import { supabase } from '@/lib/supabase';
 import type {
   Anchor,
   CatalogItem,
@@ -47,6 +48,9 @@ type Session = {
   setMandate: (m: Mandate | null) => void;
   receipt: Receipt | null;
   setReceipt: (r: Receipt | null) => void;
+  // The picked payment method, simulated (src/lib/payment.ts).
+  payMethodId: PayMethodId;
+  setPayMethodId: (id: PayMethodId) => void;
 };
 
 const SessionContext = createContext<Session | null>(null);
@@ -82,18 +86,28 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [chosen, setChosen] = useState<Outfit | null>(null);
   const [mandate, setMandate] = useState<Mandate | null>(null);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const [payMethodId, setPayMethodId] = useState<PayMethodId>('apple_pay');
 
-  // Sign in (anonymously, the first time), load the profile and catalog once, and prefill
-  // the anchor with a suggestion.
+  // Load the profile and catalog, and prefill the anchor with a suggestion. Again after
+  // signing in (an account or a guest), since the profile belongs to the account.
   useEffect(() => {
-    accessToken().catch(() => {});
-    Promise.all([getProfile(), getCatalog()])
-      .then(([p, c]) => {
-        setProfile(p);
-        setCatalog(c);
-        setAnchorState((current) => current ?? suggestAnchor(forDepartments(c, p), p));
-      })
-      .catch(() => {});
+    const load = () =>
+      Promise.all([getProfile(), getCatalog()])
+        .then(([p, c]) => {
+          setProfile(p);
+          setCatalog(c);
+          setAnchorState((current) => current ?? suggestAnchor(forDepartments(c, p), p));
+        })
+        .catch(() => {});
+    load();
+    const sub = supabase?.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') load();
+      if (event === 'SIGNED_OUT') {
+        setProfile(null);
+        setAnchorState(null);
+      }
+    });
+    return () => sub?.data.subscription.unsubscribe();
   }, []);
 
   const shop = useMemo(() => forDepartments(catalog, profile), [catalog, profile]);
@@ -121,6 +135,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setMandate,
     receipt,
     setReceipt,
+    payMethodId,
+    setPayMethodId,
   };
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
