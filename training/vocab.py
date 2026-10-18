@@ -90,3 +90,17 @@ OCCASION_FORMALITY = {
     "athletic": (1, 2),
     "comfy": (1, 2),
 }
+
+# Formality can't tell gym clothes from jeans (both formality 2). For an occasion here, every item
+# in `slots` must carry one of `tags`, and its name must contain none of `exclude` (whole words,
+# plural included). Outerwear and accessories are exempt.
+OCCASION_RULES = {
+    "athletic": {
+        "slots": ("top", "bottom", "dress", "shoes"),
+        "tags": ("sporty", "athleisure"),
+        "exclude": (
+            "jeans", "denim", "chino", "trouser", "skirt", "dress shirt", "oxford", "blazer",
+            "loafer", "boot", "slipper", "clog", "flip flop", "slide", "sandal", "heel",
+        ),
+    },
+}

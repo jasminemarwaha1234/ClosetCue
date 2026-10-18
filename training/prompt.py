@@ -49,12 +49,12 @@ Budget for the catalog items: ${budget_min:.2f} to ${budget_max:.2f}
 Candidates (id | name | slot | price | colors | formality | style tags):
 {format_candidates(candidates)}
 
-Build {count}. Each outfit uses only the anchor and candidate ids above, and `items` lists every piece, the anchor included. It has a top and a bottom, or a dress with neither, plus one pair of shoes, at most one outerwear, and any accessories. Every item's formality fits the occasion. `total` is the sum of the catalog items' prices. `reason` is one sentence of at most 40 words that names at least one item.
+Build {count}. Each outfit uses only the anchor and candidate ids above, and `items` lists every piece, the anchor included. It has a top and a bottom, or a dress with neither, plus one pair of shoes, at most one outerwear, and any accessories. Every item's formality fits the occasion. `reason` is one sentence of at most 40 words that names at least one item.
 
-Budget: every outfit's `total` must be between ${budget_min:.2f} and ${budget_max:.2f}{anchor_cost}. An outfit over ${budget_max:.2f} is rejected.
+Budget: each outfit's items must cost between ${budget_min:.2f} and ${budget_max:.2f} combined{anchor_cost}. An outfit over ${budget_max:.2f} is rejected.
 
 Reply with only this JSON:
-{{"outfits": [{{"items": ["<id>", "<id>"], "total": <number>, "reason": "<one sentence>"}}]}}"""
+{{"outfits": [{{"items": ["<id>", "<id>"], "reason": "<one sentence>"}}]}}"""
     return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
 
 

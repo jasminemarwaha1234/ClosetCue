@@ -34,6 +34,8 @@ PER_STORE = 50
 MAX_PRICE = 1000
 USER_AGENT = "Mozilla/5.0"
 
+# Matched against "<product_type> <title>", lowercased; tag_catalog.py drops matches from catalog_raw.json
+# too, so items scraped before a pattern was added stay out of catalog.json.
 DROP = re.compile(
     r"gift ?card|e-?gift|\bkids?\b|\binfant|\btoddler|\byouth\b|\bbundle|\bsample|sticker|\bcandle|"
     r"\bhome\b|homeware|\bmug\b|poster|\bbook\b|magazine|\btowel|blanket|pillow|cushion|skate ?deck|"
@@ -42,7 +44,9 @@ DROP = re.compile(
     r"\bincense|ashtray|\brug\b|\bvase\b|\bcup\b|\bplate\b|\bbowl\b|\btoy\b|\bfigure\b|\bplush|"
     r"(?<!8 )\bball\b(?! cap)|frisbee|\bcd\b|vinyl|\blp\b|cassette|\bdvd\b|zine|"
     r"\bcase\b|airpod|phone|\bumbrella|\bbottle\b|\bflask|\bfragrance|perfume|parfum|\bcandle|"
-    r"\bbeauty|lip ?gloss|\bnail|\bhair (clip|tie)|scrunchie|\bgift\b|voucher|\btest\b|chaussette|porte.?cl|pince|chouchou|barrette|[ée]tuis?\b|bo[iî]te|undershirt|\b\d+ ?pack\b|wetsuit|\btable\b|filler|hair accessor|tech accessor|playmat|kendama|dampener|\bsoap\b|shoe ?horn|shoe care|care kit|shoe tree|polishing|shine brush"
+    r"\bbeauty|lip ?gloss|\bnail|\bhair (clip|tie)|scrunchie|\bgift\b|voucher|\btest\b|chaussette|porte.?cl|pince|chouchou|barrette|[ée]tuis?\b|bo[iî]te|undershirt|\b\d+ ?pack\b|wetsuit|\btable\b|filler|hair accessor|tech accessor|playmat|kendama|dampener|\bsoap\b|shoe ?horn|shoe care|care kit|shoe tree|polishing|shine brush|"
+    r"\bbrush\b|\bcloth\b|microfiber|dust bag|\blaces\b|\bpencil|notebook|\bwand\b|halloween|accessories:equipment|"
+    r"^offerings\b|^hickies\b|^charms\b"
 )
 
 # Checked in order, so "shirt jacket" is outerwear and "dress shirt" and "dress shoes" (rewritten

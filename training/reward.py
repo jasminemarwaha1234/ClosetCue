@@ -19,7 +19,6 @@ the object itself or a JSON string of it:
 """
 
 import json
-import math
 import re
 
 # Copied from training/vocab.py because Veri receives this file alone.
@@ -57,6 +56,16 @@ OCCASION_FORMALITY = {
     "comfy": (1, 2),
 }
 LOUD_PATTERNS = frozenset({"check", "large-print", "graphic"})
+OCCASION_RULES = {
+    "athletic": {
+        "slots": ("top", "bottom", "dress", "shoes"),
+        "tags": ("sporty", "athleisure"),
+        "exclude": (
+            "jeans", "denim", "chino", "trouser", "skirt", "dress shirt", "oxford", "blazer",
+            "loafer", "boot", "slipper", "clog", "flip flop", "slide", "sandal", "heel",
+        ),
+    },
+}
 
 COLOR_GROUP = {
     **{c: "neutral" for c in NEUTRALS},
@@ -88,17 +97,18 @@ def parse_output(text):
     outfits = data["outfits"]
     if not isinstance(outfits, list) or not 1 <= len(outfits) <= OUTFITS_WANTED:
         return None
+    parsed = []
     for o in outfits:
-        if not isinstance(o, dict) or set(o) != {"items", "total", "reason"}:
+        # A stray "total" (the v1 schema, or a model that adds one anyway) is ignored.
+        if not isinstance(o, dict) or set(o) - {"total"} != {"items", "reason"}:
             return None
-        items, total, reason = o["items"], o["total"], o["reason"]
+        items, reason = o["items"], o["reason"]
         if not isinstance(items, list) or not items or not all(isinstance(i, str) for i in items):
-            return None
-        if isinstance(total, bool) or not isinstance(total, (int, float)) or not math.isfinite(total):
             return None
         if not isinstance(reason, str):
             return None
-    return outfits
+        parsed.append({"items": items, "reason": reason})
+    return parsed
 
 
 def _decode(value):
@@ -132,7 +142,8 @@ def prepare_context(row):
 
 
 def score_outfit(outfit, ctx):
-    """(score, gates_passed, breakdown) for one parsed outfit. Max 7.5; 0 when a gate fails."""
+    """(score, gates_passed, breakdown) for one parsed outfit. Max 7.5; 0 when a gate fails: an
+    invented item, or a real total (from the candidates' prices) outside the budget."""
     if "by_id" not in ctx:
         ctx = prepare_context(ctx)
     by_id = ctx["by_id"]
@@ -141,12 +152,14 @@ def score_outfit(outfit, ctx):
         return 0.0, False, {"invented": invented}
 
     items = [by_id[i] for i in outfit["items"]]
+    if not _budget(items, ctx["budget_min"], ctx["budget_max"]):
+        return 0.0, False, {"outside_budget": round(sum(float(it["price"]) for it in items), 2)}
     anchor = ctx["anchor"]
     others = [it for it in items if not anchor or it["id"] != anchor["id"]]
     breakdown = {
         "anchor": 1.0 if not anchor or anchor["id"] in outfit["items"] else 0.0,
         "complete": _complete(outfit["items"], items),
-        "budget": _budget(items, outfit["total"], ctx["budget_min"], ctx["budget_max"]),
+        "budget": 1.0,  # the budget is a gate above; the point keeps the max at 7.5
         "color": _color(items),
         "pattern": _pattern(items),
         "season": _season(items),
@@ -172,10 +185,9 @@ def _complete(ids, items):
     return 1.0 if base_ok and count.get("shoes") else 0.0
 
 
-def _budget(items, stated, lo, hi):
+def _budget(items, lo, hi):
     real = round(sum(float(it["price"]) for it in items), 2)
-    in_range = float(lo) - 0.005 <= real <= float(hi) + 0.005
-    return 1.0 if in_range and abs(real - stated) <= 0.01 + 1e-9 else 0.0
+    return 1.0 if float(lo) - 0.005 <= real <= float(hi) + 0.005 else 0.0
 
 
 def _color(items):
@@ -205,7 +217,19 @@ def _formality(items, occasion):
     lo, hi = OCCASION_FORMALITY[occasion]
     levels = [int(it["formality"]) for it in items]
     coherent = max(levels) - min(levels) <= 1
-    return 1.0 if coherent and all(lo <= f <= hi for f in levels) else 0.0
+    fits = all(lo <= f <= hi for f in levels) and all(occasion_allows(it, occasion) for it in items)
+    return 1.0 if coherent and fits else 0.0
+
+
+def occasion_allows(item, occasion):
+    """Whether the item passes the occasion's OCCASION_RULES entry (the formality range aside).
+    Retrieval, the prompt builder's anchors and the formality check all use this."""
+    rule = OCCASION_RULES.get(occasion)
+    if not rule or item["slot"] not in rule["slots"]:
+        return True
+    name = (item.get("name") or item.get("description") or "").lower()
+    return bool(set(rule["tags"]) & set(item["style_tags"])) and not any(
+        re.search(rf"\b{re.escape(word)}s?\b", name) for word in rule["exclude"])
 
 
 def _profile(items, tags, fits, avoid):

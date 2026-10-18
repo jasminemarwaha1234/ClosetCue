@@ -54,7 +54,7 @@ def item(id, price, color, name):
             "style_tags": ["minimal"], "name": name}
 
 
-# Every outfit from these scores the full 7.5 unless it breaks the budget ($50 to $150).
+# Every outfit from these scores the full 7.5 unless it breaks the budget ($50 to $150), which scores 0.
 ROW = {
     "messages": [{"role": "system", "content": "s"}, {"role": "user", "content": "u"}],
     "occasion": "casual",
@@ -94,7 +94,7 @@ def stub(answers, monkeypatch):
     """Point every model at a stub that returns (or raises) the next of answers."""
     queue = list(answers)
 
-    async def ask(messages):
+    async def ask(messages, *_):
         a = queue.pop(0)
         if isinstance(a, Exception):
             raise a
@@ -109,11 +109,11 @@ def test_metrics_on_fake_answers(monkeypatch, tmp_path):
     records, stopped = asyncio.run(E.run("gemini", [ROW] * 5, tmp_path / "gemini.jsonl"))
 
     assert stopped is None
-    assert [r["reward"] for r in records] == [5.0, 0.0, 2.1667, 0.0, 0.0]
+    assert [r["reward"] for r in records] == [5.0, 0.0, 0.0, 0.0, 0.0]
     assert [r["live_kept"] for r in records] == [2, 0, 0, 2, 0]
     assert [r["fenced"] for r in records] == [False, False, False, True, False]
-    # The best answer pairs the two in-budget outfits (7.5 each) with one over budget (6.5).
-    assert [r["best_possible"] for r in records] == [7.1667] * 5
+    # Only two outfits fit the budget (7.5 each); an over-budget third scores 0.
+    assert [r["best_possible"] for r in records] == [5.0] * 5
     s = E.summarize(records, "gemini", stopped)
     assert {k: v for k, v in s.items() if not k.startswith("latency")} == {
         "model": "gemini",
@@ -128,9 +128,9 @@ def test_metrics_on_fake_answers(monkeypatch, tmp_path):
         "complete_pct": 75.0,
         "within_budget_pct": 50.0,
         "anchor_pct": 75.0,
-        "mean_reward": 1.433,
-        "mean_reward_of_max_pct": 19.1,
-        "mean_best_possible": 7.167,
+        "mean_reward": 1.0,
+        "mean_reward_of_max_pct": 13.3,
+        "mean_best_possible": 5.0,
         "mean_reward_of_best_pct": 20.0,
         "live_outfits_pct": 26.7,
         "live_answers_ok_pct": 40.0,

@@ -26,6 +26,7 @@ import {
 import { putProfile } from '@/api/client';
 import type { Fit, StyleProfile } from '@/api/types';
 import { AccountCard } from '@/components/AccountCard';
+import { AssetPhoto } from '@/components/AssetPhoto';
 import { capitalize, useSession } from '@/lib/session';
 import { swatches } from '@/theme';
 
@@ -255,11 +256,10 @@ export default function StyleScreen() {
           <View>
             {closet.map((c) => (
               <View key={c.id} style={styles.closetRow}>
-                <View
-                  style={[
-                    styles.closetThumb,
-                    { backgroundColor: swatches[c.colors[0]?.toLowerCase()] ?? colors.placeholderB },
-                  ]}
+                <AssetPhoto
+                  assetId={c.photo_id}
+                  fallbackColor={swatches[c.colors[0]?.toLowerCase()] ?? colors.placeholderB}
+                  style={styles.closetThumb}
                 />
                 <View style={styles.closetText}>
                   <Text style={styles.closetName}>{capitalize(c.description)}</Text>
@@ -291,9 +291,11 @@ export default function StyleScreen() {
             </View>
             <View style={styles.thumbRow}>
               {[0, 1, 2].map((i) => (
-                <View
+                <AssetPhoto
                   key={i}
-                  style={[styles.thumb, { backgroundColor: PLACEHOLDERS[(i + li) % 3] }]}
+                  assetId={look.photo_ids[i] ?? ''}
+                  fallbackColor={PLACEHOLDERS[(i + li) % 3]}
+                  style={styles.thumb}
                 />
               ))}
             </View>

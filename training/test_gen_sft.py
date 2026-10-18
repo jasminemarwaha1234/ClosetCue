@@ -39,10 +39,9 @@ def test_answer_is_the_best_outfits_in_the_prompt_format():
     ctx = reward.prepare_context(ROW)
     best = best_outfits(ctx)
     assert [o["items"] for o in outfits] == [o["items"] for o in best]
-    prices = {c["id"]: c["price"] for c in ROW["candidates"]}
     for o in outfits:
+        assert list(o) == ["items", "reason"]
         assert "closet_2" in o["items"]
-        assert o["total"] == round(sum(prices[i] for i in o["items"] if not i.startswith("closet_")), 2)
         assert reward._reason(o["reason"], o["items"], [ctx["by_id"][i] for i in o["items"]]) == 0.5
         assert "\n" not in o["reason"] and len(o["reason"].split()) <= reward.MAX_REASON_WORDS
     assert reward.score_completion(text, ctx) == reward.score_completion(json.dumps({"outfits": best}), ctx) == 7.5

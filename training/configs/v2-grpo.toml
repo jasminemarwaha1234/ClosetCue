@@ -1,0 +1,42 @@
+# v2-grpo: 50 GRPO steps on v2-sft against training/reward.py.
+# Data: `python training/build_grpo.py training/data/prompts_train.jsonl <out>.jsonl` (25- and
+# 50-candidate rows), then `veri datasets upload` and put the id below. Each step is one prompt.
+# Timing from grpo-smoke (job fbce31cfde27, 4 rollouts): ~18 s per step after a ~50 s first step,
+# plus ~2 s of checkpoint upload. Scaling that linearly to 8 rollouts (an upper bound: rollouts are
+# generated as one batch) gives ~40 s per step, so 50 steps take at most ~33 min.
+# If it must be faster: --set method.rollouts_per_prompt=6 (~25 min).
+# lr 1e-5 and max_response_length 384 as in grpo-smoke.toml (answers were 131-184 tokens).
+kind = "train"
+
+[job]
+name = "v2-grpo"
+
+[model]
+base = "CharlieBrown364/outfit-llama-v2-sft"
+
+[dataset]
+id = "68bb74db11b5"
+
+[reward]
+file = "../reward.py"
+
+[method]
+type = "grpo"
+learning_rate = 1e-5
+max_steps = 50
+rollouts_per_prompt = 8
+max_response_length = 384
+lora_rank = 16
+lora_alpha = 32
+
+[resources]
+gpu_type = "L4-24GB"
+gpu_count = 1
+
+[provider]
+name = "aws"
+
+[huggingface]
+repo = "CharlieBrown364/outfit-llama-v2-grpo"
+artifact = "merged"
+private = false

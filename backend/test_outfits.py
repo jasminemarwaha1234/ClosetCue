@@ -79,7 +79,7 @@ def run(monkeypatch):
     def go(answers, request=REQUEST):
         replies = {model: list(r) for model, r in answers.items()}
 
-        async def reply(model, messages):
+        async def reply(model, messages, *_):
             calls.append((model, messages[1]["content"]))
             r = replies[model].pop(0) if replies.get(model) else None
             if isinstance(r, Exception):
@@ -114,7 +114,8 @@ def test_guard_drops_repeated_outfits_and_strips_code_fences(run):
 
 
 def test_missing_anchor_and_over_budget_retry_then_fall_back(run):
-    weak = answer(A, ["bottom_001", "shoes_001"], ["top_001", "bottom_003", "shoes_002"])  # 1 good, no anchor, $340
+    # 1 good, no anchor, and $460 that no single swap brings under $250
+    weak = answer(A, ["bottom_001", "shoes_001"], ["top_001", "bottom_003", "shoes_002", "outerwear_001"])
     res, calls = run({"OUR_LLAMA": [weak, weak], "BASE_LLAMA": [None], "gemini": [answer(A, B)]})
     body = res.json()
     assert body["generated_by"] == "gemini"
@@ -151,6 +152,52 @@ def test_unknown_ids_are_422(run, request_):
     res, calls = run({}, request_)
     assert res.status_code == 422
     assert calls == []
+
+
+def test_over_budget_outfit_swaps_its_priciest_item_for_the_best_fit(run):
+    over = ["top_001", "bottom_003", "shoes_002"]  # $340: bottom_003 ($200) goes
+    res, calls = run({"OUR_LLAMA": [answer(over, A)]})
+    body = res.json()
+    assert [m for m, _ in calls] == ["OUR_LLAMA"]
+    assert [ids(o) for o in body["outfits"]] == [["top_001", "bottom_004", "shoes_002"], A]
+    assert [o["total"] for o in body["outfits"]] == [200.0, 170.0]
+
+
+A_REASON = "Start from the black top, add the denim bottom, and this streetwear outfit is set for a casual day."
+
+
+def reasons(res):
+    return [o["reason"] for o in res.json()["outfits"]]
+
+
+def test_llama_reasons_are_templated_from_the_returned_items(run):
+    res, _ = run({"OUR_LLAMA": [answer(A, B)]})
+    assert reasons(res) == [
+        A_REASON,
+        "Wear the black top with the olive bottom for a streetwear look that fits a casual day.",
+    ]
+
+
+def test_the_same_outfit_gets_the_same_reason_in_any_order(run):
+    res, _ = run({"OUR_LLAMA": [answer(list(reversed(A)))], "BASE_LLAMA": [None], "gemini": [None]})
+    assert reasons(res) == [A_REASON]
+
+
+def test_gemini_keeps_its_reason_unless_a_repair_swapped_an_item(run):
+    over = ["top_001", "bottom_003", "shoes_002"]  # repaired to bottom_004
+    res, _ = run({"OUR_LLAMA": [None], "BASE_LLAMA": [None], "gemini": [answer(over, A)]})
+    assert reasons(res) == [
+        "The black top plus the brown shoes give this outfit a streetwear feel for a casual day.",
+        "The black top works.",
+    ]
+
+
+def test_repair_never_swaps_the_anchor(run):
+    # $340 around a $200 anchor: shoes_002 ($100) is the priciest swappable item; shoes_001 makes $320.
+    anchored = {**REQUEST, "anchor": {"source": "catalog", "id": "bottom_003"}}
+    res, _ = run({"OUR_LLAMA": [answer(["top_001", "bottom_003", "shoes_002"])] * 2,
+                  "BASE_LLAMA": [None], "gemini": [None]}, anchored)
+    assert res.status_code == 503
 
 
 def test_swaps_are_same_slot_in_budget_best_profile_match_first(run):
@@ -193,4 +240,11 @@ def test_404_without_a_profile(run, monkeypatch):
 
 def test_veri_is_skipped_when_its_url_is_unset(monkeypatch):
     monkeypatch.delenv("OUR_LLAMA_URL", raising=False)
-    assert asyncio.run(veri.chat("OUR_LLAMA", [])) is None
+    assert asyncio.run(veri.chat("OUR_LLAMA", [], [], 3)) is None
+
+
+def test_veri_schema_limits_items_to_the_offered_ids():
+    schema = veri.outfits_schema(["top_1", "closet_2"], 3)["json_schema"]["schema"]["properties"]["outfits"]
+    assert (schema["minItems"], schema["maxItems"]) == (3, 3)
+    assert schema["items"]["properties"]["items"]["items"]["enum"] == ["top_1", "closet_2"]
+    assert schema["items"]["required"] == ["items", "reason"]

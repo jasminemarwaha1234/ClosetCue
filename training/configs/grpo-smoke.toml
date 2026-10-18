@@ -1,0 +1,36 @@
+# grpo-smoke: 5 GRPO steps on v1-sft to prove the GRPO pipeline and time a step. Not a model.
+# Data: 30 rows (25- and 50-candidate prompts) from build_grpo.py; the reward is a frozen copy of
+# reward.py taken before the total/budget change, since v1-sft still emits `total`.
+# lr 1e-5: Veri's 1e-6 default is sized for full fine-tuning; LoRA updates far fewer weights and
+# needs a larger rate (Veri's LoRA example uses 2e-5). Half of that, because we start from an
+# already-tuned SFT model rather than a base model.
+# max_response_length 384: v1-sft answers are under ~200 tokens.
+kind = "train"
+
+[job]
+name = "grpo-smoke"
+
+[model]
+base = "CharlieBrown364/outfit-llama-v1-sft"
+
+[dataset]
+id = "fc2f15a9f4f1"
+
+[reward]
+file = "/private/tmp/claude-502/-Users-charlieweinberger-Desktop-Code-LaHacksAI/16cf88a4-9743-4fc6-9fe9-850f78b2c867/scratchpad/grpo/reward.py"
+
+[method]
+type = "grpo"
+learning_rate = 1e-5
+max_steps = 5
+rollouts_per_prompt = 4
+max_response_length = 384
+lora_rank = 16
+lora_alpha = 32
+
+[resources]
+gpu_type = "L4-24GB"
+gpu_count = 1
+
+[provider]
+name = "aws"
