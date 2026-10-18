@@ -106,3 +106,25 @@ Open questions, your call:
 
 - With zero outfit photos, the backend's "Send at least one photo" error shows. A friendlier message, or hiding the link until the scan finds a photo, would be nicer.
 - The suggested anchor is only picked when the session first loads a profile, so right after onboarding Build has no anchor prefilled.
+
+## Update 4, Sunday Oct 18, 06:30: your next few hours
+
+[PLAN.md](PLAN.md) was rewritten from the current code; [section 10](PLAN.md#10-who-does-what-and-when) has the full timeline for both of us. Feature freeze is now about **11:00**, submit by **11:30**. Charlie is on the model until then, so everything below is yours.
+
+| When | What | Details |
+| --- | --- | --- |
+| 6:30–7:15 | **Pick photos** | The system picker (`expo-image-picker`, multi-select) as the second option on the photos screen. No library permission and no face matching. Shrink each pick with the scan's thumbnail code (`makeThumb` in `src/lib/photos.ts` takes a media-library asset, so you may need a small variant for a picker URI), then call `createProfile` like "Next: your style" does, at most 30 photos. [PLAN section 3](PLAN.md#getting-your-photos) |
+| 6:30–7:15 | **Checkout, fallback path** | The three routes in `backend/routes/checkout.py` return 501 today, so checkout only works on mocks. Build them without Stripe first: mandate stored with `supabase.create_mandate` and the fixed card label `Visa •••• 4242, agent card`; `/checkout/cart` checks the total from catalog prices against `limit − spent` and refuses "expired", "not_apparel" or "over_limit" with a suggestion; `/checkout/confirm` reruns the check, adds to `spent`, returns the receipt with `authorization_id: null`. That makes the "make it nicer → refused" demo real. [PLAN section 8](PLAN.md#8-trust-privacy-and-checkout) |
+| 7:15–8:30 | **Stripe Issuing on top** | Still planned. First check that the sandbox account can create an Issuing card by API and that its brand is Visa; if not, the fallback ships as is. The steps are in `backend/services/stripe_issuing.py` and PLAN section 8. |
+| 7:15–8:30 | **Supabase dashboard** | "Confirm email" off, "Allow manual linking" on, and the `feedback` and `mandates` tables from `backend/supabase_schema.sql` exist. |
+| 8:30–9:30 | **The whole demo path, mocks off, on a real phone** | `EXPO_PUBLIC_USE_MOCKS=false`, backend running on the laptop (`npx expo start --tunnel` if venue Wi-Fi blocks it). Welcome → photos → Your style → Build → Outfits → Try-on → Checkout → Rate → Trust. Fix what breaks and tell Charlie about backend errors. Outfits can take up to 30 s while Gemini is the fallback, so Build needs a loading state that long. |
+| 9:30–11:00 | **Landing page, demo video, polish** | Domain, one page with the pitch, video, QR code and privacy policy. Record the 2–3 minute video (it should show the eval table, the A/B result and the mandate refusal; Charlie will have the numbers by about 9:30). Polish against Paper. |
+| 11:00–11:30 | **Devpost, your half** | The app, trust and checkout sections, plus publishing the landing page. Charlie writes the training story and eval table. |
+
+Decisions since Update 3:
+
+- **No face-matching consent screen.** Dropped. "Pick photos" is the option for people who don't want the scan, and the trust screen and privacy policy say what the scan computes.
+- **Stripe Issuing stays,** fallback first (above).
+- **`/rate` is built** (`backend/routes/rate.py`, pushed). It serves pairs from `backend/data/rate_pairs.jsonl`, which Charlie builds from two models' eval answers around 9:30. Until then, `GET /rate/next` answers 503 "There are no outfits to compare yet", which the Rate screen shows as is. No app changes needed.
+- **Two fixes in your files, both pushed:** the photos screen shows "No outfit photos found…" instead of "Next: your style" when a scan finds none, and `session.tsx` now suggests an anchor once per profile (so Build is prefilled right after onboarding; clearing it sticks) and loads the catalog even when `GET /profile` answers 404 for a new user. Before that fix, new users had an empty catalog until they restarted the app.
+- **`comfy` is now formality 1–2** (was 1). Only the reward and retrieval changed; nothing in the app.
