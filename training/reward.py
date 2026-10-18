@@ -47,7 +47,7 @@ STYLE_TAGS = (
     "clean-girl", "soft-girl", "grunge",
 )
 OCCASION_FORMALITY = {
-    "formal": (5, 5),
+    "formal": (4, 5),
     "semi-formal": (4, 5),
     "work": (3, 4),
     "everyday": (2, 4),

@@ -50,7 +50,7 @@ Reply with only this JSON:
 def test_no_anchor_closet_anchor_and_one_outfit():
     _, none = render_prompt(PROFILE, occasion="formal", budget_min=0, budget_max=80,
                             anchor=None, candidates=CANDIDATES, outfits=1)
-    assert "Occasion: formal (formality 5)\nBudget for the catalog items: $0.00 to $80.00\nAnchor: none.\n" in none["content"]
+    assert "Occasion: formal (formality 4-5)\nBudget for the catalog items: $0.00 to $80.00\nAnchor: none.\n" in none["content"]
     assert "Build exactly 1 outfit." in none["content"]
     assert "\n\nBudget: every outfit's `total` must be between $0.00 and $80.00. An outfit over $80.00 is rejected.\n\n" in none["content"]
 
