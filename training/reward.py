@@ -71,6 +71,8 @@ CONTEXT_COLUMNS = (
     "profile_style_tags", "profile_fits", "profile_avoid",
 )
 _NAME_STOPWORDS = frozenset({"with", "from", "mens", "women", "womens", "unisex", "the", "and"})
+# A period after these, or before a lowercase word, doesn't end a sentence ("Dr. Martens").
+_NOT_A_BREAK = re.compile(r"\b(?:Dr|Mr|Mrs|Ms|St|Jr|Co|Inc|vs)\.|\.(?=\s+[a-z])")
 
 
 def parse_output(text):
@@ -235,7 +237,7 @@ def _reason(reason, ids, items):
     text = reason.strip()
     if not text or "\n" in text or len(text.split()) > MAX_REASON_WORDS:
         return 0.0
-    if len([s for s in re.split(r"[.!?]+(?:\s+|$)", text) if s.strip()]) != 1:
+    if len([s for s in re.split(r"[.!?]+(?:\s+|$)", _NOT_A_BREAK.sub("", text)) if s.strip()]) != 1:
         return 0.0
     if any(i in text for i in ids):
         return 0.5

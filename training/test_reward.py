@@ -196,6 +196,10 @@ def test_reason_rules():
     assert score({**GOOD, "reason": "Pairs top_001 with denim."})[2]["reason"] == 0.5
     assert score({**GOOD, "reason": "The jean and sneaker combo is easy!"})[2]["reason"] == 0.5
     assert score({**GOOD, "reason": " ".join(["jeans"] * 41)})[2]["reason"] == 0.0
+    # A period after an abbreviation or before a lowercase word doesn't end the sentence.
+    assert score({**GOOD, "reason": "Dr. Martens would toughen up the cream crewneck."})[2]["reason"] == 0.5
+    assert score({**GOOD, "reason": "The Jr. Varsity cut, e.g. this crewneck, sits easy."})[2]["reason"] == 0.5
+    assert score({**GOOD, "reason": "Dr. Martens fans. Cream crewneck."})[2]["reason"] == 0.0
 
 
 def test_parse_rejects_bad_shapes():
