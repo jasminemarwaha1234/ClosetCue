@@ -1,4 +1,5 @@
 import type { Thumb } from '@/lib/photos';
+import { accessToken } from '@/lib/supabase';
 import * as mocks from './mocks';
 import type {
   Candidate,
@@ -53,11 +54,12 @@ export async function classifyBatch(batch: Thumb[], owner: number[] | null): Pro
 // the app answers from src/api/mocks.ts. Set EXPO_PUBLIC_USE_MOCKS=false in .env to switch.
 const USE_MOCKS = process.env.EXPO_PUBLIC_USE_MOCKS !== 'false';
 
-// TODO: send `Authorization: Bearer <token>` once the anonymous Supabase sign-in exists.
+// Every call carries the anonymous Supabase user's token, so the backend knows whose data it is.
 async function api<T>(method: string, path: string, body?: unknown): Promise<T> {
+  const token = await accessToken();
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!res.ok) {

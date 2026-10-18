@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { getCatalog, getProfile } from '@/api/client';
+import { accessToken } from '@/lib/supabase';
 import type {
   Anchor,
   CatalogItem,
@@ -82,8 +83,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [mandate, setMandate] = useState<Mandate | null>(null);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
 
-  // Load the profile and catalog once, and prefill the anchor with a suggestion.
+  // Sign in (anonymously, the first time), load the profile and catalog once, and prefill
+  // the anchor with a suggestion.
   useEffect(() => {
+    accessToken().catch(() => {});
     Promise.all([getProfile(), getCatalog()])
       .then(([p, c]) => {
         setProfile(p);

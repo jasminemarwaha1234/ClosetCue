@@ -106,22 +106,24 @@ export default function OutfitsScreen() {
                         {canSwap ? (
                           <Pressable
                             onPress={() => swap(s.outfits[index], original.id)}
-                            style={[styles.corner, styles.swap]}
-                            hitSlop={6}
+                            style={styles.swap}
+                            hitSlop={4}
                             accessibilityLabel={`Swap ${i.name}`}
                           >
-                            <Text style={styles.cornerIcon}>⇄</Text>
+                            <Text style={styles.swapText}>⇄ Swap</Text>
                           </Pressable>
                         ) : null}
                       </View>
                       {canRemove ? (
                         <Pressable
                           onPress={() => toggleRemoved(s.outfits[index], original.id)}
-                          style={[styles.corner, styles.remove]}
+                          style={[styles.corner, isRemoved && styles.addBack]}
                           hitSlop={6}
                           accessibilityLabel={isRemoved ? `Add ${i.name} back` : `Don't buy ${i.name}`}
                         >
-                          <Text style={styles.cornerIcon}>{isRemoved ? '+' : '×'}</Text>
+                          <Text style={[styles.cornerIcon, isRemoved && styles.addBackIcon]}>
+                            {isRemoved ? '+' : '×'}
+                          </Text>
                         </Pressable>
                       ) : null}
                       <Text style={[styles.pieceName, isRemoved && styles.removedText]} numberOfLines={2}>
@@ -180,7 +182,7 @@ export default function OutfitsScreen() {
           ),
         )}
 
-        <Text style={styles.hint}>Tap the arrows to swap a piece, or × to leave it out.</Text>
+        <Text style={styles.hint}>Tap × to leave a piece out, or Swap to change it.</Text>
       </ScrollView>
     </>
   );
@@ -208,7 +210,7 @@ const styles = StyleSheet.create({
   badge: {
     position: 'absolute',
     left: 6,
-    top: 6,
+    bottom: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
@@ -218,6 +220,7 @@ const styles = StyleSheet.create({
   corner: {
     position: 'absolute',
     right: 6,
+    top: 6,
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -225,10 +228,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  remove: { top: 6 },
-  swap: { bottom: 6 },
-  cornerIcon: { fontSize: 13, fontWeight: '700', color: colors.onPrimarySoft },
-  removed: { opacity: 0.35 },
+  cornerIcon: { fontSize: 16, lineHeight: 18, fontWeight: '600', color: colors.onPrimarySoft },
+  addBack: { backgroundColor: colors.primary },
+  addBackIcon: { color: colors.onPrimary },
+  swap: {
+    position: 'absolute',
+    left: 6,
+    right: 6,
+    bottom: 6,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  swapText: { fontSize: 12, lineHeight: 16, fontWeight: '600', color: colors.onPrimarySoft },
+  removed: { opacity: 0.3 },
   removedText: { color: colors.textMuted, textDecorationLine: 'line-through' },
   pieceName: { fontSize: 13, lineHeight: 16, fontWeight: '600', color: colors.text },
   piecePrice: { fontSize: 13, lineHeight: 16, color: colors.textMuted },

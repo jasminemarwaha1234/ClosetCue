@@ -103,3 +103,28 @@ The outfit cards and the receipt now have a **View at retailer** link on every i
 3. **Training prompts:** no change. `url` doesn't need to go into the model's input.
 
 The receipt's "Demo: no order was placed and no money moved." line is entirely in the app, so it needs nothing from you.
+
+---
+
+# Supabase: the app side is done, the backend side is yours
+
+From Jasmine (app and design). Written 2026-10-18.
+
+PLAN.md gives Supabase to you, so I only built the phone half and left `backend/` alone.
+
+**What the app does now** (`src/lib/supabase.ts`):
+
+- On launch it signs in anonymously with `supabase.auth.signInAnonymously()`, and keeps the session on the phone, so the same person stays the same user.
+- Every backend call from `src/api/client.ts` (`api()`) sends `Authorization: Bearer <access token>`. The scan and face calls don't yet.
+- It reads `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_KEY` (the publishable key) from the root `.env`, the names already in `.env.example`. Without them it skips sign-in and runs on mocks as before.
+
+**What the backend needs:**
+
+1. In the Supabase dashboard: **Authentication → Sign In / Providers → allow anonymous sign-ins**. Without this the app's sign-in fails.
+2. Read the user from the token on every route that touches user data: `supabase.auth.get_user(token)` with the service key, or verify the JWT with the project's JWT secret. A missing or bad token → 401.
+3. The two tables from PLAN.md section 4, with row level security on (the service key bypasses it, the publishable key then can't read anything):
+   - `profiles`: `user_id uuid primary key references auth.users on delete cascade`, `profile jsonb` (StyleProfile, closet included), `updated_at timestamptz`.
+   - `feedback`: `id bigint identity`, `user_id uuid references auth.users on delete cascade`, `pair_id text`, `choice text`, `pair jsonb` (the RatePair shown), `created_at timestamptz`.
+4. `DELETE /me` is mine. I'll write it once your `services/supabase.py` exists, deleting the user's rows (or the auth user, which cascades). Tell me the helper's name.
+
+**One shared-file edit coming from me:** `/tryon` is mine, so I'll add `backend/routes/tryon.py` and one `include_router` line in `backend/main.py`. The Gemini call will live in my own `backend/services/tryon.py`, not in your `gemini.py`.
