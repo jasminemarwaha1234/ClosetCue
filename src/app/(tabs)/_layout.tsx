@@ -12,8 +12,8 @@ export default function TabsLayout() {
         tabBarStyle: { borderTopColor: colors.hairline },
       }}
     >
-      <Tabs.Screen name="build" options={{ title: 'Build' }} />
       <Tabs.Screen name="style" options={{ title: 'Style' }} />
+      <Tabs.Screen name="build" options={{ title: 'Build' }} />
       <Tabs.Screen name="rate" options={{ title: 'Rate' }} />
       <Tabs.Screen name="trust" options={{ title: 'Trust' }} />
     </Tabs>
