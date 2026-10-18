@@ -114,7 +114,8 @@ def test_guard_drops_repeated_outfits_and_strips_code_fences(run):
 
 
 def test_missing_anchor_and_over_budget_retry_then_fall_back(run):
-    weak = answer(A, ["bottom_001", "shoes_001"], ["top_001", "bottom_003", "shoes_002"])  # 1 good, no anchor, $340
+    # 1 good, no anchor, and $460 that no single swap brings under $250
+    weak = answer(A, ["bottom_001", "shoes_001"], ["top_001", "bottom_003", "shoes_002", "outerwear_001"])
     res, calls = run({"OUR_LLAMA": [weak, weak], "BASE_LLAMA": [None], "gemini": [answer(A, B)]})
     body = res.json()
     assert body["generated_by"] == "gemini"
@@ -151,6 +152,23 @@ def test_unknown_ids_are_422(run, request_):
     res, calls = run({}, request_)
     assert res.status_code == 422
     assert calls == []
+
+
+def test_over_budget_outfit_swaps_its_priciest_item_for_the_best_fit(run):
+    over = ["top_001", "bottom_003", "shoes_002"]  # $340: bottom_003 ($200) goes
+    res, calls = run({"OUR_LLAMA": [answer(over, A)]})
+    body = res.json()
+    assert [m for m, _ in calls] == ["OUR_LLAMA"]
+    assert [ids(o) for o in body["outfits"]] == [["top_001", "bottom_004", "shoes_002"], A]
+    assert [o["total"] for o in body["outfits"]] == [200.0, 170.0]
+
+
+def test_repair_never_swaps_the_anchor(run):
+    # $340 around a $200 anchor: shoes_002 ($100) is the priciest swappable item; shoes_001 makes $320.
+    anchored = {**REQUEST, "anchor": {"source": "catalog", "id": "bottom_003"}}
+    res, _ = run({"OUR_LLAMA": [answer(["top_001", "bottom_003", "shoes_002"])] * 2,
+                  "BASE_LLAMA": [None], "gemini": [None]}, anchored)
+    assert res.status_code == 503
 
 
 def test_swaps_are_same_slot_in_budget_best_profile_match_first(run):
