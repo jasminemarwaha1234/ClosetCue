@@ -33,7 +33,7 @@ There are two env files, each copied from its `.env.example`:
 | File | Holds | Safe to share? |
 | --- | --- | --- |
 | `.env` (repo root) | The app's settings. Expo builds every `EXPO_PUBLIC_` value into the app. | Yes, anyone with the app can read them |
-| `backend/.env` | The backend's secret keys (Gemini, Veri, Supabase, Sentry) | No, never commit it |
+| `backend/.env` | The backend's secret keys (Gemini, Veri, Supabase, Sentry, Stripe test key) | No, never commit it |
 
 ```sh
 cp .env.example .env
