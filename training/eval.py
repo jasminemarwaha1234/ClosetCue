@@ -1,6 +1,6 @@
 """Evaluate one model on held-out prompts (PLAN.md section 6, NEXT_STEPS.md steps 6 and 10).
 
-    python -m training.eval --model gemini --data training/data/eval.jsonl --limit 20 --out training/results
+    python -m training.eval --model gemini --data training/data/prompts_eval.jsonl --limit 20 --out training/results
 
 Each row of --data is a prompt from build_prompts.py: {"messages": [system, user], the
 reward.CONTEXT_COLUMNS, "profile_id"}. The model answers the first --limit rows once each, in order,

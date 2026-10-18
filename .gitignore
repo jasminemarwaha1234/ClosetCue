@@ -46,3 +46,7 @@ __pycache__/
 *.pyc
 *.pt
 training/.tag_cache.json
+
+# generated training data; rebuild with:
+#   python -m training.gen_profiles --n 400 && python -m training.build_prompts
+training/data/
