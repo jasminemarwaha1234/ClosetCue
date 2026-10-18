@@ -104,8 +104,8 @@ export const swatches: Record<string, string> = {
   purple: '#7c4dff',
   yellow: '#e8c547',
   orange: '#d9772b',
-  gold: '#c9a24a',
-  silver: '#b8bcc4',
+  gold: '#c9a54c',
+  silver: '#c0c0c8',
 };
 
 export const type = {
