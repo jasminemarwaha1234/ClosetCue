@@ -118,8 +118,10 @@ export const createProfile = (photos: Thumb[]) =>
 export const putProfile = (profile: StyleProfile) =>
   USE_MOCKS ? mock(profile) : api<StyleProfile>('PUT', '/profile', profile);
 
-export const getOutfits = (req: OutfitsRequest) =>
-  USE_MOCKS ? mock(mocks.outfits(req)) : api<OutfitsResponse>('POST', '/outfits', req);
+export const getOutfits = (req: OutfitsRequest): Promise<OutfitsResponse> =>
+  USE_MOCKS
+    ? mock({ ...mocks.outfits(req), ...(req.retry ? { generated_by: 'gemini' as const } : {}) })
+    : api<OutfitsResponse>('POST', '/outfits', req);
 
 // One pricier version of the outfit, which may go over budget_max (OutfitsRequest.upgrade_of).
 export async function makeItNicer(req: OutfitsRequest, outfit: Outfit): Promise<Outfit> {
