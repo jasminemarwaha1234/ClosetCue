@@ -4,6 +4,8 @@ ultralytics
 pillow
 pydantic
 numpy
+stripe
+sentry-sdk[fastapi]
 # facenet-pytorch's own dependencies, since it's installed with --no-deps
 torchvision
 tqdm

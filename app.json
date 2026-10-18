@@ -29,7 +29,8 @@
           "photosPermission": "As If looks for photos of you in outfits to learn your style. Only small thumbnails leave your phone, and they aren't stored."
         }
       ],
-      "expo-router"
+      "expo-router",
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true

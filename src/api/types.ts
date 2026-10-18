@@ -13,12 +13,14 @@ export type Item = { id: string; base64: string };
 
 // GET /catalog -> CatalogItem[]
 export type Slot = 'top' | 'bottom' | 'dress' | 'outerwear' | 'shoes' | 'accessory';
+export type Department = 'men' | 'women' | 'unisex';
 
 export type CatalogItem = {
   id: string;
   name: string;
   brand: string;
   slot: Slot;
+  department: Department;
   price: number;
   colors: string[];
   formality: number; // 1 athleisure ... 5 formal
@@ -36,32 +38,65 @@ export type ProfileRequest = { photos: Item[] };
 // Asset ids, so the app can show the photos again without the server storing them.
 export type Look = { name: string; photo_ids: string[] };
 
+// A garment the user already owns, tagged by Gemini from one of their photos. Never bought.
+export type ClosetItem = {
+  id: string; // "closet_<n>", unique within the user's profile
+  description: string; // "navy oxford shirt"
+  slot: Slot;
+  colors: string[];
+  formality: number;
+  style_tags: string[];
+  photo_id: string; // asset id of the photo it came from, so the app can show it
+};
+
 export type StyleProfile = {
   summary: string;
   style_tags: string[]; // same vocabulary as CatalogItem.style_tags
   colors: string[]; // colors the user wears most
   formality: number; // 1-5, what they usually wear
   avoid: string[]; // style tags or colors to leave out, such as "logos"
+  departments: ('men' | 'women')[]; // catalog sections to show; unisex items always show
   looks: Look[];
+  closet: ClosetItem[];
 };
 
 // POST /outfits (OutfitsRequest) -> OutfitsResponse
-export type Occasion = 'everyday' | 'work' | 'date' | 'party' | 'formal' | 'active';
+export type Occasion =
+  | 'everyday'
+  | 'work'
+  | 'date'
+  | 'party'
+  | 'formal'
+  | 'active'
+  | 'wedding_guest'
+  | 'interview'
+  | 'brunch'
+  | 'travel'
+  | 'concert'
+  | 'outdoors'
+  | 'campus'
+  | 'lounge';
 export type GeneratedBy = 'our-llama' | 'base-llama' | 'gemini';
 
+// id is a CatalogItem.id or a ClosetItem.id from the user's profile
+export type Anchor = { source: 'catalog' | 'closet'; id: string };
+
 export type OutfitsRequest = {
-  anchor_id: string | null; // null means "I need an outfit for..." with no anchor
-  budget: number;
+  anchor: Anchor | null; // null means "I need an outfit for..." with no anchor
+  budget_min: number;
+  budget_max: number;
+  max_item_price?: number | null; // no single catalog item may cost more
   occasion: Occasion;
 };
 
 export type Outfit = {
   id: string;
-  items: CatalogItem[];
-  total: number;
+  items: CatalogItem[]; // what would be bought
+  owned: ClosetItem[]; // pieces from the user's closet; free and never in the cart
+  total: number; // sum of `items` prices only
   reason: string;
-  // Item id -> up to 3 same-slot alternatives that keep the total within budget.
-  // The anchor has none. The app swaps locally and re-adds the prices.
+  // Item id -> up to 3 same-slot alternatives that keep the total within the budget range.
+  // The anchor and owned pieces have none. The app swaps locally and re-adds the prices.
   swaps: Record<string, CatalogItem[]>;
 };
 
@@ -77,9 +112,10 @@ export type TryOnResponse = { image_base64: string }; // JPEG
 // POST /checkout/mandate (MandateRequest) -> Mandate
 // POST /checkout/cart (CartRequest) -> CartVerdict, checked before Face ID
 // POST /checkout/confirm (CartRequest) -> Receipt, or 409 if the cart no longer fits
-export type MandateRequest = { limit: number; hours?: number }; // hours defaults to 24
+// limit: the app defaults it to the request's budget_max. hours defaults to 24.
+export type MandateRequest = { limit: number; hours?: number };
 
-// "Visa •••• 4242, agent token". The agent never sees the card number.
+// "Visa •••• 1234, agent card": the Stripe Issuing card's last 4. The agent never sees the card number.
 export type CardRef = { label: string };
 
 export type Mandate = {
@@ -113,6 +149,7 @@ export type Receipt = {
   total: number;
   remaining: number;
   card: CardRef;
+  authorization_id: string | null; // Stripe Issuing's iauth_...; null means a simulated payment
   created_at: string; // ISO 8601
 };
 

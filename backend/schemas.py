@@ -22,6 +22,7 @@ class ScanRequest(BaseModel):
 
 # GET /catalog -> list[CatalogItem]
 Slot = Literal["top", "bottom", "dress", "outerwear", "shoes", "accessory"]
+Department = Literal["men", "women", "unisex"]
 
 
 class CatalogItem(BaseModel):
@@ -29,6 +30,7 @@ class CatalogItem(BaseModel):
     name: str
     brand: str
     slot: Slot
+    department: Department
     price: float
     colors: list[str]
     formality: int  # 1 athleisure ... 5 formal
@@ -51,33 +53,57 @@ class Look(BaseModel):
     photo_ids: list[str]
 
 
+class ClosetItem(BaseModel):
+    """A garment the user already owns, tagged by Gemini from one of their photos. Never bought."""
+    id: str  # "closet_<n>", unique within the user's profile
+    description: str  # "navy oxford shirt"
+    slot: Slot
+    colors: list[str]
+    formality: int
+    style_tags: list[str]
+    photo_id: str  # asset id of the photo it came from, so the app can show it
+
+
 class StyleProfile(BaseModel):
     summary: str
     style_tags: list[str]  # same vocabulary as CatalogItem.style_tags
     colors: list[str]  # colors the user wears most
     formality: int  # 1-5, what they usually wear
     avoid: list[str]  # style tags or colors to leave out, such as "logos"
+    departments: list[Literal["men", "women"]]  # catalog sections to show; unisex items always show
     looks: list[Look]
+    closet: list[ClosetItem]
 
 
 # POST /outfits (OutfitsRequest) -> OutfitsResponse
-Occasion = Literal["everyday", "work", "date", "party", "formal", "active"]
+Occasion = Literal[
+    "everyday", "work", "date", "party", "formal", "active",
+    "wedding_guest", "interview", "brunch", "travel", "concert", "outdoors", "campus", "lounge",
+]
 GeneratedBy = Literal["our-llama", "base-llama", "gemini"]
 
 
+class Anchor(BaseModel):
+    source: Literal["catalog", "closet"]
+    id: str  # a CatalogItem.id or a ClosetItem.id from the user's profile
+
+
 class OutfitsRequest(BaseModel):
-    anchor_id: Optional[str] = None  # None means "I need an outfit for..." with no anchor
-    budget: float
+    anchor: Optional[Anchor] = None  # None means "I need an outfit for..." with no anchor
+    budget_min: float
+    budget_max: float
+    max_item_price: Optional[float] = None  # no single catalog item may cost more
     occasion: Occasion
 
 
 class Outfit(BaseModel):
     id: str
-    items: list[CatalogItem]
-    total: float
+    items: list[CatalogItem]  # what would be bought
+    owned: list[ClosetItem]  # pieces from the user's closet; free and never in the cart
+    total: float  # sum of `items` prices only
     reason: str
-    # Item id -> up to 3 same-slot alternatives that keep the total within budget.
-    # The anchor has none. The app swaps locally and re-adds the prices.
+    # Item id -> up to 3 same-slot alternatives that keep the total within the budget range.
+    # The anchor and owned pieces have none. The app swaps locally and re-adds the prices.
     swaps: dict[str, list[CatalogItem]]
 
 
@@ -100,12 +126,12 @@ class TryOnResponse(BaseModel):
 # POST /checkout/cart (CartRequest) -> CartAllowed | CartRefused, checked before Face ID
 # POST /checkout/confirm (CartRequest) -> Receipt, or 409 if the cart no longer fits
 class MandateRequest(BaseModel):
-    limit: float
+    limit: float  # the app defaults this to the request's budget_max
     hours: int = 24
 
 
 class CardRef(BaseModel):
-    label: str  # "Visa •••• 4242, agent token". The agent never sees the card number.
+    label: str  # "Visa •••• 1234, agent card": the Stripe Issuing card's last 4. The agent never sees the card number.
 
 
 class Mandate(BaseModel):
@@ -150,6 +176,7 @@ class Receipt(BaseModel):
     total: float
     remaining: float
     card: CardRef
+    authorization_id: Optional[str] = None  # Stripe Issuing's iauth_...; None means a simulated payment
     created_at: str  # ISO 8601
 
 
