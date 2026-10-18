@@ -200,6 +200,8 @@ def test_reason_rules():
     assert score({**GOOD, "reason": "Dr. Martens would toughen up the cream crewneck."})[2]["reason"] == 0.5
     assert score({**GOOD, "reason": "The Jr. Varsity cut, e.g. this crewneck, sits easy."})[2]["reason"] == 0.5
     assert score({**GOOD, "reason": "Dr. Martens fans. Cream crewneck."})[2]["reason"] == 0.0
+    shirt = [{**c, "name": "Buffalo Check Shirt | Hawk"} if c["id"] == "top_001" else c for c in CANDIDATES]
+    assert score({**GOOD, "reason": "The buffalo check shirt keeps it easy."}, candidates=shirt)[2]["reason"] == 0.5
 
 
 def test_parse_rejects_bad_shapes():

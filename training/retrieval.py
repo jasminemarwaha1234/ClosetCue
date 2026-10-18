@@ -167,9 +167,10 @@ def _under_cap(item: dict, same_slot: list[dict]) -> bool:
 
 
 def format_candidates(items: list[dict]) -> str:
-    """One line per item, about 30 tokens each, for the outfit prompt."""
+    """One line per item, about 30 tokens each, for the outfit prompt. A `|` in a name becomes `/`
+    so it can't read as a column break."""
     return "\n".join(
-        f"{item['id']} | {item['name']} | {item['slot']} | ${item['price']:.2f} | "
+        f"{item['id']} | {item['name'].replace('|', '/')} | {item['slot']} | ${item['price']:.2f} | "
         f"{', '.join(item['colors'])} | formality {item['formality']} | {', '.join(item['style_tags'])}"
         for item in items
     )

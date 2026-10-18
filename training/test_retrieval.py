@@ -175,6 +175,8 @@ def test_format_candidates():
     assert format_candidates([item, item]).splitlines() == [
         "top_000 | top 0 | top | $20.00 | black | formality 1 | minimal, preppy"
     ] * 2
+    assert format_candidates([{**item, "name": "Buffalo Check Shirt | Hawk"}]) == \
+        "top_000 | Buffalo Check Shirt / Hawk | top | $20.00 | black | formality 1 | minimal, preppy"
 
 
 if __name__ == "__main__":
