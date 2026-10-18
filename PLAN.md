@@ -1,25 +1,46 @@
 # PLAN: an AI stylist that builds whole outfits and checks out safely
 
-Working names, to choose between later: **As If** (from *Clueless*, whose digital closet inspired this) or **Fitly** (used in the current photo-permission text in [app.json](app.json)). Once we pick, update that text to match.
+Working name: **As If** (from *Clueless*, whose digital closet inspired this). The final name is still open. When it changes, update the photo-permission text in [app.json](app.json) and the title in `src/app/onboarding/photos.tsx`.
 
 LA Hacks AI Hackathon 2026, team of 2. Hacking ends **Sunday Oct 18, 12:00 PM PDT**. See [LA_HACKS.md](LA_HACKS.md) for rules, judging and schedule.
 
 ## Contents
 
-1. [Pitch](#1-pitch)
-2. [Track and challenge strategy](#2-track-and-challenge-strategy)
-3. [Product](#3-product)
-4. [Architecture and which model does what](#4-architecture-and-which-model-does-what)
-5. [The model: what we train](#5-the-model-what-we-train)
-6. [How we validate the model](#6-how-we-validate-the-model)
-7. [The training journal: how we explain it to judges](#7-the-training-journal-how-we-explain-it-to-judges)
-8. [Trust, privacy and checkout](#8-trust-privacy-and-checkout)
-9. [Scope: must-have, stretch, later](#9-scope-must-have-stretch-later)
-10. [Who does what, and when](#10-who-does-what-and-when)
-11. [Demo script](#11-demo-script)
-12. [Risks and fallbacks](#12-risks-and-fallbacks)
-13. [Open questions to look into](#13-open-questions-to-look-into)
-14. [Submission checklist](#14-submission-checklist)
+- [PLAN: an AI stylist that builds whole outfits and checks out safely](#plan-an-ai-stylist-that-builds-whole-outfits-and-checks-out-safely)
+  - [Contents](#contents)
+  - [1. Pitch](#1-pitch)
+  - [2. Track and challenge strategy](#2-track-and-challenge-strategy)
+    - [Main track: Model Learning](#main-track-model-learning)
+    - [Company challenges](#company-challenges)
+  - [3. Product](#3-product)
+    - [Core loop](#core-loop)
+    - [Getting your photos](#getting-your-photos)
+    - [Outfit detection](#outfit-detection)
+    - [Face matching ("only look at photos of me")](#face-matching-only-look-at-photos-of-me)
+    - [Screens](#screens)
+    - [Routes](#routes)
+  - [4. Architecture and which model does what](#4-architecture-and-which-model-does-what)
+    - [Which model does what](#which-model-does-what)
+    - [System](#system)
+    - [Repo layout](#repo-layout)
+  - [5. The model: what we train](#5-the-model-what-we-train)
+    - [Task](#task)
+    - [Base model](#base-model)
+    - [Catalog](#catalog)
+    - [Data](#data)
+    - [Reward function: our definition of a good outfit](#reward-function-our-definition-of-a-good-outfit)
+    - [Training runs](#training-runs)
+  - [6. How we validate the model](#6-how-we-validate-the-model)
+    - [The eval table that carries the pitch](#the-eval-table-that-carries-the-pitch)
+  - [7. The training journal: how we explain it to judges](#7-the-training-journal-how-we-explain-it-to-judges)
+  - [8. Trust, privacy and checkout](#8-trust-privacy-and-checkout)
+  - [9. Scope: must-have, stretch, later](#9-scope-must-have-stretch-later)
+  - [10. Who does what, and when](#10-who-does-what-and-when)
+    - [Staying unblocked](#staying-unblocked)
+  - [11. Demo script](#11-demo-script)
+  - [12. Risks and fallbacks](#12-risks-and-fallbacks)
+  - [13. Open questions to look into](#13-open-questions-to-look-into)
+  - [14. Submission checklist](#14-submission-checklist)
 
 ---
 
@@ -101,7 +122,7 @@ The user chooses one of two ways to share photos. Both ship as equal options.
 | Option | How | Expo package | Status |
 | --- | --- | --- | --- |
 | **Pick photos** | The system picker, multi-select up to 20. On iOS the picker runs outside our app, so it needs no photo-library permission. | `expo-image-picker` (in Expo Go) | To build |
-| **Scan the camera roll** | Read the 300 newest photos and keep only the ones that show you in an outfit, using outfit detection and face matching (below). | `expo-media-library` (its `legacy` API), plus pose and face models on the server | Built as a prototype in [App.tsx](App.tsx) and `backend/main.py` |
+| **Scan the camera roll** | Read the 500 newest photos and keep only the ones that show you in an outfit, using outfit detection and face matching (below). | `expo-media-library` (its `legacy` API), plus pose and face models on the server | Built as a prototype in [src/app/onboarding/photos.tsx](src/app/onboarding/photos.tsx) and `backend/services/` |
 
 How the scan works today:
 
@@ -137,7 +158,7 @@ It drops photos of other people and keeps photos of you that someone else took. 
 
 **Where it runs.** On the phone is the private version, but it needs native code, so a development build. Today it runs on the server, which means uploading photos that contain other people's faces. Finding the user's face also computes embeddings for **everyone** in the 80 photos, not just the user. Face embeddings count as biometric data under laws like Illinois' BIPA, so they need explicit consent and shouldn't be stored. Gemini isn't an option: face identification is the kind of request it's likely to refuse.
 
-**Plan:** keep it on the server for the demo, keep the embedding only for the session (done), put it behind a consent screen that says what it computes (section 8; not done yet), and tell judges that on-device matching is the production design. That honesty helps the Visa trust score.
+**Plan:** keep it on the server for the demo, keep the embedding only for the session (done), put it behind a consent screen that says what it computes (section 8; Person B; not done yet), and tell judges that on-device matching is the production design. That honesty helps the Visa trust score.
 
 ### Screens
 
@@ -156,19 +177,18 @@ Design these in Paper before building. The first six are the demo path.
 
 ### Routes
 
-Every file in `src/app/` is a screen in Expo Router. Folders in parentheses, like `(tabs)`, group screens under one layout without adding to the URL. The demo path (Welcome → Photos → Style → Build → Outfits → Try-on → Checkout) is one straight push through the stack. After onboarding, a tab bar holds the four places a user returns to.
+Every file in `src/app/` is a screen in Expo Router. Folders in parentheses, like `(tabs)`, group screens under one layout without adding to the URL, which is why Build is `build.tsx` and not `(tabs)/index.tsx`: that would claim `/`, which the redirect already uses. Every route below exists. Screens that aren't built yet show a placeholder with links along the demo path. The demo path (Welcome → Photos → Style → Build → Outfits → Try-on → Checkout) is one straight push through the stack. After onboarding, a tab bar holds the four places a user returns to.
 
 ```
 src/app/
-├── _layout.tsx              root Stack; starts the anonymous Supabase session
-├── index.tsx                redirects to onboarding (no profile yet) or to the tabs
+├── _layout.tsx              root Stack; will start the anonymous Supabase session
+├── index.tsx                redirects to onboarding (later: to /build when a profile exists)
 ├── onboarding/
 │   ├── welcome.tsx          1. Welcome and consent
-│   ├── photos.tsx           2. Share your photos (pick / scan)
-│   └── is-this-you.tsx      2. "Is this you?" during the scan (an inline card in App.tsx today)
+│   └── photos.tsx           2. Share your photos (pick / scan), with the "Is this you?" card inline
 ├── (tabs)/
 │   ├── _layout.tsx          tab bar: Build · Style · Rate · Trust
-│   ├── index.tsx            4. Build
+│   ├── build.tsx            4. Build
 │   ├── style.tsx            3. Your style (also the last onboarding step)
 │   ├── rate.tsx             8. Which is better?
 │   └── trust.tsx            9. Trust
@@ -210,11 +230,14 @@ newest photos ──────────────────────
 thumbnails + your face ────────────────▶ POST /scan ─────────────────────▶ pose + face models: photos of you in outfits
 photos ────────────────────────────────▶ POST /profile ──────────────────▶ Gemini: tag each photo
                                           builds profile ────────────────▶ Supabase: profiles
+edit profile ──────────────────────────▶ GET, PUT /profile ──────────────▶ Supabase: profiles
+browse, anchor ────────────────────────▶ GET /catalog ───────────────────▶ training/catalog.json
 anchor, budget ────────────────────────▶ POST /outfits ── candidates ────▶ Veri: our Llama 3B
                                           retrieve, call, guard, retry once
 photo + items ─────────────────────────▶ POST /tryon ────────────────────▶ Gemini image editing
-cart ──────────────────────────────────▶ POST /checkout/mandate, /confirm   enforces the spending limit
-A/B choice, fit rating ────────────────▶ POST /feedback ─────────────────▶ Supabase: feedback (→ DPO data)
+cart ──────────────────────────────────▶ POST /checkout/mandate, /cart, /confirm   enforces the spending limit
+A/B choice ────────────────────────────▶ GET /rate/next, POST /rate ─────▶ Supabase: feedback (→ DPO data)
+fit rating ────────────────────────────▶ POST /fit ──────────────────────▶ Supabase: feedback, updated profile
 trust screen ──────────────────────────▶ DELETE /me ─────────────────────▶ Supabase: delete user's rows
                  Sentry: traces, logs and AI-call monitoring on both sides
 ```
@@ -226,29 +249,29 @@ trust screen ──────────────────────�
   - Tables: `profiles` (one per user, the style profile as JSON), `feedback` (A/B choices and fit ratings, with the outfits shown). The `feedback` table exports straight to the DPO dataset.
   - Photos are never stored. "Delete my data" deletes the user's rows.
   - The phone only talks to Supabase for sign-in. Reads and writes go through the backend, which holds the service key.
-- **Secrets:** the Gemini, Veri and Supabase service keys live only on the backend, in `.env.local`. The repo goes public for submission, and anything the phone app ships can be read.
+- **Secrets:** the Gemini, Veri and Supabase service keys live only on the backend, in `backend/.env`. The app's settings go in the root `.env`, and everything in it ships inside the app. [README.md](README.md) lists both. The repo goes public for submission, and anything the phone app ships can be read.
 - **The guard:** the backend runs the reward's checks on every model answer. A failing answer gets one retry and never reaches the screen.
 
 ### Repo layout
 
-Everything lives in this one repo. The Expo app stays at the root, which is what [AGENTS.md](AGENTS.md) and the Expo commands expect. Today the app is one file ([App.tsx](App.tsx)) and the server is one file in `backend/`. When we move to this layout, the code in `backend/main.py` splits into the files below.
+Everything lives in this one repo. The Expo app stays at the root, which is what [AGENTS.md](AGENTS.md) and the Expo commands expect. Built so far: the photo scan (`src/app/onboarding/photos.tsx`, `src/api/`, `src/lib/photos.ts`, and the scan and face files in `backend/routes/` and `backend/services/`), a placeholder screen for every route, and `src/theme/` (tokens seeded from the current screens; real values come from the Paper style guide). Everything else in the tree is planned. Run the backend from the repo root with `uvicorn backend.main:app --host 0.0.0.0 --port 8000`.
 
 ```
 LaHacksAI/
 ├── package.json, app.json, tsconfig.json   the Expo app
 ├── src/
 │   ├── app/          routes only (section 3)
-│   ├── components/   OutfitCard, ItemTile, BudgetSlider, PhotoGrid…
+│   ├── components/   Placeholder (until every screen is real), OutfitCard, ItemTile, BudgetSlider, PhotoGrid…
 │   ├── api/          client.ts (fetch + EXPO_PUBLIC_API_BASE_URL), types.ts, mocks.ts
-│   ├── lib/          supabase.ts, sentry.ts, photos.ts (the shrink and scan helpers now in App.tsx)
-│   └── theme/        colors, type and spacing from the Paper style guide
+│   ├── lib/          photos.ts (shrinks photos for the scan), supabase.ts, sentry.ts
+│   └── theme/        colors, type, spacing and radii; values from the Paper style guide once it's done
 ├── assets/
 ├── backend/          FastAPI
 │   ├── main.py       creates the app, includes the routers
-│   ├── routes/       profile.py, outfits.py, tryon.py, checkout.py, feedback.py, me.py, scan.py, faces.py
-│   ├── services/     gemini.py, veri.py, supabase.py, retrieval.py, pose.py, faces.py
+│   ├── routes/       profile.py, outfits.py, catalog.py, tryon.py, checkout.py, feedback.py, me.py, scan.py, faces.py
+│   ├── services/     gemini.py, veri.py, supabase.py, retrieval.py, pose.py, faces.py, images.py
 │   ├── schemas.py    Pydantic request and response models
-│   ├── test_framing.py   prints the framing for local photos
+│   ├── test_framing.py   prints the framing for local photos (python -m backend.test_framing <photos>)
 │   └── requirements.txt
 ├── training/
 │   ├── catalog.json  the catalog; the server reads it too
@@ -419,7 +442,7 @@ Trust is 15% of Visa's score and the main worry people have about agents that sp
 
 **Photos**
 
-- You choose what to share: specific photos, or a scan of your 300 newest photos. Only small thumbnails leave the phone.
+- You choose what to share: specific photos, or a scan of your 500 newest photos. Only small thumbnails leave the phone.
 - **Face matching, during the scan.** Finding your face computes face embeddings for everyone in your 80 newest photos, not just you. None of them are stored. Your own face's embedding stays in the app's memory for the session, and "Not you? Reset my face" clears it. The consent screen says all of this plainly before the scan runs.
 - Photos are processed for the session and not stored. Only the text tags and the profile are kept, and you can read and edit both.
 - One tap deletes everything: profile, feedback and anything from the session.
@@ -474,20 +497,20 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 
 ## 10. Who does what, and when
 
-**Person A: model and backend.** Catalog, data, reward, Veri runs, eval, journal, `/outfits`, `/profile`, `/feedback`, Supabase.
-**Person B: design and app.** Paper style guide and screens, Expo Router setup, every screen including the A/B screen, `/tryon`, `/checkout`, `DELETE /me`, `/scan`, `/faces/find-owner`, Sentry, domain and landing page, demo video.
+**Person A (Charlie): model and backend.** Catalog, data, reward, Veri runs, eval, journal, `/profile`, `/outfits`, `/catalog`, `/rate`, `/fit`, Supabase.
+**Person B (Jasmine): design and app.** Paper style guide and screens, Expo Router setup, every screen including the A/B screen, `/tryon`, `/checkout`, `DELETE /me`, `/scan`, `/faces/find-owner` (including fix 4 in [backend/SCAN_FIXES.md](backend/SCAN_FIXES.md)), the face-matching consent screen, asking the Visa team about a sandbox, Sentry, domain and landing page, demo video.
 
 The split works because training runs take 30–60 minutes of waiting. Person A writes server endpoints while a run trains.
 
 ### Staying unblocked
 
 1. **Contract first (Sat 2–4 PM, together).** Agree on the outfit JSON schema, the request and response of every endpoint, and the `catalog.json` fields. Write them into `backend/schemas.py` and `src/api/types.ts`, and have B write `src/api/mocks.ts` from them. After that, neither of us waits on the other.
-2. **Split the server by file.** A owns `profile.py`, `outfits.py`, `feedback.py` and the `services/` files for Gemini, Veri and Supabase. B owns `tryon.py`, `checkout.py`, `me.py`, `scan.py`, `faces.py`, and the pose and face `services/`. `main.py` and `schemas.py` are shared: keep edits there small and pull before touching them.
+2. **Split the server by file.** A owns `profile.py`, `outfits.py`, `catalog.py`, `feedback.py` (`/rate` and `/fit`) and the `services/` files for Gemini, Veri and Supabase. B owns `tryon.py`, `checkout.py`, `me.py`, `scan.py`, `faces.py`, and the pose and face `services/`. `main.py` and `schemas.py` are shared: keep edits there small and pull before touching them.
 3. **Integration checkpoints**, where the app swaps a mock for the real endpoint:
    - **Sat 10 PM:** `/profile` live, and `/outfits` against v0.
    - **Sun 6 AM:** `/outfits` against our trained model.
 4. **Git:** short-lived branches, or push to `main` inside your own folders, and pull often.
-5. **Watch A's load.** A is on the critical path, since no trained model means no Model Learning track. If A falls behind, B takes the Supabase setup or `/feedback`, both plain create, read, update and delete code.
+5. **Watch A's load.** A is on the critical path, since no trained model means no Model Learning track. If A falls behind, B takes the Supabase setup or `/rate` and `/fit`, all plain create, read, update and delete code.
 
 Times are PDT. Shift them if we start late, but keep the 10 PM track decision and the 8:30 AM feature freeze.
 
@@ -539,7 +562,7 @@ Times are PDT. Shift them if we start late, but keep the 10 PM track decision an
 | Two phones scan at once and collide. All three models (pose and two face models) are shared by every request, and the pose model's `predict` isn't thread-safe. | Fix 4 in [backend/SCAN_FIXES.md](backend/SCAN_FIXES.md): one lock around all model work, and one pose `predict` call per batch. |
 | A fresh server install crashes on import, because `facenet-pytorch` isn't in `requirements.txt` (it's installed separately with `pip install facenet-pytorch --no-deps`). | Put the step in the README's setup section, and tell each other when a dependency changes. |
 | The phone can't reach the laptop on venue Wi-Fi | `npx expo start --tunnel`, tested Saturday, not Sunday morning. |
-| Secrets in a public repo | Keys only in `.env.local` on the backend. Check `git log -p` for keys before making the repo public. |
+| Secrets in a public repo | Keys only in `backend/.env`. Check `git log -p` for keys before making the repo public. |
 | Credits run out | `veri billing balance` before each run. `--min-replicas 0` on every deployment. Stop deployments overnight if we aren't using them. |
 
 ---
@@ -551,7 +574,7 @@ Not urgent right now. Each has an owner and a time it must be answered by.
 | Question | How to answer it | By |
 | --- | --- | --- |
 | Does Veri's trainer accept an ungated Llama 3.2 3B community mirror? If not, we use Qwen3-4B. | `veri jobs estimate` on a config with the mirror; ask at the Veri table if unclear. | Person A, before the first run |
-| Does Visa have a sandbox or API for agent payment tokens at this event? | Ask the Visa team at their table. | Either, Saturday |
+| Does Visa have a sandbox or API for agent payment tokens at this event? | Ask the Visa team at their table. | Person B, Saturday |
 
 ---
 

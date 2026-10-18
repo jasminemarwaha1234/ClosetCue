@@ -3,6 +3,7 @@
     "name": "LaHacksAI",
     "slug": "LaHacksAI",
     "version": "1.0.0",
+    "scheme": "lahacksai",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -25,9 +26,13 @@
       [
         "expo-media-library",
         {
-          "photosPermission": "Fitly looks for photos of you in outfits to learn your style. Only small thumbnails leave your phone, and they aren't stored."
+          "photosPermission": "As If looks for photos of you in outfits to learn your style. Only small thumbnails leave your phone, and they aren't stored."
         }
-      ]
-    ]
+      ],
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
