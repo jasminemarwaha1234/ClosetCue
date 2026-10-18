@@ -67,11 +67,11 @@ For reference, these are the only fields the screen reads:
 Please tell Jasmine the final list of allowed color names and `style_tags`, so the app's swatches and the catalog vocabulary stay in sync.
 ---
 
-# Change request: two gaps found while designing the rest of the demo path
+# Change request: "make it nicer" for the checkout demo
 
-From Jasmine (app and design). Written 2026-10-17. These came out of the Paper designs for Pick item, Outfits, Try-on, Checkout, Receipt and How did it fit?. Everything else on those screens already fits the current contract.
+From Jasmine (app and design). Written 2026-10-17. This came out of the Paper designs for Pick item, Outfits, Try-on, Checkout and Receipt. Everything else on those screens already fits the current contract.
 
-## 1. "Make it nicer" has no way to ask for it (needed for the demo)
+## "Make it nicer" has no way to ask for it (needed for the demo)
 
 PLAN.md section 8 and the demo script: you say "make it nicer", the agent proposes a $90 upgrade that pushes the cart past the $200 limit, and checkout refuses it. Right now nothing in `OutfitsRequest` asks for an upgrade, and the guard drops any outfit over `budget`, so the app can't get an over-limit cart from `/outfits`.
 
@@ -82,6 +82,8 @@ Options, pick whichever is easiest for you:
 
 Whatever you choose, tell Jasmine the shape so `src/api/types.ts` matches. Refusing the cart (`/checkout/cart`) is Jasmine's file and already returns `suggestion` for "the closest outfit that fits".
 
-## 2. `ItemFit.liked` (only if "How did it fit?" ships; it's stretch item 2)
+For reference, the refused screen also lets the person raise their own limit and pay. That uses the existing `POST /checkout/mandate` with the new limit, then `/checkout/confirm` after Face ID, so it needs nothing from you. The agent still can never go over a limit; only the person can raise it.
 
-The fit screen asks only Too small / Just right / Too big per piece, which is all PLAN.md describes. `ItemFit.liked: bool` is required, so the app would have to send a value the user never gave. Please make it optional in `backend/schemas.py` (`liked: bool | None = None`) and ignore it when it's missing. Jasmine will mirror it in `types.ts`.
+## Dropped: "How did it fit?"
+
+We can't know when an order arrives, so the fit screen is cut from the app. Nothing from the app will call `POST /fit`.
