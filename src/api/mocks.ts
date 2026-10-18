@@ -123,16 +123,23 @@ function outfit(id: string, itemIds: string[], reason: string, ownedIds: string[
   };
 }
 
-// The slots each outfit fills. A dress replaces the top and bottom.
-const LOOKS: Slot[][] = [
-  ['top', 'bottom', 'outerwear', 'shoes'],
-  ['top', 'bottom', 'shoes'],
-  ['top', 'bottom', 'shoes', 'accessory'],
-];
-const DRESS_LOOKS: Slot[][] = [
-  ['dress', 'outerwear', 'shoes'],
-  ['dress', 'shoes'],
-  ['dress', 'shoes', 'accessory'],
+// The three hand-made looks the stylist starts from, around the cream crewneck.
+const LOOKS = [
+  {
+    items: ['top_012', 'bottom_004', 'outerwear_002'],
+    owned: ['closet_2'],
+    reason: 'The navy jacket keeps it sharp, and your own white sneakers echo the cream knit.',
+  },
+  {
+    items: ['top_012', 'bottom_009', 'outerwear_007', 'shoes_014'],
+    owned: [],
+    reason: 'Black trousers dress up the crewneck, and the lilac shoes are the one accent.',
+  },
+  {
+    items: ['top_012', 'bottom_015', 'shoes_009', 'accessory_005'],
+    owned: [],
+    reason: 'Light denim and white canvas keep the cream knit easy for a day out.',
+  },
 ];
 
 // The catalog anchor of the last request, which the cart suggestion never drops.
@@ -140,50 +147,71 @@ let lastAnchorId: string | null = null;
 
 const sum = (items: CatalogItem[]) => items.reduce((total, i) => total + i.price, 0);
 
-// Outfits built around the picked piece, inside the budget range and the max per item,
-// like the real stylist. Each outfit aims near the middle of the range, picking a
-// different item per slot so the three aren't the same.
+// Swaps the priciest pieces (never the anchor) for cheaper ones in the same slot, or
+// drops them, until the cart is at most `budget`.
+function fitUnder(cart: CatalogItem[], budget: number, keep: string | null) {
+  cart = [...cart];
+  while (sum(cart) > budget) {
+    const priciest = cart.filter((i) => i.id !== keep).sort((a, b) => b.price - a.price)[0];
+    if (!priciest) break;
+    const over = sum(cart) - budget;
+    const cheaper = catalog
+      .filter((c) => c.slot === priciest.slot && c.price < priciest.price && !cart.includes(c))
+      .sort((a, b) => b.price - a.price);
+    const replacement = cheaper.find((c) => priciest.price - c.price >= over) ?? cheaper.at(-1);
+    cart.splice(cart.indexOf(priciest), 1, ...(replacement ? [replacement] : []));
+  }
+  return cart;
+}
+
+// The three looks, rebuilt around the picked piece: it takes the place of whatever was in
+// its slot (a dress replaces the top and bottom), then pieces get cheaper until the look fits
+// the budget and the max per item, like the real stylist would.
 export function outfits(req: OutfitsRequest): OutfitsResponse {
   const perItem = req.max_item_price ?? Infinity;
-  const pool = catalog.filter((c) => c.price <= perItem);
   const anchorItem = req.anchor?.source === 'catalog' ? byId(req.anchor.id) : null;
   const anchorOwned = req.anchor?.source === 'closet' ? profile.closet.find((c) => c.id === req.anchor!.id) : null;
   const anchorSlot = anchorItem?.slot ?? anchorOwned?.slot;
-  const target = (req.budget_min + req.budget_max) / 2;
+  const replaced: Slot[] = anchorSlot === 'dress' ? ['top', 'bottom', 'dress'] : anchorSlot ? [anchorSlot] : [];
   lastAnchorId = anchorItem?.id ?? null;
-
-  const looks = anchorSlot === 'dress' ? DRESS_LOOKS : LOOKS;
   const stamp = Date.now();
   const seen = new Set<string>();
   const list: Outfit[] = [];
 
-  looks.forEach((slots, n) => {
-    const items: CatalogItem[] = anchorItem ? [anchorItem] : [];
-    const owned = anchorOwned ? [anchorOwned] : [];
-    // The first outfit wears the user's own sneakers, like the stylist can with the closet.
-    const mine = n === 0 && !anchorOwned ? profile.closet.find((c) => c.slot === 'shoes') : undefined;
-    if (mine) owned.push(mine);
-    const open = slots.filter((slot) => slot !== anchorSlot && slot !== mine?.slot);
-    open.forEach((slot, k) => {
-      const left = req.budget_max - sum(items);
-      const share = (target - sum(items)) / (open.length - k);
-      const options = pool
-        .filter((c) => c.slot === slot && c.price <= left)
-        .sort((a, b) => Math.abs(a.price - share) - Math.abs(b.price - share));
-      if (options.length) items.push(options[n % options.length]);
+  LOOKS.forEach((look, n) => {
+    let items = look.items.map(byId).filter((i) => !replaced.includes(i.slot));
+    let owned = profile.closet.filter((c) => look.owned.includes(c.id) && !replaced.includes(c.slot));
+    if (anchorItem) items.unshift(anchorItem);
+    if (anchorOwned) owned = [anchorOwned, ...owned];
+    // Pieces over the max per item become the priciest one in that slot that's under it.
+    items = items.flatMap((i) => {
+      if (i.id === lastAnchorId || i.price <= perItem) return [i];
+      const under = catalog.filter((c) => c.slot === i.slot && c.price <= perItem).sort((a, b) => b.price - a.price);
+      return under[0] ? [under[0]] : [];
     });
+    items = fitUnder(items, req.budget_max, lastAnchorId);
     const key = items.map((i) => i.id).sort().join();
     if (!items.length || seen.has(key)) return;
     seen.add(key);
-    list.push({ id: `outfit_${stamp}_${n}`, items, owned, total: sum(items), reason: reasonFor(items, owned), swaps: {} });
+    const untouched = !anchorSlot || (anchorItem?.id === 'top_012' && sum(items) === sum(look.items.map(byId)));
+    list.push({
+      id: `outfit_${stamp}_${n}`,
+      items,
+      owned,
+      total: sum(items),
+      reason: untouched ? look.reason : reasonFor(items, owned),
+      swaps: {},
+    });
   });
 
   for (const o of list) {
     // Every non-anchor item gets same-slot alternatives that keep it under budget, like the real backend.
     for (const i of o.items) {
       if (i.id === lastAnchorId) continue;
-      o.swaps[i.id] = pool
-        .filter((c) => c.slot === i.slot && c.id !== i.id && o.total - i.price + c.price <= req.budget_max)
+      o.swaps[i.id] = catalog
+        .filter(
+          (c) => c.slot === i.slot && c.id !== i.id && c.price <= perItem && o.total - i.price + c.price <= req.budget_max,
+        )
         .slice(0, 3);
     }
   }
@@ -232,21 +260,10 @@ function cartTotal(req: CartRequest) {
   return sum(req.item_ids.map(byId));
 }
 
-// The closest cart under `budget`: swap the priciest piece for a cheaper one in the same
-// slot, or drop it, until it fits. The picked piece always stays.
+// The closest cart under `budget`, keeping the picked piece.
 function closestUnder(ids: string[], budget: number): Outfit | null {
-  const cart = ids.map(byId);
-  while (sum(cart) > budget) {
-    const priciest = cart.filter((i) => i.id !== lastAnchorId).sort((a, b) => b.price - a.price)[0];
-    if (!priciest) return null;
-    const over = sum(cart) - budget;
-    const cheaper = catalog
-      .filter((c) => c.slot === priciest.slot && c.price < priciest.price && !cart.includes(c))
-      .sort((a, b) => b.price - a.price);
-    const replacement = cheaper.find((c) => priciest.price - c.price >= over) ?? cheaper.at(-1);
-    cart.splice(cart.indexOf(priciest), 1, ...(replacement ? [replacement] : []));
-  }
-  if (!cart.length) return null;
+  const cart = fitUnder(ids.map(byId), budget, lastAnchorId);
+  if (!cart.length || sum(cart) > budget) return null;
   return {
     id: `outfit_fit_${Date.now()}`,
     items: cart,
