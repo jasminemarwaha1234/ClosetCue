@@ -13,6 +13,32 @@
 > 2. **Keep `image` in `catalog.json`** when you tag it: `/tryon` sends each item's product photo to Gemini. Also make `price` a number (it's the string `"185.0"` in `catalog_raw.json`).
 > 3. **Share the Gemini key** with me privately: `/tryon` is mine and uses Gemini image editing (your NEXT_STEPS item 8).
 
+> **What changed since your last push ("Add a handoff of the model and backend next steps", Oct 18 01:30), Jasmine:**
+>
+> **Run after pulling:** `pip install -r backend/requirements.txt` (new: `httpx`, `python-dotenv`, `google-genai`) and `npm install` (new: `@supabase/supabase-js`, `expo-sqlite`).
+>
+> **The contract didn't change:** `backend/schemas.py` and `src/api/types.ts` are untouched.
+>
+> | File | Change |
+> | --- | --- |
+> | `backend/main.py` (shared) | Two `include_router` lines: `me` and `tryon` |
+> | `backend/requirements.txt` (shared) | Added `httpx`, `python-dotenv`, `google-genai` |
+> | `backend/services/supabase.py` (new, your area) | Supabase: `current_user` token check, profile/feedback/mandate helpers, `delete_user`. See "Supabase: done by Jasmine" below |
+> | `backend/supabase_schema.sql` (new) | The `profiles`, `feedback`, `mandates` tables with RLS. Jasmine runs it once in the dashboard |
+> | `backend/routes/me.py` (new) | `DELETE /me` |
+> | `backend/routes/tryon.py`, `backend/services/tryon.py` (new) | `POST /tryon` with Gemini image editing |
+> | `src/api/mocks.ts` | Mock catalog is 18 real items from `catalog_raw.json` (same ids); mock outfits follow the anchor, budget and max per item |
+> | `src/api/client.ts` | Sends the Supabase token; `tryOn` always calls the backend; `deleteMe()`. Your `makeItNicer` is unchanged |
+> | `src/lib/supabase.ts` (new), `src/lib/session.tsx` | Anonymous sign-in on launch |
+> | `src/lib/confirm.ts` | Pay asks with an in-app dialog in Expo Go, Face ID in a dev build |
+> | `src/app/outfits.tsx`, `src/components/ui.tsx` | × to leave a piece out, Swap pill, product photos |
+> | `src/app/(tabs)/build.tsx`, `src/components/RangeSlider.tsx` | Budget slider from $10 with uneven steps |
+> | `src/app/onboarding/photos.tsx`, `src/app/_layout.tsx` | Onboarding can't be swiped back to |
+> | `src/theme/index.ts` | `gold` and `silver` swatches |
+> | `package.json`, `package-lock.json`, `app.json` | `@supabase/supabase-js`, `expo-sqlite` and its config plugin |
+>
+> **Env:** `backend/.env` now needs `SUPABASE_URL` and `SUPABASE_SECRET_KEY`, which I'll send you privately. `GEMINI_API_KEY` needs billing on its Google project for try-on (image models have no free tier). Text tagging works without it.
+
 # Change request: remove "formality" from the style profile
 
 From Jasmine (app and design). Written 2026-10-17.
