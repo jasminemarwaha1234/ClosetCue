@@ -1,8 +1,24 @@
 [
-  {"name": "Represent", "domain": "representclo.com", "currency": "USD"},
   {"name": "Stüssy", "domain": "www.stussy.com", "currency": "USD"},
   {"name": "Brain Dead", "domain": "wearebraindead.com", "currency": "USD"},
-  {"name": "Princess Polly", "domain": "us.princesspolly.com", "currency": "USD", "department": "women"},
-  {"name": "Rouje", "domain": "www.rouje.com", "currency": "EUR", "usd_rate": 1.16, "department": "women"},
-  {"name": "Lack of Color", "domain": "lackofcolor.com", "currency": "USD"}
+  {"name": "Kith", "domain": "kith.com", "currency": "USD"},
+  {"name": "Taylor Stitch", "domain": "www.taylorstitch.com", "currency": "USD", "department": "men"},
+  {"name": "Todd Snyder", "domain": "toddsnyder.com", "currency": "USD", "department": "men"},
+  {"name": "Bonobos", "domain": "www.bonobos.com", "currency": "USD", "department": "men"},
+  {"name": "Big Bud Press", "domain": "bigbudpress.com", "currency": "USD", "department": "unisex"},
+  {"name": "Faherty", "domain": "fahertybrand.com", "currency": "USD"},
+  {"name": "Rowing Blazers", "domain": "rowingblazers.com", "currency": "USD"},
+  {"name": "Outerknown", "domain": "www.outerknown.com", "currency": "USD"},
+  {"name": "Alo Yoga", "domain": "www.aloyoga.com", "currency": "USD"},
+  {"name": "Set Active", "domain": "setactive.co", "currency": "USD", "department": "women"},
+  {"name": "Outdoor Voices", "domain": "www.outdoorvoices.com", "currency": "USD"},
+  {"name": "Christy Dawn", "domain": "christydawn.com", "currency": "USD", "department": "women"},
+  {"name": "Edikted", "domain": "edikted.com", "currency": "USD", "department": "women"},
+  {"name": "Allbirds", "domain": "www.allbirds.com", "currency": "USD", "max_items": 30},
+  {"name": "Thursday Boot Co.", "domain": "thursdayboots.com", "currency": "USD", "max_items": 30},
+  {"name": "Birdies", "domain": "birdies.com", "currency": "USD", "department": "women", "max_items": 30},
+  {"name": "Steve Madden", "domain": "www.stevemadden.com", "currency": "USD", "max_items": 40},
+  {"name": "Koio", "domain": "www.koio.co", "currency": "USD", "max_items": 30},
+  {"name": "Gorjana", "domain": "www.gorjana.com", "currency": "USD", "department": "women", "max_items": 20},
+  {"name": "Princess Polly", "domain": "us.princesspolly.com", "currency": "USD", "department": "women"}
 ]

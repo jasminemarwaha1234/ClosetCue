@@ -4,7 +4,8 @@ Run from the repo root: python -m training.scrape_catalog [--stores NAME ...] [-
 
 Each store is a Shopify shop that serves /products.json. stores.json fields:
   name, domain, currency (the shop's base currency, which products.json prices are in),
-  usd_rate (required when currency isn't USD), department (optional hint for one-department stores).
+  usd_rate (required when currency isn't USD), department (optional hint for one-department stores),
+  max_items (optional; defaults to PER_STORE, lower for one-slot stores so they don't swamp a slot).
 
 Requests go strictly one at a time, at least DELAY seconds apart: a parallel run once got
 our IP blocked across all of Shopify.
@@ -206,10 +207,11 @@ def scrape_store(store, state, cache, drops):
 
     # Round-robin across slots so a store heavy in one slot still gives a spread.
     queues = {s: sorted(items, key=lambda i: stable_order(i["handle"])) for s, items in by_slot.items()}
+    cap = store.get("max_items", PER_STORE)
     picked = []
-    while len(picked) < PER_STORE and any(queues.values()):
+    while len(picked) < cap and any(queues.values()):
         for slot in SLOTS:
-            if queues.get(slot) and len(picked) < PER_STORE:
+            if queues.get(slot) and len(picked) < cap:
                 picked.append(queues[slot].pop(0))
     drops[store["name"], "over the store cap"] += sum(len(q) for q in queues.values())
     print(f"  {len(raw)} products in feed, kept {len(picked)}")
