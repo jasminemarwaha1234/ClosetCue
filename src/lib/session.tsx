@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { getCatalog, getProfile } from '@/api/client';
 import type { PayMethodId } from '@/lib/payment';
@@ -88,17 +88,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [payMethodId, setPayMethodId] = useState<PayMethodId>('apple_pay');
 
-  // Load the profile and catalog, and prefill the anchor with a suggestion. Again after
-  // signing in (an account or a guest), since the profile belongs to the account.
+  // Load the profile and catalog. Again after signing in (an account or a guest), since the
+  // profile belongs to the account. Separately, so the catalog loads before onboarding makes the profile.
   useEffect(() => {
-    const load = () =>
-      Promise.all([getProfile(), getCatalog()])
-        .then(([p, c]) => {
-          setProfile(p);
-          setCatalog(c);
-          setAnchorState((current) => current ?? suggestAnchor(forDepartments(c, p), p));
-        })
-        .catch(() => {});
+    const load = () => {
+      getProfile().then(setProfile).catch(() => {});
+      getCatalog().then(setCatalog).catch(() => {});
+    };
     load();
     const sub = supabase?.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN') load();
@@ -109,6 +105,19 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     });
     return () => sub?.data.subscription.unsubscribe();
   }, []);
+
+  // Prefill the anchor with a suggestion once per signed-in profile, whichever of the profile
+  // and catalog arrives last. Not on later profile edits, so clearing the anchor sticks.
+  const suggested = useRef(false);
+  useEffect(() => {
+    if (!profile) {
+      suggested.current = false;
+      return;
+    }
+    if (suggested.current || catalog.length === 0) return;
+    suggested.current = true;
+    setAnchorState((current) => current ?? suggestAnchor(forDepartments(catalog, profile), profile));
+  }, [profile, catalog]);
 
   const shop = useMemo(() => forDepartments(catalog, profile), [catalog, profile]);
 
