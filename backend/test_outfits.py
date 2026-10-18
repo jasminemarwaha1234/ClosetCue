@@ -79,7 +79,7 @@ def run(monkeypatch):
     def go(answers, request=REQUEST):
         replies = {model: list(r) for model, r in answers.items()}
 
-        async def reply(model, messages):
+        async def reply(model, messages, *_):
             calls.append((model, messages[1]["content"]))
             r = replies[model].pop(0) if replies.get(model) else None
             if isinstance(r, Exception):
@@ -211,4 +211,11 @@ def test_404_without_a_profile(run, monkeypatch):
 
 def test_veri_is_skipped_when_its_url_is_unset(monkeypatch):
     monkeypatch.delenv("OUR_LLAMA_URL", raising=False)
-    assert asyncio.run(veri.chat("OUR_LLAMA", [])) is None
+    assert asyncio.run(veri.chat("OUR_LLAMA", [], [], 3)) is None
+
+
+def test_veri_schema_limits_items_to_the_offered_ids():
+    schema = veri.outfits_schema(["top_1", "closet_2"], 3)["json_schema"]["schema"]["properties"]["outfits"]
+    assert (schema["minItems"], schema["maxItems"]) == (3, 3)
+    assert schema["items"]["properties"]["items"]["items"]["enum"] == ["top_1", "closet_2"]
+    assert schema["items"]["required"] == ["items", "reason"]

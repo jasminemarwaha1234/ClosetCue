@@ -79,7 +79,8 @@ async def run(model: str, rows: list[dict], path: Path) -> tuple[list[dict], str
                 await asyncio.sleep(DELAY)
             start = time.monotonic()
             try:
-                text, error = await ask(row["messages"]), None
+                ids = list(reward.prepare_context(row)["by_id"])
+                text, error = await ask(row["messages"], ids, reward.OUTFITS_WANTED), None
             except Exception as e:  # network errors, timeouts, a deployment still waking
                 if _quota(e):
                     stopped = f"quota exhausted at row {n}: {e!r}"

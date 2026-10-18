@@ -29,10 +29,11 @@ MIN_OUTFITS = 2
 UPGRADE_RANGE = 150.0
 MAX_SWAPS = 3
 
-CHAIN: list[tuple[GeneratedBy, Callable[[list[dict]], Awaitable[Optional[str]]]]] = [
-    ("our-llama", lambda messages: veri.chat("OUR_LLAMA", messages)),
-    ("base-llama", lambda messages: veri.chat("BASE_LLAMA", messages)),
-    ("gemini", lambda messages: gemini.chat(messages)),
+# Each model is asked with (messages, the ids it may use, how many outfits).
+CHAIN: list[tuple[GeneratedBy, Callable[[list[dict], list[str], int], Awaitable[Optional[str]]]]] = [
+    ("our-llama", lambda messages, ids, n: veri.chat("OUR_LLAMA", messages, ids, n)),
+    ("base-llama", lambda messages, ids, n: veri.chat("BASE_LLAMA", messages, ids, n)),
+    ("gemini", lambda messages, ids, n: gemini.chat(messages)),
 ]
 
 
@@ -85,7 +86,7 @@ async def _generate(messages, ctx, wanted: int, upgrade: bool,
     for name, ask in CHAIN:
         for _ in range(2):
             try:
-                text = await ask(messages)
+                text = await ask(messages, list(ctx["by_id"]), wanted)
             except Exception as e:  # network errors, quota, a deployment still waking
                 log.warning("%s failed: %r", name, e)
                 break

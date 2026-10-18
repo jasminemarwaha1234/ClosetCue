@@ -94,7 +94,7 @@ def stub(answers, monkeypatch):
     """Point every model at a stub that returns (or raises) the next of answers."""
     queue = list(answers)
 
-    async def ask(messages):
+    async def ask(messages, *_):
         a = queue.pop(0)
         if isinstance(a, Exception):
             raise a
