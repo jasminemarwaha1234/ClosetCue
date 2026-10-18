@@ -80,6 +80,12 @@ export const getCatalog = () =>
 export const getProfile = () =>
   USE_MOCKS ? mock(mocks.profile) : api<StyleProfile>('GET', '/profile');
 
+// Gemini reads the outfit photos into a profile and closet, and the backend saves it.
+export const createProfile = (photos: Thumb[]) =>
+  USE_MOCKS
+    ? mock(mocks.profile)
+    : api<StyleProfile>('POST', '/profile', { photos: photos.map(({ id, base64 }) => ({ id, base64 })) });
+
 export const putProfile = (profile: StyleProfile) =>
   USE_MOCKS ? mock(profile) : api<StyleProfile>('PUT', '/profile', profile);
 

@@ -352,9 +352,10 @@ import {
 } from 'react-native';
 import * as MediaLibrary from 'expo-media-library/legacy';
 
-import { classifyBatch, findOwnerCandidates } from '@/api/client';
+import { classifyBatch, createProfile, findOwnerCandidates } from '@/api/client';
 import type { Candidate } from '@/api/types';
 import { looksLikeScreenshot, makeThumb, type Thumb } from '@/lib/photos';
+import { useSession } from '@/lib/session';
 import { colors, radii, type } from '@/theme';
 
 // How many of the newest photos to look at.
@@ -362,6 +363,7 @@ const SCAN_LIMIT = 500;
 const BATCH_SIZE = 4; // photos processed at the same time on the phone
 const UPLOAD_BATCH = 10; // thumbnails sent to the backend per request
 const FIND_OWNER_PHOTOS = 80; // newest photos used to find your face
+const PROFILE_PHOTOS = 30; // newest outfit photos sent to POST /profile, its maximum
 
 type Phase = 'idle' | 'scanning' | 'done';
 type Stage = 'shrinking' | 'finding' | 'checking';
@@ -381,6 +383,8 @@ export default function PhotosScreen() {
   const [unreadable, setUnreadable] = useState(0);
   const [limited, setLimited] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const session = useSession();
 
   // face matching
   const [owner, setOwner] = useState<number[] | null>(null);
@@ -508,6 +512,24 @@ export default function PhotosScreen() {
       setAwaitingConfirm(false);
       setPhase('done');
     }
+  }
+
+  // Builds and saves the style profile from the outfit photos, then leaves onboarding.
+  async function finish() {
+    setMessage(null);
+    setSaving(true);
+    try {
+      session.setProfile(await createProfile(outfitThumbs.slice(0, PROFILE_PHOTOS)));
+    } catch (e) {
+      setMessage(`Couldn't make your style profile: ${e instanceof Error ? e.message : String(e)}`);
+      return;
+    } finally {
+      setSaving(false);
+    }
+    markOnboarded((await getSession())?.user.id);
+    // Onboarding is done, so clear it from the stack: swiping back can't return to it.
+    if (router.canDismiss()) router.dismissAll();
+    router.replace('/style');
   }
 
   const scanning = phase === 'scanning';
@@ -668,17 +690,12 @@ export default function PhotosScreen() {
         )}
 
         {phase === 'done' && (
-          // Onboarding is done, so clear it from the stack: swiping back can't return to it.
           <Text
             accessibilityRole="link"
-            onPress={async () => {
-              markOnboarded((await getSession())?.user.id);
-              if (router.canDismiss()) router.dismissAll();
-              router.replace('/style');
-            }}
+            onPress={saving ? undefined : finish}
             style={[styles.link, styles.linkCenter]}
           >
-            Next: your style
+            {saving ? 'Reading your style…' : 'Next: your style'}
           </Text>
         )}
       </ScrollView>
