@@ -163,6 +163,35 @@ def test_over_budget_outfit_swaps_its_priciest_item_for_the_best_fit(run):
     assert [o["total"] for o in body["outfits"]] == [200.0, 170.0]
 
 
+A_REASON = "Start from the black top, add the denim bottom, and this streetwear outfit is set for a casual day."
+
+
+def reasons(res):
+    return [o["reason"] for o in res.json()["outfits"]]
+
+
+def test_llama_reasons_are_templated_from_the_returned_items(run):
+    res, _ = run({"OUR_LLAMA": [answer(A, B)]})
+    assert reasons(res) == [
+        A_REASON,
+        "Wear the black top with the olive bottom for a streetwear look that fits a casual day.",
+    ]
+
+
+def test_the_same_outfit_gets_the_same_reason_in_any_order(run):
+    res, _ = run({"OUR_LLAMA": [answer(list(reversed(A)))], "BASE_LLAMA": [None], "gemini": [None]})
+    assert reasons(res) == [A_REASON]
+
+
+def test_gemini_keeps_its_reason_unless_a_repair_swapped_an_item(run):
+    over = ["top_001", "bottom_003", "shoes_002"]  # repaired to bottom_004
+    res, _ = run({"OUR_LLAMA": [None], "BASE_LLAMA": [None], "gemini": [answer(over, A)]})
+    assert reasons(res) == [
+        "The black top plus the brown shoes give this outfit a streetwear feel for a casual day.",
+        "The black top works.",
+    ]
+
+
 def test_repair_never_swaps_the_anchor(run):
     # $340 around a $200 anchor: shoes_002 ($100) is the priciest swappable item; shoes_001 makes $320.
     anchored = {**REQUEST, "anchor": {"source": "catalog", "id": "bottom_003"}}

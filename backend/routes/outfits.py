@@ -3,7 +3,9 @@
 # Retrieval picks the candidates, a model chooses outfits from them, and the reward's checks
 # guard every answer: an outfit is dropped when it fails a gate (bad JSON, an invented item), misses
 # the anchor, or is outside the budget (an over-budget outfit first gets one swap to fit, _repair).
-# Totals come from catalog prices; the model doesn't state one.
+# Totals come from catalog prices; the model doesn't state one. Reasons are rewritten from the final
+# items with gen_sft's templates (training/reasons.py), since Llama's often name items it didn't pick;
+# Gemini's reasons are kept unless a repair swapped one of its items.
 # Each model gets a second try when fewer than MIN_OUTFITS survive, then the next model in CHAIN
 # answers. If none reaches MIN_OUTFITS, the best partial answer is returned; a 503 only when no
 # outfit survived at all.
@@ -17,7 +19,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from backend.schemas import GeneratedBy, Outfit, OutfitsRequest, OutfitsResponse
 from backend.services import catalog, gemini, supabase, veri
-from training import reward
+from training import reasons, reward
 from training.prompt import build_request
 from training.retrieval import _allowed, _score
 
@@ -60,7 +62,8 @@ async def outfits(req: OutfitsRequest, user_id: str = Depends(supabase.current_u
 
     swap_pool = [i for i in items.values() if _allowed(i, profile, None, budget_max, req.max_item_price, req.occasion)]
     swap_pool.sort(key=lambda i: (-_score(i, profile), i["id"]))
-    generated_by, chosen = await _generate(messages, ctx, wanted, upgrade=bool(req.upgrade_of), swap_pool=swap_pool)
+    generated_by, chosen = await _generate(messages, ctx, wanted, upgrade=bool(req.upgrade_of), swap_pool=swap_pool,
+                                           style_tags=profile["style_tags"])
     return OutfitsResponse(
         outfits=[
             _outfit(ids, why, items, closet, req.anchor.id if req.anchor else None, swap_pool, budget_min, budget_max)
@@ -79,8 +82,8 @@ def _lookup(item_id: str, items: dict[str, dict], closet: dict[str, dict]) -> di
     raise HTTPException(422, f"{item_id} isn't in the catalog or your closet")
 
 
-async def _generate(messages, ctx, wanted: int, upgrade: bool,
-                    swap_pool: list[dict]) -> tuple[GeneratedBy, list[tuple[list[str], str]]]:
+async def _generate(messages, ctx, wanted: int, upgrade: bool, swap_pool: list[dict],
+                    style_tags: list[str]) -> tuple[GeneratedBy, list[tuple[list[str], str]]]:
     needed = min(MIN_OUTFITS, wanted)
     best: tuple[GeneratedBy, list] | None = None
     for name, ask in CHAIN:
@@ -92,7 +95,7 @@ async def _generate(messages, ctx, wanted: int, upgrade: bool,
                 break
             if text is None:  # not configured
                 break
-            kept = _guard(text, ctx, upgrade, swap_pool)[:wanted]
+            kept = _guard(text, ctx, upgrade, swap_pool, style_tags, keep_reasons=name == "gemini")[:wanted]
             if len(kept) >= needed:
                 return name, kept
             if kept and (best is None or len(kept) > len(best[1])):
@@ -102,9 +105,11 @@ async def _generate(messages, ctx, wanted: int, upgrade: bool,
     return best
 
 
-def _guard(text: str, ctx: dict, upgrade: bool, swap_pool: list[dict] = ()) -> list[tuple[list[str], str]]:
+def _guard(text: str, ctx: dict, upgrade: bool, swap_pool: list[dict] = (), style_tags: list[str] = (),
+           keep_reasons: bool = True) -> list[tuple[list[str], str]]:
     """(item ids, reason) for each outfit in the answer that passes the reward's checks. An outfit
-    over budget_max first gets its priciest swappable item replaced (_repair), when that fits."""
+    over budget_max first gets its priciest swappable item replaced (_repair), when that fits. The
+    reason is templated from the final items unless keep_reasons and nothing was swapped."""
     fenced = re.fullmatch(r"\s*```(?:json)?\s*(.*?)\s*```\s*", text, re.DOTALL)
     parsed = reward.parse_output(fenced.group(1) if fenced else text.strip())
     if upgrade:  # an upgrade only has to cost more than the outfit it replaces, which the prompt asks for
@@ -116,15 +121,17 @@ def _guard(text: str, ctx: dict, upgrade: bool, swap_pool: list[dict] = ()) -> l
             continue
         seen.add(key)
         _, passed, breakdown = reward.score_outfit(o, ctx)
+        used = ctx
         if breakdown.get("outside_budget", 0) > ctx["budget_max"]:
             repaired = _repair(o, ctx, swap_pool)
             if repaired is None or frozenset(repaired[0]["items"]) in seen:
                 continue
-            o = repaired[0]
+            o, used = repaired
             seen.add(frozenset(o["items"]))
-            _, passed, breakdown = reward.score_outfit(o, repaired[1])
+            _, passed, breakdown = reward.score_outfit(o, used)
         if passed and (upgrade or breakdown["anchor"]):
-            kept.append((o["items"], o["reason"]))
+            why = o["reason"] if keep_reasons and used is ctx else reasons.describe(o["items"], used, style_tags)
+            kept.append((o["items"], why))
     return kept
 
 
