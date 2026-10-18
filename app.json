@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "LaHacksAI",
-    "slug": "LaHacksAI",
+    "name": "ClosetCue",
+    "slug": "closetcue",
     "version": "1.0.0",
     "scheme": "lahacksai",
     "orientation": "portrait",
@@ -26,7 +26,7 @@
       [
         "expo-media-library",
         {
-          "photosPermission": "As If looks for photos of you in outfits to learn your style. Only small thumbnails leave your phone, and they aren't stored."
+          "photosPermission": "ClosetCue looks for photos of you in outfits to learn your style. Only small thumbnails leave your phone, and they aren't stored."
         }
       ],
       "expo-router",
@@ -34,7 +34,7 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "As If uses Face ID so only you can approve a purchase."
+          "faceIDPermission": "ClosetCue uses Face ID so only you can approve a purchase."
         }
       ],
       "expo-web-browser",

@@ -40,7 +40,7 @@ import {
 } from '@/lib/supabase';
 import { colors, radii, type } from '@/theme';
 
-// Welcome + sign-in. Designed in Paper ("As If / Welcome – sign in"), with a username and
+// Welcome + sign-in. Designed in Paper ("ClosetCue / Welcome – sign in"), with a username and
 // password in place of Google for now. An account brings a saved profile back on any phone;
 // a guest stays on this one.
 export default function WelcomeScreen() {
@@ -123,8 +123,8 @@ export default function WelcomeScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.hero}>
-          <Text style={styles.wordmark}>
-            As If<Text style={styles.dot}>.</Text>
+          <Text style={styles.wordmark} numberOfLines={1} adjustsFontSizeToFit>
+            ClosetCue<Text style={styles.dot}>.</Text>
           </Text>
           <Text style={styles.tagline}>Whole outfits, built around one thing you love.</Text>
         </View>

@@ -13,7 +13,7 @@ import { colors, radii, spacing } from '@/theme';
 type Mode = 'onyou' | 'flatlay';
 
 // 6. Try-on: your photo wearing the outfit, with the flat lay as the fallback.
-// Designed in Paper ("As If / Try-on").
+// Designed in Paper ("ClosetCue / Try-on").
 export default function TryOnScreen() {
   const { chosen: outfit } = useSession();
   const [view, setView] = useState<Mode>('onyou');

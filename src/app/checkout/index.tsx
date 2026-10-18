@@ -17,8 +17,8 @@ function hoursLeft(m: Mandate) {
   return `Ends in ${h} ${h === 1 ? 'hour' : 'hours'}`;
 }
 
-// 7. Checkout, including the refusal. Designed in Paper ("As If / Checkout" and
-// "As If / Checkout – refused"). The cart is the outfit's `items` only, never `owned`.
+// 7. Checkout, including the refusal. Designed in Paper ("ClosetCue / Checkout" and
+// "ClosetCue / Checkout – refused"). The cart is the outfit's `items` only, never `owned`.
 export default function CheckoutScreen() {
   const s = useSession();
   const outfit = s.chosen;

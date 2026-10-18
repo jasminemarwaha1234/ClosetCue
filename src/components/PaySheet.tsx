@@ -30,7 +30,7 @@ export function PayMark({ id }: { id: PayMethodId }) {
   );
 }
 
-// "Pay with": pick how to pay, then pay. Designed in Paper ("As If / Checkout – pay with").
+// "Pay with": pick how to pay, then pay. Designed in Paper ("ClosetCue / Checkout – pay with").
 // Simulated for the demo (src/lib/payment.ts); the limit check and refusal stay real.
 export function PaySheet({
   visible,

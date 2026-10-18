@@ -8,7 +8,7 @@ import { capitalize, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
 // Receipt: what was bought, what it cost, what's left of the limit, and Stripe's
-// authorization ID (or a "simulated" label when there is none). Designed in Paper ("As If / Receipt").
+// authorization ID (or a "simulated" label when there is none). Designed in Paper ("ClosetCue / Receipt").
 // No order reaches the store (PLAN.md section 8), so it says so and links each item to its real page.
 export default function ReceiptScreen() {
   const { receipt, mandate, chosen, payMethodId } = useSession();

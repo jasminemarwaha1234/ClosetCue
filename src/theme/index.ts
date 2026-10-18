@@ -36,7 +36,7 @@
 //   small: { fontSize: 14 },
 //   caption: { fontSize: 13 },
 // } as const;
-// Design tokens from the Paper style guide ("Jolly cloud" file, Fitly / As If screens).
+// Design tokens from the Paper style guide ("Jolly cloud" file, Fitly / ClosetCue screens).
 // Existing keys keep their names so other screens keep working; values now match Paper.
 
 export const colors = {

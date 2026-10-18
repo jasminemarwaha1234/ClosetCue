@@ -205,3 +205,9 @@ From Jasmine, 2026-10-18. App-only; no backend or contract changes. Merged your 
 - **Files:** `src/lib/supabase.ts`, `src/lib/onboarding.ts` (new), `src/lib/payment.ts` (new), `src/lib/session.tsx`, `src/app/index.tsx`, `src/app/onboarding/welcome.tsx`, `src/app/onboarding/photos.tsx`, `src/app/_layout.tsx` (welcome header hidden), `src/app/(tabs)/style.tsx` (account card), `src/app/checkout/index.tsx`, `src/app/checkout/receipt.tsx`, `src/components/AccountCard.tsx`, `src/components/AccountFields.tsx`, `src/components/PaySheet.tsx`, `src/components/logos.tsx` (all new), `src/api/client.ts` (`usingMocks`), `src/theme/index.ts` (`brands`, `scrim`), `package.json` (`react-native-svg`).
 
 - **Your style uses the real profile now** (`src/app/(tabs)/style.tsx`): summary, style tags, colors, fits, Leave out (`avoid`), closet and looks all come from `StyleProfile`. Editing the summary, Leave out or the new **Fits you wear** chips saves with `PUT /profile`, so your route gets the whole profile back each time.
+
+---
+
+# The app is called ClosetCue now (FYI)
+
+From Jasmine, 2026-10-18. Renamed from As If in `app.json` (app name, slug `closetcue`, photo and Face ID prompts), the welcome screen, README's title, PLAN.md's first line and the Paper frames ("ClosetCue / …"). Unchanged on purpose: the `lahacksai://` link scheme, the `~/.venvs/as-if` folder, and the internal account domain `users.asif.app`, since changing those would break existing sign-ins and setup. If any Devpost or demo text says As If, it should say ClosetCue.

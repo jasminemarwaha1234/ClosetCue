@@ -13,7 +13,7 @@ import {
 
 import { colors, radii, swatches, type } from '@/theme';
 
-// Building blocks shared by the screens designed in Paper ("As If / …" frames).
+// Building blocks shared by the screens designed in Paper ("ClosetCue / …" frames).
 
 export function Header({ eyebrow, title, lead }: { eyebrow: string; title: string; lead?: string }) {
   return (

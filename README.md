@@ -1,4 +1,4 @@
-# As If
+# ClosetCue
 
 An AI stylist that builds whole outfits around a piece you love, within your budget, and checks out under a spending limit the agent can't go over. Built at LA Hacks 2026. See [PLAN.md](PLAN.md) for the full plan.
 

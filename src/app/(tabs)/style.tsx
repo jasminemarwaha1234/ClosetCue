@@ -29,7 +29,7 @@ import { AccountCard } from '@/components/AccountCard';
 import { capitalize, useSession } from '@/lib/session';
 import { swatches } from '@/theme';
 
-// Paper tokens ("As If / Your style"). Same names as my earlier theme file, so once your
+// Paper tokens ("ClosetCue / Your style"). Same names as my earlier theme file, so once your
 // src/theme/index.ts has them, delete this block and use:
 //   import { colors, radius, spacing, type } from '@/theme';
 const colors = {

@@ -21,7 +21,7 @@ const SLOTS: { value: Slot | 'all'; label: string }[] = [
 type Tile = { anchor: Anchor; name: string; meta: string; image?: string; color?: string };
 
 // Modal: choose the anchor from the shop, from your closet, or no piece at all.
-// Designed in Paper ("As If / Pick item").
+// Designed in Paper ("ClosetCue / Pick item").
 export default function PickItemScreen() {
   const s = useSession();
   const insets = useSafeAreaInsets();

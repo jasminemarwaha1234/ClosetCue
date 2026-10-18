@@ -1,6 +1,6 @@
 # PLAN: an AI stylist that builds whole outfits and checks out safely
 
-Working name: **As If** (from *Clueless*, whose digital closet inspired this). The final name is still open. When it changes, update the photo-permission text in [app.json](app.json) and the title in `src/app/onboarding/photos.tsx`.
+Name: **ClosetCue** (it was **As If** until Sunday morning). The name shows in [app.json](app.json) (the app name and the photo and Face ID prompts) and on the welcome screen.
 
 LA Hacks AI Hackathon 2026, team of 2. **Feature freeze about 11:00 AM, submit by 11:30 AM, hacking ends 12:00 PM PDT, Sunday Oct 18.** See [LA_HACKS.md](LA_HACKS.md) for rules, judging and schedule.
 

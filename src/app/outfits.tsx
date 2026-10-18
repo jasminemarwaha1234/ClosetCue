@@ -28,7 +28,7 @@ function applyEdits(o: Outfit, picks: Record<string, number> = {}, removed: stri
 
 const swapped = (o: Outfit, picks: Record<string, number> = {}) => applyEdits(o, picks).items;
 
-// 5. Outfits. Designed in Paper ("As If / Outfits").
+// 5. Outfits. Designed in Paper ("ClosetCue / Outfits").
 export default function OutfitsScreen() {
   const s = useSession();
   const anchorItem = useAnchorItem();
