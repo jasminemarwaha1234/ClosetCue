@@ -2,6 +2,9 @@
 
 Run from the repo root: python -m training.scrape_catalog [--stores NAME ...] [--cache DIR]
 
+With --stores, every other store's items keep their ids, and the named stores' items are
+numbered after the highest existing id in each slot, so tags cached by id stay valid.
+
 Each store is a Shopify shop that serves /products.json. stores.json fields:
   name, domain, currency (the shop's base currency, which products.json prices are in),
   usd_rate (required when currency isn't USD), department (optional hint for one-department stores),
@@ -39,10 +42,11 @@ DROP = re.compile(
     r"\bincense|ashtray|\brug\b|\bvase\b|\bcup\b|\bplate\b|\bbowl\b|\btoy\b|\bfigure\b|\bplush|"
     r"(?<!8 )\bball\b(?! cap)|frisbee|\bcd\b|vinyl|\blp\b|cassette|\bdvd\b|zine|"
     r"\bcase\b|airpod|phone|\bumbrella|\bbottle\b|\bflask|\bfragrance|perfume|parfum|\bcandle|"
-    r"\bbeauty|lip ?gloss|\bnail|\bhair (clip|tie)|scrunchie|\bgift\b|voucher|\btest\b|chaussette|porte.?cl|pince|chouchou|barrette|[ée]tuis?\b|bo[iî]te|undershirt|\b\d+ ?pack\b|wetsuit|\btable\b|filler|hair accessor|tech accessor|playmat|kendama|dampener|\bsoap\b"
+    r"\bbeauty|lip ?gloss|\bnail|\bhair (clip|tie)|scrunchie|\bgift\b|voucher|\btest\b|chaussette|porte.?cl|pince|chouchou|barrette|[ée]tuis?\b|bo[iî]te|undershirt|\b\d+ ?pack\b|wetsuit|\btable\b|filler|hair accessor|tech accessor|playmat|kendama|dampener|\bsoap\b|shoe ?horn|shoe care|care kit|shoe tree|polishing|shine brush"
 )
 
-# Checked in order, so "shirt jacket" is outerwear and "dress shirt" (rewritten below) is a top.
+# Checked in order, so "shirt jacket" is outerwear and "dress shirt" and "dress shoes" (rewritten
+# below) are a top and shoes.
 SLOT_PATTERNS = [
     ("dress", r"dress|gown|jumpsuit|romper|playsuit"),
     ("outerwear", r"jacket|coat|parka|blazer|puffer|vest|gilet|windbreaker|anorak|bomber|trench|"
@@ -115,7 +119,7 @@ def fetch_products(store, state, cache):
 
 def norm(text):
     text = text.lower().replace("_", " ")
-    text = re.sub(r"dress shirt", "shirt", text)
+    text = re.sub(r"dress (?=shirt|shoe|pant|trouser|boot)", "", text)
     text = re.sub(r"(short|long|cap)[ -]sleeves?", "sleeve", text)
     text = re.sub(r"shirt dress", "dress", text)
     return text
@@ -240,16 +244,22 @@ def main():
         except (urllib.error.URLError, json.JSONDecodeError, KeyError) as e:
             print(f"  skipped: {e}")
 
-    # Ids follow stores.json order, so appending a store doesn't renumber earlier items.
+    out = HERE / "catalog_raw.json"
+    kept = []
+    if args.stores and out.exists():
+        kept = [i for i in json.loads(out.read_text()) if i["brand"] not in args.stores]
     store_rank = {s["name"]: i for i, s in enumerate(stores)}
     items.sort(key=lambda i: (store_rank[i["brand"]], i["handle"]))
     counters = Counter()
+    for item in kept:
+        slot, n = item["id"].rsplit("_", 1)
+        counters[slot] = max(counters[slot], int(n))
     for item in items:
         counters[item["slot"]] += 1
         item["id"] = f"{item['slot']}_{counters[item['slot']]:03d}"
         del item["handle"]
-    items = [{"id": i.pop("id"), **i} for i in items]
-    (HERE / "catalog_raw.json").write_text(json.dumps(items, indent=2, ensure_ascii=False) + "\n")
+    items = kept + [{"id": i.pop("id"), **i} for i in items]
+    out.write_text(json.dumps(items, indent=2, ensure_ascii=False) + "\n")
 
     print(f"\nWrote {len(items)} items to training/catalog_raw.json")
     per_store = defaultdict(Counter)

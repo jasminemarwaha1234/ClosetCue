@@ -20,5 +20,8 @@
   {"name": "Steve Madden", "domain": "www.stevemadden.com", "currency": "USD", "max_items": 40},
   {"name": "Koio", "domain": "www.koio.co", "currency": "USD", "max_items": 30},
   {"name": "Gorjana", "domain": "www.gorjana.com", "currency": "USD", "department": "women", "max_items": 20},
-  {"name": "Princess Polly", "domain": "us.princesspolly.com", "currency": "USD", "department": "women"}
+  {"name": "Princess Polly", "domain": "us.princesspolly.com", "currency": "USD", "department": "women"},
+  {"name": "Jack Victor", "domain": "www.jackvictor.com", "currency": "USD", "department": "men"},
+  {"name": "Paul Evans", "domain": "www.paulevansny.com", "currency": "USD", "department": "men", "max_items": 30},
+  {"name": "Mac Duggal", "domain": "www.macduggal.com", "currency": "USD", "department": "women", "max_items": 30}
 ]
