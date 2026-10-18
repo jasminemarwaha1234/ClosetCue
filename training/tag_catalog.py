@@ -2,8 +2,10 @@
 
 Run from the repo root: python -m training.tag_catalog [--limit N]
 
-Gemini fills department, colors, formality, style_tags, season, pattern and fit from each item's text and
-image, choosing only from training/vocab.py. Every answer is checked against the vocab in
+Items the scraper's DROP list matches (non-clothing, such as books and shoe trees) are skipped,
+so a pattern added after a scrape still keeps them out. Gemini fills department, colors,
+formality, style_tags, season, pattern and fit from each item's text and image, choosing only
+from training/vocab.py. Every answer is checked against the vocab in
 Python; bad or missing items are retried one at a time, then dropped. Results are cached per
 item id in training/.tag_cache.json, so a rerun only tags what's left. Cached entries that no
 longer pass the vocab checks are tagged again.
@@ -28,6 +30,7 @@ from google.genai import errors, types
 from PIL import Image
 from pydantic import BaseModel
 
+from training.scrape_catalog import DROP
 from training.vocab import (
     COLORS, DEPARTMENTS, FIT_SLOTS, FITS, MAX_STYLE_TAGS, PATTERNS, SEASONS, SLOTS, STYLE_TAGS,
 )
@@ -194,7 +197,8 @@ def main():
     parser.add_argument("--limit", type=int, help="tag only the first N items")
     args = parser.parse_args()
 
-    all_raw = json.loads((HERE / "catalog_raw.json").read_text())
+    all_raw = [item for item in json.loads((HERE / "catalog_raw.json").read_text())
+               if not DROP.search(f"{item['product_type']} {item['name']}".lower())]
     raw = all_raw[: args.limit]
     by_id = {item["id"]: item for item in all_raw}
     cache = {}

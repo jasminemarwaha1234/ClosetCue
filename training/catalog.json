@@ -4293,32 +4293,6 @@
     "url": "https://www.taylorstitch.com/products/glacier-shirt-in-washed-indigo-selvedge-denim-2607"
   },
   {
-    "id": "accessory_035",
-    "name": "The Good Acre Carpenter Pencil (3-Pack)",
-    "brand": "Taylor Stitch",
-    "slot": "accessory",
-    "department": "men",
-    "price": 10.0,
-    "colors": [
-      "tan",
-      "white"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "workwear"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0070/1922/files/good-acre-carpenter-pencil-3-pack-2409_001.jpg",
-    "url": "https://www.taylorstitch.com/products/good-acre-carpenter-pencil-3-pack-2409"
-  },
-  {
     "id": "outerwear_034",
     "name": "The Hatteras Anorak in Fatigue Olive Dry Wax Canvas",
     "brand": "Taylor Stitch",
@@ -7373,32 +7347,6 @@
     "fit": null,
     "image": "https://cdn.shopify.com/s/files/1/0775/2355/files/01-overall-flats-by-dot-morgan-chris-9-4-2412940.png",
     "url": "https://bigbudpress.com/products/overall-handbags"
-  },
-  {
-    "id": "accessory_060",
-    "name": "Perfect Pencil Pouch",
-    "brand": "Big Bud Press",
-    "slot": "accessory",
-    "department": "unisex",
-    "price": 28.0,
-    "colors": [
-      "pink"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal",
-      "streetwear"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0775/2355/files/ECOMMFABRICDETAILSANDFLATSGROUPBYDOT3-18-241781.jpg",
-    "url": "https://bigbudpress.com/products/perfect-pencil-pouch"
   },
   {
     "id": "dress_014",
@@ -11587,58 +11535,6 @@
     "url": "https://www.outerknown.com/products/womens-hightide-sweatshirt-heather-beachwood"
   },
   {
-    "id": "accessory_093",
-    "name": "Uplifting Yoga Block - Jungle/Silver",
-    "brand": "Alo Yoga",
-    "slot": "accessory",
-    "department": "unisex",
-    "price": 34.0,
-    "colors": [
-      "olive"
-    ],
-    "formality": 1,
-    "style_tags": [
-      "athleisure",
-      "sporty"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/2185/2813/products/A0084U_04006_b1_a1_01b42e14-7c50-4fcc-88d9-2ec8aca7f704.jpg",
-    "url": "https://www.aloyoga.com/products/a0084u-uplifting-yoga-block-jungle-silver"
-  },
-  {
-    "id": "accessory_094",
-    "name": "Yoga Strap - Jungle",
-    "brand": "Alo Yoga",
-    "slot": "accessory",
-    "department": "unisex",
-    "price": 32.0,
-    "colors": [
-      "olive"
-    ],
-    "formality": 1,
-    "style_tags": [
-      "athleisure",
-      "sporty"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/2185/2813/files/A0326U_01664_b1_a1.jpg",
-    "url": "https://www.aloyoga.com/products/a0326u-yoga-strap-jungle"
-  },
-  {
     "id": "shoes_037",
     "name": "ALO Runner (Unisex) - Navy",
     "brand": "Alo Yoga",
@@ -15439,33 +15335,6 @@
     "url": "https://www.outdoorvoices.com/products/washed-hat-washed-black"
   },
   {
-    "id": "accessory_118",
-    "name": "A Wild Love For The World by Joanna Macy",
-    "brand": "Christy Dawn",
-    "slot": "accessory",
-    "department": "women",
-    "price": 27.95,
-    "colors": [
-      "forest-green",
-      "cream"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "bohemian",
-      "outdoors"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/1132/5272/products/Book14.jpg",
-    "url": "https://christydawn.com/products/a-wild-love-for-the-world-by-joanna-macy"
-  },
-  {
     "id": "accessory_119",
     "name": "Adora Bag | Natural",
     "brand": "Christy Dawn",
@@ -15488,59 +15357,6 @@
     "fit": null,
     "image": "https://cdn.shopify.com/s/files/1/1132/5272/files/DAWN_042226_SUMMER_MAY_2189.jpg",
     "url": "https://christydawn.com/products/adora-bag-natural"
-  },
-  {
-    "id": "accessory_120",
-    "name": "Braiding Sweetgrass by Robin Wall Kimmerer",
-    "brand": "Christy Dawn",
-    "slot": "accessory",
-    "department": "women",
-    "price": 18.0,
-    "colors": [
-      "cream",
-      "olive"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "bohemian",
-      "outdoors"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/1132/5272/products/Book6.jpg",
-    "url": "https://christydawn.com/products/braiding-sweetgrass-by-robin-wall-kimmerer"
-  },
-  {
-    "id": "accessory_121",
-    "name": "By His Grace - Stories About Neem Karoli Baba by Dada Mukerjee",
-    "brand": "Christy Dawn",
-    "slot": "accessory",
-    "department": "women",
-    "price": 16.0,
-    "colors": [
-      "tan",
-      "brown"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "bohemian"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/1132/5272/files/OfferingsCover-4_cbae282e-d892-445f-96cc-f19934b8cc68.jpg",
-    "url": "https://christydawn.com/products/by-his-grace-stories-about-neem-karoli-baba-by-dada-mukerjee"
   },
   {
     "id": "accessory_122",
@@ -15593,33 +15409,6 @@
     "fit": null,
     "image": "https://cdn.shopify.com/s/files/1/1132/5272/files/Maria.jpg",
     "url": "https://christydawn.com/products/maria-quilted-dufle-oak-leaf"
-  },
-  {
-    "id": "accessory_124",
-    "name": "Miracle Of Love - Stories About Neem Karoli Baba Compiled by Ram Dass",
-    "brand": "Christy Dawn",
-    "slot": "accessory",
-    "department": "women",
-    "price": 40.0,
-    "colors": [
-      "white",
-      "black",
-      "red"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "bohemian"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/1132/5272/files/Offerings-8.jpg",
-    "url": "https://christydawn.com/products/miracle-of-love-stories-about-neem-karoli-baba-compiled-by-ram-dass"
   },
   {
     "id": "top_138",
@@ -16333,33 +16122,6 @@
     "url": "https://christydawn.com/products/the-nilton-cardigan-basketweave-blue"
   },
   {
-    "id": "accessory_126",
-    "name": "The Notebook | Mocha Daisy",
-    "brand": "Christy Dawn",
-    "slot": "accessory",
-    "department": "women",
-    "price": 48.0,
-    "colors": [
-      "brown",
-      "cream"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "bohemian",
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "large-print",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/1132/5272/files/DAWN_Gift_Giving_2025_156.jpg",
-    "url": "https://christydawn.com/products/the-notebook-mocha-daisy"
-  },
-  {
     "id": "top_146",
     "name": "The Pedro Short Sleeve Shirt | Indigo Zinnia Stripe",
     "brand": "Christy Dawn",
@@ -16384,32 +16146,6 @@
     "fit": "regular",
     "image": "https://cdn.shopify.com/s/files/1/1132/5272/files/Pedro1_41b157f4-c1d7-4cf8-9303-b0b03f1f419d.jpg",
     "url": "https://christydawn.com/products/the-pedro-short-sleeve-shirt-indigo-zinnia-stripe"
-  },
-  {
-    "id": "accessory_127",
-    "name": "The Power of Now by Eckhart Tolle",
-    "brand": "Christy Dawn",
-    "slot": "accessory",
-    "department": "women",
-    "price": 17.0,
-    "colors": [
-      "muted-green",
-      "yellow"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/1132/5272/products/Book23.jpg",
-    "url": "https://christydawn.com/products/the-power-of-now-by-eckhart-tolle"
   },
   {
     "id": "top_147",
@@ -16877,29 +16613,6 @@
     "fit": null,
     "image": "https://cdn.shopify.com/s/files/1/0467/4148/7783/files/acc3284_black_23-09-263_0f36f337-8fe3-4c47-94cd-4206e540a54c.jpg",
     "url": "https://edikted.com/products/acc3284_black"
-  },
-  {
-    "id": "accessory_134",
-    "name": "Magic Wizard Wand",
-    "brand": "Edikted",
-    "slot": "accessory",
-    "department": "women",
-    "price": 8.0,
-    "colors": [
-      "brown"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "preppy",
-      "goth"
-    ],
-    "season": [
-      "fall"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0467/4148/7783/files/acc3352_brown_12-08-26-8.jpg",
-    "url": "https://edikted.com/products/acc3352_brown"
   },
   {
     "id": "accessory_135",
@@ -21731,206 +21444,6 @@
     "url": "https://www.koio.co/products/garda-in-moonlight"
   },
   {
-    "id": "accessory_151",
-    "name": "Koio Dust Bag",
-    "brand": "Koio",
-    "slot": "accessory",
-    "department": "unisex",
-    "price": 12.0,
-    "colors": [
-      "cream"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0646/1285/files/Koio-V2-dustbag-1_ddbfbecf-4132-4e6f-9a51-bf4588e23779.jpg",
-    "url": "https://www.koio.co/products/koio-dust-bag"
-  },
-  {
-    "id": "accessory_152",
-    "name": "Koio Microfiber Cloth",
-    "brand": "Koio",
-    "slot": "accessory",
-    "department": "unisex",
-    "price": 10.0,
-    "colors": [
-      "gray"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0646/1285/products/Koio_Cleaning-Set_Microfiber-Cloth_435f3798-8801-4f31-a44e-387da87cf570.png",
-    "url": "https://www.koio.co/products/koio-microfiber-cloth"
-  },
-  {
-    "id": "shoes_134",
-    "name": "Koio Shoe Tree",
-    "brand": "Koio",
-    "slot": "shoes",
-    "department": "unisex",
-    "price": 30.0,
-    "colors": [
-      "tan"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0646/1285/products/Koio-Shoe-Trees_1_23f1af8e-0c30-4238-9e37-aacd2d0e6fe1.png",
-    "url": "https://www.koio.co/products/koio-shoe-tree"
-  },
-  {
-    "id": "shoes_135",
-    "name": "Koio Suede Brush",
-    "brand": "Koio",
-    "slot": "shoes",
-    "department": "unisex",
-    "price": 15.0,
-    "colors": [
-      "white"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0646/1285/files/Koio-V2-shoe-brush-1.png",
-    "url": "https://www.koio.co/products/koio-suede-brush"
-  },
-  {
-    "id": "accessory_153",
-    "name": "Koio Laces in Sandstone",
-    "brand": "Koio",
-    "slot": "accessory",
-    "department": "unisex",
-    "price": 20.0,
-    "colors": [
-      "gray"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0646/1285/products/LA04110-sandstone2.png",
-    "url": "https://www.koio.co/products/lace-03-sandstone"
-  },
-  {
-    "id": "accessory_154",
-    "name": "Koio Laces in Mineral",
-    "brand": "Koio",
-    "slot": "accessory",
-    "department": "unisex",
-    "price": 20.0,
-    "colors": [
-      "gray"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0646/1285/products/LA07110-mineral.png",
-    "url": "https://www.koio.co/products/lace-07-mineral"
-  },
-  {
-    "id": "accessory_155",
-    "name": "Koio Laces in Castagna",
-    "brand": "Koio",
-    "slot": "accessory",
-    "department": "unisex",
-    "price": 20.0,
-    "colors": [
-      "brown"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0646/1285/products/LA33150-castagna2.png",
-    "url": "https://www.koio.co/products/lace-09-castagna"
-  },
-  {
-    "id": "accessory_156",
-    "name": "Koio Laces in Mocha",
-    "brand": "Koio",
-    "slot": "accessory",
-    "department": "unisex",
-    "price": 20.0,
-    "colors": [
-      "brown"
-    ],
-    "formality": 2,
-    "style_tags": [
-      "minimal"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0646/1285/products/LA28160-mocha2.png",
-    "url": "https://www.koio.co/products/lace-10-mocha"
-  },
-  {
     "id": "shoes_136",
     "name": "Lido Suede Loafer in Fawn",
     "brand": "Koio",
@@ -22114,111 +21627,6 @@
     "url": "https://www.koio.co/products/vegan-01-triple-white-1-mens"
   },
   {
-    "id": "top_175",
-    "name": "14K Gold Birthstone Halo Charm",
-    "brand": "Gorjana",
-    "slot": "top",
-    "department": "women",
-    "price": 195.0,
-    "colors": [
-      "gold"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "minimal",
-      "old-money"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": "regular",
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/264-101-182-G_1_efefe073-b20e-425c-b168-f3027318ef7e.jpg",
-    "url": "https://www.gorjana.com/products/14k-gold-birthstone-halo-charm"
-  },
-  {
-    "id": "top_176",
-    "name": "14K Gold Crew Halo Charm",
-    "brand": "Gorjana",
-    "slot": "top",
-    "department": "women",
-    "price": 125.0,
-    "colors": [
-      "gold"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "minimal",
-      "old-money"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": "regular",
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/269-119-G_1_3c8e39eb-9569-440c-bebd-05de248a692f.jpg",
-    "url": "https://www.gorjana.com/products/14k-gold-crew-halo-charm"
-  },
-  {
-    "id": "top_177",
-    "name": "14K Gold Milestone Heart Charm",
-    "brand": "Gorjana",
-    "slot": "top",
-    "department": "women",
-    "price": 358.0,
-    "colors": [
-      "gold"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "minimal",
-      "old-money"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": "regular",
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/264-207-185-G_1_e10b4bce-d06c-4395-8474-dac1542b6d30.jpg",
-    "url": "https://www.gorjana.com/products/14k-gold-milestone-heart-charm"
-  },
-  {
-    "id": "accessory_157",
-    "name": "14K Gold Pearl Halo Charm",
-    "brand": "Gorjana",
-    "slot": "accessory",
-    "department": "women",
-    "price": 165.0,
-    "colors": [
-      "gold",
-      "white"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "minimal",
-      "clean-girl"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/269-121-186-G_1_b87ff901-0273-4d82-8d62-b77a78e30a11.jpg",
-    "url": "https://www.gorjana.com/products/14k-gold-pearl-halo-charm"
-  },
-  {
     "id": "accessory_158",
     "name": "Bella Mini Charm Necklace",
     "brand": "Gorjana",
@@ -22245,59 +21653,6 @@
     "url": "https://www.gorjana.com/products/bella-mini-charm-necklace"
   },
   {
-    "id": "top_178",
-    "name": "Bride to Be Parker Charm",
-    "brand": "Gorjana",
-    "slot": "top",
-    "department": "women",
-    "price": 55.0,
-    "colors": [
-      "gold",
-      "white"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "preppy",
-      "clean-girl"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": "regular",
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/265-120-16-G_1.jpg",
-    "url": "https://www.gorjana.com/products/bride-to-be-parker-charm"
-  },
-  {
-    "id": "accessory_159",
-    "name": "Charm Collector",
-    "brand": "Gorjana",
-    "slot": "accessory",
-    "department": "women",
-    "price": 48.0,
-    "colors": [
-      "gold"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "minimal",
-      "clean-girl"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/268-105-G_1_1d92e79b-aa04-4b78-b559-3d58323222be.jpg",
-    "url": "https://www.gorjana.com/products/charm-collector"
-  },
-  {
     "id": "accessory_160",
     "name": "Cress Hoops",
     "brand": "Gorjana",
@@ -22322,32 +21677,6 @@
     "fit": null,
     "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/265-001-G_1_c6af3880-c7a3-4646-b920-e8446a52ffc5.jpg",
     "url": "https://www.gorjana.com/products/cress-hoops"
-  },
-  {
-    "id": "top_179",
-    "name": "14K Diamond Crew Halo Charm",
-    "brand": "Gorjana",
-    "slot": "top",
-    "department": "women",
-    "price": 225.0,
-    "colors": [
-      "gold"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "minimal",
-      "old-money"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": "regular",
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/269-120-185-G_1_a2dc35ac-65e8-4b04-ab2d-13b10aba7464.jpg",
-    "url": "https://www.gorjana.com/products/diamond-crew-halo-charm"
   },
   {
     "id": "accessory_161",
@@ -22402,32 +21731,6 @@
     "url": "https://www.gorjana.com/products/enzo-anklet"
   },
   {
-    "id": "top_180",
-    "name": "Interlocking Heart Parker Charm",
-    "brand": "Gorjana",
-    "slot": "top",
-    "department": "women",
-    "price": 50.0,
-    "colors": [
-      "gold"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "minimal",
-      "clean-girl"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": "regular",
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/265-121-G_1.jpg",
-    "url": "https://www.gorjana.com/products/interlocking-heart-parker-charm"
-  },
-  {
     "id": "accessory_163",
     "name": "14K Lab Grown Diamond Heart Necklace",
     "brand": "Gorjana",
@@ -22478,32 +21781,6 @@
     "fit": null,
     "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/2610-005-185-G_1_3f04d3a4-1df9-4709-8e03-846733284ff1.jpg",
     "url": "https://www.gorjana.com/products/lab-grown-diamond-mercer-drop-earrings"
-  },
-  {
-    "id": "accessory_165",
-    "name": "Lou Heart Carabiner Charm",
-    "brand": "Gorjana",
-    "slot": "accessory",
-    "department": "women",
-    "price": 48.0,
-    "colors": [
-      "gold"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "minimal",
-      "clean-girl"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "solid",
-    "fit": null,
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/261-103-G_1_84205ef3-0f45-48e7-8040-376f9c55d43c.jpg",
-    "url": "https://www.gorjana.com/products/lou-heart-carabiner-charm"
   },
   {
     "id": "accessory_166",
@@ -22606,33 +21883,6 @@
     "fit": null,
     "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/266-108-03-G_1_dc597db6-6441-4622-99c0-f6aee28cb024.jpg",
     "url": "https://www.gorjana.com/products/scallop-padlock-beach-necklace"
-  },
-  {
-    "id": "top_181",
-    "name": "The Mrs. Carabiner Charm",
-    "brand": "Gorjana",
-    "slot": "top",
-    "department": "women",
-    "price": 55.0,
-    "colors": [
-      "gold",
-      "white"
-    ],
-    "formality": 3,
-    "style_tags": [
-      "minimal",
-      "clean-girl"
-    ],
-    "season": [
-      "spring",
-      "summer",
-      "fall",
-      "winter"
-    ],
-    "pattern": "graphic",
-    "fit": "regular",
-    "image": "https://cdn.shopify.com/s/files/1/0015/3849/0427/files/265-122-16-G_1.jpg",
-    "url": "https://www.gorjana.com/products/the-mrs-carabiner-charm"
   },
   {
     "id": "dress_100",
