@@ -35,6 +35,10 @@ HERE = Path(__file__).parent
 ANCHOR_MIX = {"catalog": 0.45, "closet": 0.35, "none": 0.20}
 SIZES = (25, 50, 75, 100)
 ANCHOR_BUDGET_SHARE = 0.5
+# best_outfits treats scores this close as equal and takes the outfit with fewer pieces, then the
+# cheaper one. Every check moves the score by 0.1 or more, except the profile average, where 0.05
+# is the gap between 3 of 4 and 4 of 5 matching pieces: an artifact of piece count, not a better look.
+TIE = 0.05
 
 
 def split_profiles(profiles: list[dict], eval_share: float, seed: int) -> tuple[list[dict], list[dict]]:
@@ -102,7 +106,8 @@ def complete_possible(row: dict) -> bool:
 
 
 def best_outfits(ctx: dict, extend: int = 50) -> list[dict]:
-    """The 3 highest-scoring outfits for a reward context, best first: every top+bottom+shoes and
+    """The 3 highest-scoring outfits for a reward context, best first (scores within TIE count as
+    equal: fewer pieces, then the lower total, goes first): every top+bottom+shoes and
     dress+shoes that can include the anchor, then the `extend` best of those with one outerwear,
     one accessory, or one of each added. Only the best bases are extended so a 100-candidate row
     (about 10,000 bases) takes about 0.2 s; on real rows, extending 1000 found nothing better."""
@@ -131,7 +136,16 @@ def best_outfits(ctx: dict, extend: int = 50) -> list[dict]:
         for extra in extras:
             if not set(extra) & set(base["items"]):
                 add(base["items"] + extra)
-    return [o for _, o in sorted(found.values(), key=lambda s: -s[0])[:reward.OUTFITS_WANTED]]
+    def cost(outfit: dict) -> tuple[int, float]:
+        return len(outfit["items"]), sum(ctx["by_id"][i]["price"] for i in outfit["items"])
+
+    left, best = sorted(found.values(), key=lambda s: -s[0]), []
+    while left and len(best) < reward.OUTFITS_WANTED:
+        near = [s for s in left if s[0] >= left[0][0] - TIE - 1e-9]
+        pick = min(near, key=lambda s: cost(s[1]))
+        left.remove(pick)
+        best.append(pick[1])
+    return best
 
 
 def main():

@@ -115,8 +115,8 @@ def test_best_outfits_adds_an_accessory_to_reach_budget_min():
     assert [(o["items"], sum(price for i in o["items"] for c in row["candidates"] if c["id"] == i
                              for price in [c["price"]])) for o in best] == [
         (["top_2", "bottom_1", "shoes_1"], 150),
-        (["top_2", "bottom_1", "shoes_1", "accessory_1"], 170),
         (["top_1", "bottom_1", "shoes_1", "accessory_1"], 160),
+        (["top_2", "bottom_1", "shoes_1", "accessory_1"], 170),
     ]
     assert reward.score_completion(json.dumps({"outfits": best}), row) == 7.5
     # With top_1 as the anchor, only outfits around it count.
