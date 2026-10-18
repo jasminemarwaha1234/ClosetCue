@@ -1,6 +1,6 @@
 # Camera-roll scan: fixes
 
-From a review of the photo scan in [App.tsx](../App.tsx) and [main.py](main.py) on Saturday Oct 17. Fixes 1–3 are done; fix 4 is open. The last section lists things that were reviewed and deliberately left as they are, so don't change those.
+From a review of the photo scan on Saturday Oct 17. The code now lives in [photos.tsx](../src/app/onboarding/photos.tsx) on the app side, and in [services/pose.py](services/pose.py) (`check_sync`) and [services/faces.py](services/faces.py) (`find_owner_sync`) on the backend. Fixes 1–3 are done; fix 4 is open. The last section lists things that were reviewed and deliberately left as they are, so don't change those.
 
 | Fix | Status |
 | --- | --- |
@@ -30,7 +30,7 @@ A keypoint counts as visible when its confidence is at least 0.5. Each person's 
 
 People shorter than 25% of the photo height don't count. The photo gets the best framing (`full` beats `upper`, ties broken by the larger box), and `has_outfit` is `framing != "none"`. The commit added two rules beyond the original fix: with no owner face set, photos with more than 3 people are skipped (`MAX_PEOPLE`), and with an owner face set, only people whose face matches count.
 
-**Check it works.** From `backend/`, run `python test_framing.py <photo> …` on at least one photo of each kind below:
+**Check it works.** From the repo root, run `python -m backend.test_framing <photo> …` on at least one photo of each kind below:
 
 | Photo | Expected `framing` |
 | --- | --- |
@@ -62,7 +62,7 @@ People shorter than 25% of the photo height don't count. The photo gets the best
 Don't change these. The team decided to keep them for now:
 
 - **Screenshots are skipped.** Keep `looksLikeScreenshot()` as is. Using screenshots as "inspiration" is a later feature.
-- **Only the 300 newest photos are scanned.**
+- **Only the 500 newest photos are scanned.**
 - **iCloud-only photos are skipped** (`shouldDownloadFromNetwork: false`).
 - **The app uses `expo-media-library/legacy`.** It works; don't migrate it now.
 - **The repo stays public and open source**, which is what the AGPL-3.0 license of `ultralytics` and its YOLO weights requires for a network service.

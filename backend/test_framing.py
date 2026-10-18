@@ -4,7 +4,8 @@ import sys
 
 from PIL import Image, ImageOps
 
-from main import Item, check_sync
+from backend.schemas import Item
+from backend.services.pose import check_sync
 
 for path in sys.argv[1:]:
     img = ImageOps.exif_transpose(Image.open(path)).convert("RGB")

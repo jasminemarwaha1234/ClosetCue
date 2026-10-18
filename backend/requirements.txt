@@ -4,4 +4,7 @@ ultralytics
 pillow
 pydantic
 numpy
+# facenet-pytorch's own dependencies, since it's installed with --no-deps
+torchvision
+tqdm
 # also install separately: pip install facenet-pytorch --no-deps
