@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import * as WebBrowser from 'expo-web-browser';
 import {
   ActivityIndicator,
   Image,
@@ -83,6 +84,22 @@ export function TextButton({ label, onPress, style }: { label: string; onPress: 
   return (
     <Pressable onPress={onPress} hitSlop={8} style={({ pressed }) => [styles.textButton, pressed && styles.dim, style]}>
       <Text style={styles.linkText}>{label}</Text>
+    </Pressable>
+  );
+}
+
+// Opens an item's real product page in an in-app browser. Hidden when there's no URL.
+export function RetailerLink({ url, label = 'View at retailer' }: { url: string; label?: string }) {
+  if (!url) return null;
+  return (
+    <Pressable
+      onPress={() => WebBrowser.openBrowserAsync(url)}
+      hitSlop={6}
+      accessibilityRole="link"
+      accessibilityLabel="View at retailer"
+      style={({ pressed }) => pressed && styles.dim}
+    >
+      <Text style={styles.retailer}>{label} ↗</Text>
     </Pressable>
   );
 }
@@ -207,6 +224,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   linkText: { fontSize: 16, lineHeight: 20, fontWeight: '600', color: colors.onPrimarySoft },
+  retailer: { fontSize: 13, lineHeight: 18, fontWeight: '600', color: colors.primary },
   textButton: { minHeight: 24, alignItems: 'center', justifyContent: 'center' },
   dim: { opacity: 0.6 },
 

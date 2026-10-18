@@ -3,7 +3,7 @@ import { router, Stack } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type { Outfit } from '@/api/types';
-import { Header, PieceImage, money } from '@/components/ui';
+import { Header, PieceImage, RetailerLink, money } from '@/components/ui';
 import { capitalize, occasionLabel, useAnchorItem, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
@@ -102,6 +102,7 @@ export default function OutfitsScreen() {
                         {i.name}
                       </Text>
                       <Text style={styles.piecePrice}>{money(i.price)}</Text>
+                      <RetailerLink url={i.url} label="View" />
                     </View>
                   );
                 })}

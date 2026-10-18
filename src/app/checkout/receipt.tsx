@@ -2,12 +2,13 @@ import { router, Stack } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { PrimaryButton, money } from '@/components/ui';
+import { PieceImage, PrimaryButton, RetailerLink, money } from '@/components/ui';
 import { capitalize, useSession } from '@/lib/session';
 import { colors, radii, spacing } from '@/theme';
 
 // Receipt: what was bought, what it cost, what's left of the limit, and Stripe's
 // authorization ID (or a "simulated" label when there is none). Designed in Paper ("As If / Receipt").
+// No order reaches the store (PLAN.md section 8), so it says so and links each item to its real page.
 export default function ReceiptScreen() {
   const { receipt, mandate, chosen } = useSession();
 
@@ -39,6 +40,24 @@ export default function ReceiptScreen() {
               {owned.length ? ` Your ${owned.map((c) => c.description).join(' and ')} are already yours.` : ''}
             </Text>
           </View>
+          <View style={styles.demo}>
+            <Text style={styles.demoText}>Demo: no order was placed and no money moved.</Text>
+          </View>
+        </View>
+
+        <View>
+          {receipt.items.map((i) => (
+            <View key={i.id} style={styles.item}>
+              <PieceImage image={i.image} colorName={i.colors[0]} style={styles.thumb} />
+              <View style={styles.itemText}>
+                <Text style={styles.itemName} numberOfLines={1}>
+                  {i.name}
+                </Text>
+                <RetailerLink url={i.url} />
+              </View>
+              <Text style={styles.itemPrice}>{money(i.price)}</Text>
+            </View>
+          ))}
         </View>
 
         <View>
@@ -101,6 +120,26 @@ const styles = StyleSheet.create({
   eyebrow: { fontSize: 14, lineHeight: 18, fontWeight: '600', letterSpacing: 1.1, color: colors.primary },
   title: { fontSize: 44, lineHeight: 48, fontWeight: '800', letterSpacing: -1.5, color: colors.text },
   lead: { fontSize: 17, lineHeight: 24, color: colors.textMuted },
+  demo: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+  },
+  demoText: { fontSize: 14, lineHeight: 20, fontWeight: '500', color: colors.textBody },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.hairline,
+  },
+  thumb: { width: 40, height: 46, borderRadius: radii.sm },
+  itemText: { flex: 1, gap: 2, alignItems: 'flex-start' },
+  itemName: { fontSize: 15, lineHeight: 20, fontWeight: '500', color: colors.text },
+  itemPrice: { fontSize: 15, lineHeight: 20, fontWeight: '600', color: colors.text },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',

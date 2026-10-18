@@ -35,7 +35,8 @@ function item(
     style_tags: ['minimal', 'relaxed'],
     season: ['fall', 'winter', 'spring'],
     image: '',
-    url: '',
+    // Stand-in for the real product page so the retailer links can be tried.
+    url: `https://www.google.com/search?q=${encodeURIComponent(name)}`,
     ...extra,
   };
 }
