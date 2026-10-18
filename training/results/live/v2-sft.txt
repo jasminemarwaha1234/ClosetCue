@@ -1,0 +1,257 @@
+08:49:31 serving
+{"ok":true}
+
+##### profile_0045: Y2k style, mostly white, light-blue and silver, slim fits; avoids minimal.  departments=['women'] occasions=['work', 'party', 'casual'] budget $10-280
+
+=== work, no anchor, $10-280: HTTP 200, 7.5s
+    generated_by: our-llama
+  1. $153.00  Built around the Saydee Polka Dot Twisted Cutout Top, this y2k outfit adds the Hudsen Longline Cargo Shorts Khaki Petite for work.
+       - Saydee Polka Dot Twisted Cutout Top (top, $15.00, formality 2, y2k)
+       - Hudsen Longline Cargo Shorts Khaki Petite (bottom, $69.00, formality 2, streetwear, y2k)
+       - Therapy Flaunt Platform Flower Detail Sandals Black (shoes, $69.00, formality 2, y2k, streetwear)
+       swaps offered for 3 item(s)
+  2. $133.00  Start from the Saydee Polka Dot Twisted Cutout Top, add the Dreamful Low Rise Mini Denim Short White Petite, and this y2k outfit is set for work.
+       - Saydee Polka Dot Twisted Cutout Top (top, $15.00, formality 2, y2k)
+       - Dreamful Low Rise Mini Denim Short White Petite (bottom, $49.00, formality 2, streetwear, y2k)
+       - Therapy Flaunt Platform Flower Detail Sandals Black (shoes, $69.00, formality 2, y2k, streetwear)
+       swaps offered for 3 item(s)
+  3. $143.00  The Saydee Polka Dot Twisted Cutout Top and the Hudsen Longline Cargo Shorts Turquoise keep this y2k look right for work.
+       - Saydee Polka Dot Twisted Cutout Top (top, $15.00, formality 2, y2k)
+       - Nicolina Low Rise Raw Hem Denim Mini Skirt Light Vintage Blue (bottom, $59.00, formality 2, y2k, streetwear)
+       - Therapy Flaunt Platform Flower Detail Sandals Black (shoes, $69.00, formality 2, y2k, streetwear)
+       swaps offered for 3 item(s)
+
+=== work, catalog anchor 'STUSSY STAR LS TEE' $55.0: HTTP 200, 4.6s
+    generated_by: our-llama
+  1. $155.00  A y2k take on work: the Stussy Star LS Tee with the Chara Grommet Mini Skort.
+       - STUSSY STAR LS TEE (top, $55.00, formality 2, streetwear, y2k)
+       - Chara Grommet Mini Skort (bottom, $31.00, formality 3, y2k, grunge, streetwear)
+       - Therapy Flaunt Platform Flower Detail Sandals Black (shoes, $69.00, formality 2, y2k, streetwear)
+       swaps offered for 2 item(s)
+  2. $191.00  Pairing the Stussy Star LS Tee with the Hummingbird Jewelry Bow makes a y2k outfit that suits work.
+       - STUSSY STAR LS TEE (top, $55.00, formality 2, streetwear, y2k)
+       - Chara Grommet Mini Skort (bottom, $31.00, formality 3, y2k, grunge, streetwear)
+       - The Hummingbird Jewelry Bow - Deep Earth Velvet (shoes, $105.00, formality 3, preppy, old-money)
+       swaps offered for 2 item(s)
+  3. $246.00  For work, the Stussy Star LS Tee with the Goldfinch 15 Mary Jane stays y2k and fits the budget.
+       - STUSSY STAR LS TEE (top, $55.00, formality 2, streetwear, y2k)
+       - Chara Grommet Mini Skort (bottom, $31.00, formality 3, y2k, grunge, streetwear)
+       - The Goldfinch 15 Mary Jane - Empire Blue Velvet (shoes, $160.00, formality 3, preppy, clean-girl)
+       swaps offered for 2 item(s)
+
+=== work, closet anchor 'denim shorts': HTTP 200, 5.0s
+    generated_by: our-llama
+  1. $91.00  Pairing your denim shorts with the Pearle Crochet Trim Strapless Top makes a y2k outfit that suits work.
+       - Pearle Crochet Trim Strapless Top (top, $22.00, formality 2, bohemian, y2k)
+       - Therapy Flaunt Platform Flower Detail Sandals Black (shoes, $69.00, formality 2, y2k, streetwear)
+       - [owned] denim shorts (bottom)
+       swaps offered for 2 item(s)
+  2. $84.00  Your denim shorts and the Saydee Polka Dot Twisted Cutout Top keep this y2k look right for work.
+       - Saydee Polka Dot Twisted Cutout Top (top, $15.00, formality 2, y2k)
+       - Therapy Flaunt Platform Flower Detail Sandals Black (shoes, $69.00, formality 2, y2k, streetwear)
+       - [owned] denim shorts (bottom)
+       swaps offered for 2 item(s)
+  3. $95.20  Start from your denim shorts, add the Sea Charm Bracelet, and this y2k outfit is set for work.
+       - Pearle Crochet Trim Strapless Top (top, $22.00, formality 2, bohemian, y2k)
+       - Therapy Flaunt Platform Flower Detail Sandals Black (shoes, $69.00, formality 2, y2k, streetwear)
+       - Sea Charm Bracelet (accessory, $4.20, formality 2, coastal, y2k, soft-girl)
+       - [owned] denim shorts (bottom)
+       swaps offered for 3 item(s)
+
+=== athletic, no anchor, $10-280: HTTP 200, 5.3s
+    generated_by: our-llama
+  1. $101.00  The Smooth Sk8 Tee plus the Saphi Striped Foldover Knit Shorts give this outfit a y2k feel for a workout.
+       - Contrast Stitch Mini Tank - Basic Black *FINAL SALE* (top, $29.00, formality 1, athleisure, streetwear, y2k)
+       - Marleaux Foldover Shorts (bottom, $17.00, formality 1, athleisure, y2k, clean-girl)
+       - Faherty x REEF Original Convertible - Jungle Blue (shoes, $55.00, formality 2, outdoors, sporty, coastal)
+       swaps offered for 3 item(s)
+  2. $241.00  The Saphi Striped Foldover Knit Shorts and the ALO Runner (Unisex) keep this y2k look right for a workout.
+       - Contrast Stitch Mini Tank - Basic Black *FINAL SALE* (top, $29.00, formality 1, athleisure, streetwear, y2k)
+       - Marleaux Foldover Shorts (bottom, $17.00, formality 1, athleisure, y2k, clean-girl)
+       - ALO Runner (Unisex) - Navy (shoes, $195.00, formality 1, sporty, athleisure)
+       swaps offered for 3 item(s)
+  3. $139.00  The Saphi Striped Foldover Knit Shorts plus the Mini Tote Bags give this outfit a y2k feel for a workout.
+       - Contrast Stitch Mini Tank - Basic Black *FINAL SALE* (top, $29.00, formality 1, athleisure, streetwear, y2k)
+       - Marleaux Foldover Shorts (bottom, $17.00, formality 1, athleisure, y2k, clean-girl)
+       - Faherty x REEF Original Convertible - Jungle Blue (shoes, $55.00, formality 2, outdoors, sporty, coastal)
+       - Mini Tote Bags (accessory, $38.00, formality 2, streetwear, workwear)
+       swaps offered for 4 item(s)
+
+=== make it nicer (upgrade of outfit 1, $153.00): HTTP 200, 2.6s
+    generated_by: our-llama
+  1. $207.00  Built around the Y2k Style, this y2k outfit adds the Faherty X Reef Draftsmen Flip Flop for work.
+       - Cropped Tank - Fruit Fantasy *FINAL SALE* (top, $39.00, formality 2, streetwear, y2k)
+       - Dreamful Low Rise Mini Denim Short White Petite (bottom, $49.00, formality 2, streetwear, y2k)
+       - Therapy Flaunt Platform Flower Detail Sandals Black (shoes, $69.00, formality 2, y2k, streetwear)
+       - S CROWN TRUCKER (accessory, $50.00, formality 2, streetwear, y2k)
+       swaps offered for 4 item(s)
+
+##### profile_0021: Minimal, workwear and old-money style, mostly gray, black and forest-green, slim and regular fits; avoids streetwear.  departments=['men'] occasions=['everyday', 'casual'] budget $140-230
+
+=== everyday, no anchor, $140-230: HTTP 200, 5.1s
+    generated_by: our-llama
+  1. $179.80  The Breakwater Short in Washed Indigo Chambray with the Men's Allbirds Flip Flop stays minimal for everyday wear.
+       - The Organic Cotton Crew in Heather Grey Waffle (top, $85.00, formality 2, minimal, workwear, athleisure)
+       - The Apres Short in Rinsed Indigo Pincord (bottom, $64.80, formality 2, coastal, minimal)
+       - Koio Shoe Tree (shoes, $30.00, formality 2, minimal)
+       swaps offered for 3 item(s)
+  2. $199.80  Pairing the Breakwater Short in Washed Indigo Chambray with the Men's Allbirds Flip Flop makes a minimal outfit that suits everyday wear.
+       - The Organic Cotton Crew in Heather Grey Waffle (top, $85.00, formality 2, minimal, workwear, athleisure)
+       - The Apres Short in Rinsed Indigo Pincord (bottom, $64.80, formality 2, coastal, minimal)
+       - Men's Allbirds Flip Flop - Natural Black (shoes, $50.00, formality 1, minimal, coastal, athleisure)
+       swaps offered for 3 item(s)
+  3. $197.60  A minimal take on everyday wear: the Breakwater Short in Washed Indigo Chambray with the Koio Shoe Tree.
+       - The Organic Cotton Crew in Heather Grey Waffle (top, $85.00, formality 2, minimal, workwear, athleisure)
+       - The Breakwater Short in Washed Indigo Chambray (bottom, $82.60, formality 2, coastal, workwear)
+       - Koio Shoe Tree (shoes, $30.00, formality 2, minimal)
+       swaps offered for 3 item(s)
+
+=== everyday, catalog anchor 'The Meridian Polo in Faded Pine' $68.6: HTTP 200, 4.9s
+    generated_by: our-llama
+  1. $218.60  Built around the Meridian Polo in Faded Pine, this minimal outfit adds the Koio Microfiber Cloth for everyday wear.
+       - The Meridian Polo in Faded Pine (top, $68.60, formality 2, coastal, minimal)
+       - Local Straight Fit - Outerworn (bottom, $110.00, formality 2, coastal, minimal)
+       - Koio Shoe Tree (shoes, $30.00, formality 2, minimal)
+       - Koio Microfiber Cloth (accessory, $10.00, formality 2, minimal)
+       swaps offered for 3 item(s)
+  2. $223.60  A minimal take on everyday wear: the Meridian Polo in Faded Pine with the Heavyweight Trousers.
+       - The Meridian Polo in Faded Pine (top, $68.60, formality 2, coastal, minimal)
+       - Heavyweight Trousers - Vintage Tee White (bottom, $115.00, formality 3, workwear, minimal)
+       - Koio Shoe Tree (shoes, $30.00, formality 2, minimal)
+       - Koio Microfiber Cloth (accessory, $10.00, formality 2, minimal)
+       swaps offered for 3 item(s)
+  3. $221.60  The Meridian Polo in Faded Pine and the Alpaca Cozy Scarf keep this minimal look right for everyday wear.
+       - The Meridian Polo in Faded Pine (top, $68.60, formality 2, coastal, minimal)
+       - Heavyweight Trousers - Vintage Tee White (bottom, $115.00, formality 3, workwear, minimal)
+       - Koio Shoe Tree (shoes, $30.00, formality 2, minimal)
+       - Find Your Outerknown Mini Tote (accessory, $8.00, formality 2, coastal, minimal)
+       swaps offered for 3 item(s)
+
+=== everyday, closet anchor 'gray jeans': HTTP 200, 5.2s
+    generated_by: our-llama
+  1. $228.50  Start from your gray jeans, add the Koio Shoe Tree, and this minimal outfit is set for everyday wear.
+       - The Organic Cotton Crew in Dark Forest Waffle (top, $59.50, formality 2, workwear, outdoors, minimal)
+       - Range Fleece CPO - Buffalo Rock Stripe (outerwear, $139.00, formality 2, outdoors, western)
+       - Koio Shoe Tree (shoes, $30.00, formality 2, minimal)
+       - [owned] gray jeans (bottom)
+       swaps offered for 3 item(s)
+  2. $213.50  Your gray jeans plus the Sunwashed Canvas CPO give this outfit a minimal feel for everyday wear.
+       - The Organic Cotton Crew in Dark Forest Waffle (top, $59.50, formality 2, workwear, outdoors, minimal)
+       - Sunwashed Canvas CPO - Sea Salt (outerwear, $124.00, formality 2, workwear, coastal, minimal)
+       - Koio Shoe Tree (shoes, $30.00, formality 2, minimal)
+       - [owned] gray jeans (bottom)
+       swaps offered for 3 item(s)
+
+=== athletic, no anchor, $140-230: HTTP 200, 4.9s
+    generated_by: our-llama
+  1. $173.98  Pairing the Zephyr Pant with the CloudKnit Shortsleeve makes a minimal outfit that suits a workout.
+       - CloudKnit Shortsleeve (top, $34.99, formality 2, athleisure, minimal, sporty)
+       - Zephyr Pant (bottom, $38.99, formality 1, athleisure, sporty, minimal)
+       - Men's Tree Runner NZ - Natural Black (Natural Black Sole) (shoes, $100.00, formality 2, minimal, athleisure, sporty)
+       swaps offered for 3 item(s)
+  2. $183.98  A minimal take on a workout: the Zephyr Pant with the Koio Microfiber Cloth.
+       - CloudKnit Shortsleeve (top, $34.99, formality 2, athleisure, minimal, sporty)
+       - Zephyr Pant (bottom, $38.99, formality 1, athleisure, sporty, minimal)
+       - Men's Tree Runner NZ - Natural Black (Natural Black Sole) (shoes, $100.00, formality 2, minimal, athleisure, sporty)
+       - Koio Microfiber Cloth (accessory, $10.00, formality 2, minimal)
+       swaps offered for 4 item(s)
+  3. $191.98  Wear the Zephyr Pant with the Find Your Outerknown Mini Tote for a minimal look that fits a workout.
+       - CloudKnit Shortsleeve (top, $34.99, formality 2, athleisure, minimal, sporty)
+       - Zephyr Pant (bottom, $38.99, formality 1, athleisure, sporty, minimal)
+       - Men's Tree Runner NZ - Natural Black (Natural Black Sole) (shoes, $100.00, formality 2, minimal, athleisure, sporty)
+       - Koio Microfiber Cloth (accessory, $10.00, formality 2, minimal)
+       - Find Your Outerknown Mini Tote (accessory, $8.00, formality 2, coastal, minimal)
+       swaps offered for 5 item(s)
+
+=== make it nicer (upgrade of outfit 1, $179.80): HTTP 200, 2.2s
+    generated_by: our-llama
+  1. $275.00  The Pacific Polo in Rinsed Indigo Pique and the Men's Canvas Cruiser Slip On keep this minimal look right for everyday wear.
+       - The Organic Cotton Crew in Heather Grey Waffle (top, $85.00, formality 2, minimal, workwear, athleisure)
+       - Heavyweight Trousers - Vintage Tee White (bottom, $115.00, formality 3, workwear, minimal)
+       - Men's Canvas Cruiser Slip On - Warm White (Natural White Sole) (shoes, $75.00, formality 2, minimal, coastal, preppy)
+       swaps offered for 3 item(s)
+
+##### profile_0000: Y2k style, mostly white, black, lilac and purple, slim and oversized fits; avoids goth and workwear.  departments=['women'] occasions=['semi-formal', 'athletic'] budget $10-180
+
+=== semi-formal, no anchor, $10-180: HTTP 200, 5.0s
+    generated_by: our-llama
+  1. $130.80  The Olya Lacey Satin Effect Mini Dress plus the Hummingbird Jewelry Bow give this outfit a y2k feel for a semi-formal event.
+       - Karda Halter Handkerchief Hem Mini Dress (dress, $25.80, formality 3, y2k)
+       - The Hummingbird Jewelry Bow - Deep Earth Velvet (shoes, $105.00, formality 3, preppy, old-money)
+       swaps offered for 2 item(s)
+  2. $144.00  Wear the Olya Lacey Satin Effect Mini Dress with the Hummingbird Jewelry Bow for a y2k look that fits a semi-formal event.
+       - Tannie Lacey Satin Effect Mini Dress (dress, $39.00, formality 3, y2k, soft-girl)
+       - The Hummingbird Jewelry Bow - Deep Earth Velvet (shoes, $105.00, formality 3, preppy, old-money)
+       swaps offered for 2 item(s)
+  3. $173.30  Pairing the Olya Lacey Satin Effect Mini Dress with the Brain Dead x Coach SoHo Suede Wooden Clog makes a y2k outfit that suits a semi-formal event.
+       - Karda Halter Handkerchief Hem Mini Dress (dress, $25.80, formality 3, y2k)
+       - Brain Dead x Coach SoHo Suede Wooden Clog - Vintage Brown (shoes, $147.50, formality 3, streetwear, bohemian)
+       swaps offered for 2 item(s)
+
+=== semi-formal, catalog anchor 'STUSSY STAR LS TEE' $55.0: HTTP 200, 5.4s
+    generated_by: our-llama
+  1. $151.00  The Stussy Star LS Tee and the Chara Grommet Mini Skort keep this y2k look right for a semi-formal event.
+       - STUSSY STAR LS TEE (top, $55.00, formality 2, streetwear, y2k)
+       - Chara Grommet Mini Skort (bottom, $31.00, formality 3, y2k, grunge, streetwear)
+       - Unrivaled Pointed Toe Faux Suede Heels Beige (shoes, $65.00, formality 3, clean-girl, minimal, old-money)
+       swaps offered for 2 item(s)
+  2. $179.00  For a semi-formal event, the Stussy Star LS Tee with the Laicey Lace Midi Skirt stays y2k and fits the budget.
+       - STUSSY STAR LS TEE (top, $55.00, formality 2, streetwear, y2k)
+       - Laicey Lace Midi Skirt Black (bottom, $59.00, formality 3, grunge, bohemian)
+       - Unrivaled Pointed Toe Faux Suede Heels Beige (shoes, $65.00, formality 3, clean-girl, minimal, old-money)
+       swaps offered for 2 item(s)
+  3. $133.99  Wear the Stussy Star LS Tee with the Odyssey Rhinestones Bone Crocodile for a y2k look that fits a semi-formal event.
+       - STUSSY STAR LS TEE (top, $55.00, formality 2, streetwear, y2k)
+       - Dida Asymmetric Beaded Midi Skirt (bottom, $39.00, formality 3, y2k, bohemian)
+       - ODYSSEY RHINESTONES BONE CROCODILE (shoes, $39.99, formality 3, minimal, clean-girl)
+       swaps offered for 2 item(s)
+
+=== semi-formal, closet anchor 'silver midi skirt': HTTP 200, 5.4s
+    generated_by: our-llama
+  1. $77.59  Start from your silver midi skirt, add the Indah Contrast Stitch Oversized Sweater, and this y2k outfit is set for a semi-formal event.
+       - Indah Contrast Stitch Oversized Sweater (top, $37.60, formality 3, streetwear, y2k)
+       - ODYSSEY RHINESTONES BONE CROCODILE (shoes, $39.99, formality 3, minimal, clean-girl)
+       - [owned] silver midi skirt (bottom)
+       swaps offered for 2 item(s)
+  2. $155.59  Pairing your silver midi skirt with the Nymera Bag Black makes a y2k outfit that suits a semi-formal event.
+       - Indah Contrast Stitch Oversized Sweater (top, $37.60, formality 3, streetwear, y2k)
+       - ODYSSEY RHINESTONES BONE CROCODILE (shoes, $39.99, formality 3, minimal, clean-girl)
+       - NYMERA BAG BLACK (accessory, $78.00, formality 3, streetwear, y2k)
+       - [owned] silver midi skirt (bottom)
+       swaps offered for 3 item(s)
+  3. $120.56  Wear your silver midi skirt with the Savahan Bag Green for a y2k look that fits a semi-formal event.
+       - Indah Contrast Stitch Oversized Sweater (top, $37.60, formality 3, streetwear, y2k)
+       - ODYSSEY RHINESTONES BONE CROCODILE (shoes, $39.99, formality 3, minimal, clean-girl)
+       - LARISAL BAG BLACK/MULTI (accessory, $42.97, formality 3, streetwear, y2k)
+       - [owned] silver midi skirt (bottom)
+       swaps offered for 3 item(s)
+
+=== athletic, no anchor, $10-180: HTTP 200, 5.3s
+    generated_by: our-llama
+  1. $146.00  The Rewind Romper plus the Faherty x REEF Original Convertible give this outfit a y2k feel for a workout.
+       - Rewind Romper - Outerworn (dress, $41.00, formality 2, athleisure, streetwear, y2k)
+       - Faherty x REEF Original Convertible - Jungle Blue (shoes, $55.00, formality 2, outdoors, sporty, coastal)
+       - S CROWN TRUCKER (accessory, $50.00, formality 2, streetwear, y2k)
+       swaps offered for 3 item(s)
+  2. $154.00  Built around the Rewind Romper, this y2k outfit adds the Cambridge University Baseball Cap Navy for a workout.
+       - Rewind Romper - Outerworn (dress, $41.00, formality 2, athleisure, streetwear, y2k)
+       - Faherty x REEF Original Convertible - Jungle Blue (shoes, $55.00, formality 2, outdoors, sporty, coastal)
+       - Cambridge University Baseball Cap Navy (accessory, $58.00, formality 2, preppy, old-money)
+       swaps offered for 3 item(s)
+  3. $115.00  Wear the Rewind Romper with the Leopard Bandana  *FINAL SALE* for a y2k look that fits a workout.
+       - Rewind Romper - Outerworn (dress, $41.00, formality 2, athleisure, streetwear, y2k)
+       - Faherty x REEF Original Convertible - Jungle Blue (shoes, $55.00, formality 2, outdoors, sporty, coastal)
+       - Leopard Bandana  *FINAL SALE* (accessory, $19.00, formality 2, streetwear, y2k)
+       swaps offered for 3 item(s)
+
+=== make it nicer (upgrade of outfit 1, $130.80): HTTP 200, 2.3s
+    generated_by: our-llama
+  1. $145.00  The Hummingbird Jewelry Bow and the Peara Scoop Neck Woven Mini Dress keep this y2k look right for a semi-formal event.
+       - Peara Scoop Neck Woven Mini Dress (dress, $40.00, formality 3, minimal, clean-girl, y2k)
+       - The Hummingbird Jewelry Bow - Deep Earth Velvet (shoes, $105.00, formality 3, preppy, old-money)
+       swaps offered for 2 item(s)
+
+cleanup: DELETE /me -> 204
+--- backend log (model chain lines)
+
+[exited with code 0]
