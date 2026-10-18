@@ -102,6 +102,12 @@ async def save_profile(user_id: str, profile: dict) -> dict:
     return rows[0]["profile"]
 
 
+async def rated_pair_ids(user_id: str) -> set[str]:
+    """The pair ids the user has already chosen between."""
+    rows = await _rest("GET", "feedback", params={"user_id": f"eq.{user_id}", "select": "pair_id"})
+    return {row["pair_id"] for row in rows}
+
+
 async def add_feedback(user_id: str, pair_id: str, choice: str, pair: dict, a_model: str, b_model: str) -> None:
     """Saves an A/B choice. Choosing again for the same pair replaces the earlier answer."""
     await _rest(
