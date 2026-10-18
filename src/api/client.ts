@@ -1,3 +1,5 @@
+import Constants from 'expo-constants';
+
 import type { Thumb } from '@/lib/photos';
 import { accessToken, signOut } from '@/lib/supabase';
 import * as mocks from './mocks';
@@ -20,8 +22,25 @@ import type {
   TryOnResponse,
 } from './types';
 
-// Set in .env as EXPO_PUBLIC_API_BASE_URL (use your laptop's LAN IP on a real phone)
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
+// The backend. EXPO_PUBLIC_API_BASE_URL in .env wins (use it for a backend tunnel). Otherwise
+// it's port 8000 on the laptop the app was loaded from, so a phone keeps finding the laptop when
+// it switches between Wi-Fi and a hotspot. A tunneled app (exp.direct) can't, so it needs the env.
+const devHost = Constants.expoConfig?.hostUri?.split(':')[0];
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_BASE_URL ||
+  (devHost && !devHost.endsWith('exp.direct') ? `http://${devHost}:8000` : 'http://localhost:8000');
+
+// Gives up instead of waiting forever when the backend can't be reached.
+const SCAN_TIMEOUT = 90_000;
+function timeout(ms: number) {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), ms);
+  return controller.signal;
+}
+const unreachable = (e: unknown) =>
+  e instanceof Error && (e.name === 'AbortError' || /network request failed/i.test(e.message))
+    ? new Error(`Couldn't reach the backend at ${API_BASE_URL}. Is it running, on the same Wi-Fi?`)
+    : e;
 
 // Asks the backend for the most common faces in these photos.
 export async function findOwnerCandidates(thumbs: Thumb[]): Promise<Candidate[]> {
@@ -29,6 +48,9 @@ export async function findOwnerCandidates(thumbs: Thumb[]): Promise<Candidate[]>
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(thumbs.map(({ id, base64 }) => ({ id, base64 }))),
+    signal: timeout(SCAN_TIMEOUT),
+  }).catch((e) => {
+    throw unreachable(e);
   });
   if (!res.ok) throw new Error(`Backend returned ${res.status}`);
   const data: { candidates: Candidate[] } = await res.json();
@@ -44,6 +66,9 @@ export async function classifyBatch(batch: Thumb[], owner: number[] | null): Pro
       items: batch.map(({ id, base64 }) => ({ id, base64 })),
       owner_embedding: owner,
     }),
+    signal: timeout(SCAN_TIMEOUT),
+  }).catch((e) => {
+    throw unreachable(e);
   });
   if (!res.ok) throw new Error(`Backend returned ${res.status}`);
   const data: { results: ScanResult[] } = await res.json();
