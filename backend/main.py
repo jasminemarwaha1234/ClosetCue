@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from backend.routes import catalog, checkout, faces, me, outfits, scan, tryon
+from backend.routes import catalog, checkout, faces, me, outfits, profile, scan, tryon
 
 app = FastAPI()
 app.include_router(scan.router)
@@ -10,6 +10,7 @@ app.include_router(me.router)
 app.include_router(tryon.router)
 app.include_router(catalog.router)
 app.include_router(outfits.router)
+app.include_router(profile.router)
 
 
 @app.get("/health")
