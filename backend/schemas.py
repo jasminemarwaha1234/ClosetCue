@@ -23,6 +23,8 @@ class ScanRequest(BaseModel):
 # GET /catalog -> list[CatalogItem]
 Slot = Literal["top", "bottom", "dress", "outerwear", "shoes", "accessory"]
 Department = Literal["men", "women", "unisex"]
+Pattern = Literal["solid", "stripe", "check", "small-print", "large-print", "graphic"]
+Fit = Literal["slim", "regular", "relaxed", "oversized"]
 
 
 class CatalogItem(BaseModel):
@@ -36,6 +38,8 @@ class CatalogItem(BaseModel):
     formality: int  # 1 athleisure ... 5 formal
     style_tags: list[str]
     season: list[str]
+    pattern: Pattern
+    fit: Optional[Fit] = None  # None for shoes and accessories
     image: str  # image URL
     url: str  # retailer page
 
@@ -64,6 +68,9 @@ class ClosetItem(BaseModel):
     colors: list[str]
     formality: int
     style_tags: list[str]
+    pattern: Pattern
+    fit: Optional[Fit] = None  # None for shoes and accessories
+    season: list[str]
     photo_id: str  # asset id of the photo it came from, so the app can show it
 
 
@@ -71,17 +78,15 @@ class StyleProfile(BaseModel):
     summary: str
     style_tags: list[str]  # same vocabulary as CatalogItem.style_tags
     colors: list[str]  # colors the user wears most
-    avoid: list[str]  # style tags or colors to leave out, such as "logos"
+    fits: list[Fit]
+    avoid: list[str]  # style tags or colors to leave out, such as "y2k" or "orange"
     departments: list[Literal["men", "women"]]  # catalog sections to show; unisex items always show
     looks: list[Look]
     closet: list[ClosetItem]
 
 
 # POST /outfits (OutfitsRequest) -> OutfitsResponse
-Occasion = Literal[
-    "everyday", "work", "date", "party", "formal", "active",
-    "wedding_guest", "interview", "brunch", "travel", "concert", "outdoors", "campus", "lounge",
-]
+Occasion = Literal["formal", "semi-formal", "work", "everyday", "party", "casual", "athletic", "comfy"]
 GeneratedBy = Literal["our-llama", "base-llama", "gemini"]
 
 

@@ -14,6 +14,8 @@ export type Item = { id: string; base64: string };
 // GET /catalog -> CatalogItem[]
 export type Slot = 'top' | 'bottom' | 'dress' | 'outerwear' | 'shoes' | 'accessory';
 export type Department = 'men' | 'women' | 'unisex';
+export type Pattern = 'solid' | 'stripe' | 'check' | 'small-print' | 'large-print' | 'graphic';
+export type Fit = 'slim' | 'regular' | 'relaxed' | 'oversized';
 
 export type CatalogItem = {
   id: string;
@@ -26,6 +28,8 @@ export type CatalogItem = {
   formality: number; // 1 athleisure ... 5 formal
   style_tags: string[];
   season: string[];
+  pattern: Pattern;
+  fit: Fit | null; // null for shoes and accessories
   image: string; // image URL
   url: string; // retailer page
 };
@@ -48,6 +52,9 @@ export type ClosetItem = {
   colors: string[];
   formality: number;
   style_tags: string[];
+  pattern: Pattern;
+  fit: Fit | null; // null for shoes and accessories
+  season: string[];
   photo_id: string; // asset id of the photo it came from, so the app can show it
 };
 
@@ -55,7 +62,8 @@ export type StyleProfile = {
   summary: string;
   style_tags: string[]; // same vocabulary as CatalogItem.style_tags
   colors: string[]; // colors the user wears most
-  avoid: string[]; // style tags or colors to leave out, such as "logos"
+  fits: Fit[];
+  avoid: string[]; // style tags or colors to leave out, such as "y2k" or "orange"
   departments: ('men' | 'women')[]; // catalog sections to show; unisex items always show
   looks: Look[];
   closet: ClosetItem[];
@@ -63,20 +71,14 @@ export type StyleProfile = {
 
 // POST /outfits (OutfitsRequest) -> OutfitsResponse
 export type Occasion =
-  | 'everyday'
-  | 'work'
-  | 'date'
-  | 'party'
   | 'formal'
-  | 'active'
-  | 'wedding_guest'
-  | 'interview'
-  | 'brunch'
-  | 'travel'
-  | 'concert'
-  | 'outdoors'
-  | 'campus'
-  | 'lounge';
+  | 'semi-formal'
+  | 'work'
+  | 'everyday'
+  | 'party'
+  | 'casual'
+  | 'athletic'
+  | 'comfy';
 export type GeneratedBy = 'our-llama' | 'base-llama' | 'gemini';
 
 export type Anchor =

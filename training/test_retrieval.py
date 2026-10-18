@@ -6,7 +6,7 @@ import random
 from training.retrieval import format_candidates, retrieve
 
 COLORS = ["black", "white", "navy", "olive", "red", "cream"]
-TAGS = [["minimal", "classic"], ["streetwear", "graphic"], ["relaxed"], ["tailored", "smart-casual"], ["logos", "streetwear"]]
+TAGS = [["minimal", "preppy"], ["streetwear", "techwear"], ["coastal"], ["old-money", "preppy"], ["y2k", "streetwear"]]
 DEPARTMENTS = ["men", "women", "unisex"]
 
 
@@ -33,8 +33,9 @@ def make_catalog(per_slot: int = 30) -> list[dict]:
 
 PROFILE = {
     "summary": "",
-    "style_tags": ["minimal", "relaxed"],
+    "style_tags": ["minimal", "coastal"],
     "colors": ["navy", "cream"],
+    "fits": [],
     "avoid": [],
     "departments": ["men", "women"],
     "looks": [],
@@ -91,7 +92,7 @@ def test_accessory_anchor_keeps_accessories_but_not_itself():
 
 def test_closet_anchor_costs_nothing():
     closet_anchor = {"id": "closet_1", "description": "navy oxford", "slot": "top", "colors": ["navy"],
-                     "formality": 3, "style_tags": ["classic"], "photo_id": "x"}
+                     "formality": 3, "style_tags": ["preppy"], "photo_id": "x"}
     items = run(anchor=closet_anchor, budget_max=150.0, n=1000)
     assert max(item["price"] for item in items) > 140.0
     assert all(item["price"] <= 150.0 for item in items)
@@ -112,13 +113,13 @@ def test_departments():
 
 
 def test_avoid_style_tags_and_colors():
-    items = run(profile={**PROFILE, "avoid": ["logos", "red"]})
-    assert not [item for item in items if "logos" in item["style_tags"] or "red" in item["colors"]]
+    items = run(profile={**PROFILE, "avoid": ["y2k", "red"]})
+    assert not [item for item in items if "y2k" in item["style_tags"] or "red" in item["colors"]]
 
 
 def test_formality_within_one_level_of_occasion():
     assert {item["formality"] for item in run(occasion="formal", n=40)} == {4, 5}
-    assert {item["formality"] for item in run(occasion="lounge", n=40)} == {1, 2}
+    assert {item["formality"] for item in run(occasion="athletic", n=40)} == {1, 2, 3}
 
 
 def test_slot_proportions():
@@ -141,7 +142,7 @@ def top(i, colors, tags):
 
 def test_diversity_cap():
     catalog = [top(i, ["black"], ["minimal"]) for i in range(10)]
-    catalog += [top(10 + i, [f"color{i}"], ["relaxed"]) for i in range(10)]
+    catalog += [top(10 + i, [f"color{i}"], ["coastal"]) for i in range(10)]
     items = run(catalog, n=8)
     assert len(items) == 8
     assert sum(1 for item in items if item["colors"] == ["black"]) == 2
@@ -157,15 +158,22 @@ def test_diversity_cap_holds_on_the_mixed_catalog():
 
 def test_reserves_about_15_percent_for_lower_scoring_items():
     catalog = [top(i, [f"a{i}"], ["minimal"]) for i in range(20)]
-    catalog += [top(20 + i, [f"b{i}"], ["edgy"]) for i in range(20)]
+    catalog += [top(20 + i, [f"b{i}"], ["goth"]) for i in range(20)]
     items = run(catalog, n=20)
-    assert sum(1 for item in items if item["style_tags"] == ["edgy"]) == 3
+    assert sum(1 for item in items if item["style_tags"] == ["goth"]) == 3
+
+
+def test_fit_bonus_ranks_a_matching_fit_first():
+    catalog = [{**top(0, ["black"], ["minimal"]), "fit": "slim"},
+               {**top(1, ["black"], ["minimal"]), "fit": "relaxed"}]
+    assert [item["id"] for item in run(catalog, n=1)] == ["top_000"]
+    assert [item["id"] for item in run(catalog, {**PROFILE, "fits": ["relaxed"]}, n=1)] == ["top_001"]
 
 
 def test_format_candidates():
     item = make_catalog()[0]
     assert format_candidates([item, item]).splitlines() == [
-        "top_000 | top 0 | top | $20.00 | black | formality 1 | minimal, classic"
+        "top_000 | top 0 | top | $20.00 | black | formality 1 | minimal, preppy"
     ] * 2
 
 

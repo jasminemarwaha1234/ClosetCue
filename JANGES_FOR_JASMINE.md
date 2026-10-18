@@ -34,7 +34,7 @@ Plan changes from Saturday Oct 17 that affect the app, the API contract or your 
 - **Anchor:** optional. Show the suggested one (the catalog item that best matches the user's style, chosen with some randomness) with a way to change or clear it.
 - **Budget:** a slider with two handles, a minimum and a maximum. Default $50–$200.
 - **Max price per item:** optional. The API and backend support it either way. Whether the Build screen shows a control for it, and where, is your call. It could be a stretch goal.
-- **Occasion:** default `everyday`, chosen from the 14 options.
+- **Occasion:** default `everyday`, chosen from the 8 options (see the second Sunday update below).
 
 **Item picker** (`pick-item`). Two sources: the catalog and "From my closet" (the profile's `closet`), plus a "No anchor" choice. Filter the catalog to the profile's `departments` plus unisex items.
 
@@ -70,6 +70,27 @@ Your three change requests in [CHANGES_FOR_CHARLIE.md](CHANGES_FOR_CHARLIE.md) a
 | `OutfitsResponse` | `outfits` holds 1 to 3 (normally 2 or 3), never 0: when every generator fails, `/outfits` returns a 503. `generated_by` covers every outfit in the response |
 | `/fit` | Removed, with `FitFeedback`, `ItemFit`, `FitRating` and the `fit/[orderId]` screen |
 
-**Vocabularies.** The color names and style tags are final, in `training/vocab.py` (listed in PLAN.md section 5, Catalog). `swatches` in `src/theme/index.ts` covers every color except `gold` and `silver`, which jewelry will use.
+**Vocabularies.** Replaced by the second Sunday update below.
 
 **Catalog.** The first pull has 930 real products from 21 stores, each with `url` set to its own product page. They still need tagging before `/catalog` can serve them.
+
+## Update 2, Sunday Oct 18 (after merging your Supabase and try-on work)
+
+The vocabulary and the occasions were reworked, so the contract changed again. `types.ts`, `schemas.py`, `session.tsx`'s `OCCASIONS` and the mocks already match, and the app typechecks.
+
+| Type | Change |
+| --- | --- |
+| `Occasion` | 8 options instead of 14: `formal`, `semi-formal`, `work`, `everyday`, `party`, `casual`, `athletic`, `comfy`. `date`, `active`, `wedding_guest`, `interview`, `brunch`, `travel`, `concert`, `outdoors`, `campus` and `lounge` are gone |
+| `Pattern`, `Fit` | **New.** `Pattern` is `solid`, `stripe`, `check`, `small-print`, `large-print` or `graphic`. `Fit` is `slim`, `regular`, `relaxed` or `oversized` |
+| `CatalogItem` | New `pattern: Pattern` and `fit: Fit \| null` (`null` for shoes and accessories) |
+| `ClosetItem` | New `pattern`, `fit` and `season`, the same as `CatalogItem` |
+| `StyleProfile` | New `fits: Fit[]`: the fits the user wears. Retrieval and the reward prefer items with one of them. Showing or editing it on "Your style" is your call |
+
+**Vocabularies,** final in `training/vocab.py` and listed in PLAN.md section 5:
+
+- **Colors (25):** white, cream, beige, tan, khaki, brown, gray, charcoal, black, navy, denim, olive, blue, forest-green, muted-green, burgundy, light-blue, lilac, gold, silver, yellow, orange, red, pink, purple. `swatches` has all of them. Plain `green` is gone; the mock Stan Smiths are now `forest-green`.
+- **Style tags (17, 1 to 3 per item):** minimal, old-money, western, preppy, streetwear, techwear, workwear, outdoors, athleisure, bohemian, y2k, goth, coastal, sporty, clean-girl, soft-girl, grunge. Old tags like `relaxed`, `smart-casual` and `logos` are gone; `avoid` examples are now things like `y2k` or `orange`.
+
+**Mocks.** I kept your 18 real products and gave them `pattern` and `fit`: the `item()` helper defaults to `solid` and `regular` (`null` for shoes and accessories), with `relaxed` or `oversized` on the wide-leg pant, hoodie and baggy jeans, and `graphic` on the Brain Dead tote.
+
+**Catalog.** `training/catalog.json` isn't committed yet, so `/tryon` still reads `catalog_raw.json`. It lands once the whole catalog is tagged with the new vocab, and it will include your 18 mock ids.

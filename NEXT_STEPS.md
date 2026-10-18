@@ -14,10 +14,10 @@ Rules for whoever picks this up:
 
 | What | Where | Notes |
 | --- | --- | --- |
-| Shared vocabularies | `training/vocab.py` | 23 colors (the app's swatch names plus `gold`, `silver`), neutrals, 8 clashing pairs, 17 style tags, occasion formality ranges |
+| Shared vocabularies | `training/vocab.py` | 25 colors in three groups (neutral, versatile, accent) with a pairwise compatibility table, 17 style tags, patterns, fits, 8 occasion formality ranges |
 | Outfit contract | `backend/schemas.py`, `src/api/types.ts` | Typed catalog/closet anchors, `closet_<n>` ids, budget checks, 1–3 outfits, `upgrade_of` for "make it nicer" |
-| Retrieval | `training/retrieval.py`, `test_retrieval.py` (16 pass) | `retrieve(...)` and `format_candidates(items)` for the prompt. Deterministic |
-| Reward | `training/reward.py`, `test_reward.py` (19 pass) | `reward()` for Veri, plus `parse_output`, `score_outfit`, `score_completion`, `prepare_context` for the backend guard. Stdlib only. Max score 6.5 |
+| Retrieval | `training/retrieval.py`, `test_retrieval.py` (17 pass) | `retrieve(...)` and `format_candidates(items)` for the prompt. Deterministic |
+| Reward | `training/reward.py`, `test_reward.py` (21 pass) | `reward()` for Veri, plus `parse_output`, `score_outfit`, `score_completion`, `prepare_context` for the backend guard. Stdlib only. Max score 7.5 |
 | Catalog scraper | `training/scrape_catalog.py`, `training/stores.json` | One request at a time, ≥3.5 s apart (parallel requests got the IP blocked across all of Shopify). `--cache DIR` reuses fetched feeds |
 | Raw catalog | `training/catalog_raw.json` | **930 items, 21 US-dollar stores**, pulled 2026-10-18. Untagged: no department/colors/formality/style_tags/season yet |
 | Veri pipeline check | JOURNAL entry | Llama trains, merged weights push to HF. See "Veri facts" |
@@ -73,7 +73,7 @@ Run the tests: `python3 -m pytest -q training/`.
    - Recommended: Gemini tags the catalog (it can read the product photo) and writes profile summaries and SFT reasons; code generates profiles and the SFT outfits (see step 5).
    - Check the key's rate limits first: 930 tagging calls plus ~300 SFT calls on a free tier may be throttled. Batch several items per call.
    - The OpenAI switch is off unless Charlie says otherwise.
-2. **Track:** stay on Model Learning or switch to Applied Intelligence. The plan's 10 PM deadline passed with only smoke runs done.
+2. **Track:** stay on Model Learning only if the eval proves our trained model beats base Llama (v0), the Gemini reference, or both, on the same held-out prompts. Otherwise switch to Applied Intelligence. The plan's 10 PM deadline passed with only smoke runs done.
 3. **Push** the local commits so Jasmine gets the catalog, reward, retrieval and contract.
 
 ## Review (defaults are already in code; change if you disagree)
@@ -82,13 +82,13 @@ Run the tests: `python3 -m pytest -q training/`.
    1. The 3 outfit scores are averaged; missing or duplicate outfits score 0.
    2. An invented item zeroes only that outfit.
    3. No anchor: the anchor point is free.
-   4. Bad outfits still earn about 2 of 6.5.
+   4. Bad outfits still earn about 3 of 7.5.
    5. JSON in code fences scores 0 (training must store answers without fences; the live guard may strip them).
    6. Complete = top + bottom or a dress, exactly one pair of shoes, at most one outerwear.
    7. Budget is pass or fail; stated total within $0.01 of the real one.
-   8. Color: a clash or 3+ accents = 0; 2 accents = 0.5; 0–1 = 1.
+   8. Color: the lowest pairwise score of the outfit's distinct colors by group (neutral, versatile, accent), 0.6 to 1. Pattern: at most one loud pattern = 0.5. Season: the items share a season = 0.5.
    9. Formality is pass or fail across all items, anchor included.
-   10. Anything on the avoid list = 0; else the share of items sharing a style tag with the profile.
+   10. Anything on the avoid list = 0; else the mean over items of their style-tag and fit matches with the profile.
    11. The reason must name an item (id, or a 4+ letter word from its name that isn't a color or tag).
    12. The reason is one sentence, at most 40 words.
    13. The live guard also drops outfits with `anchor == 0` or `budget == 0`, except `upgrade_of` requests.
@@ -100,11 +100,11 @@ Run the tests: `python3 -m pytest -q training/`.
    4. The diversity cap is never relaxed.
    5. Slot split: top 25%, bottom 25%, shoes 20%, outerwear 12%, dress 10%, accessory 8%.
    6. The formality filter applies to accessories too.
-6. **Vocabulary** (`training/vocab.py`): the 17 style tags and 8 clash pairs. Changing them later means re-tagging.
+6. **Vocabulary** (`training/vocab.py`): the 17 style tags, the color groups and their compatibility table, the patterns (and which are loud) and the fits. Changing them later means re-tagging.
 
 ## Ask Jasmine
 
-7. Add `gold` and `silver` to `swatches` in `src/theme/index.ts`.
+7. Swatches for `gold`, `silver`, `muted-green`, `forest-green` and `light-blue` are now in `src/theme/index.ts`. The hex values are placeholders she may want to match to Paper.
 8. Try-on: with Gemini back, `/tryon` can use Gemini image editing as planned.
 9. `GeneratedBy` keeps `"gemini"` now that Gemini is back. The kebab-case spelling (`our-llama`) stays unless she wants it changed.
 

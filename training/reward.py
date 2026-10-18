@@ -11,9 +11,10 @@ the object itself or a JSON string of it:
     budget_min          number
     budget_max          number
     anchor              null or {"source": "catalog" | "closet", "id": str}
-    candidates          [{"id", "slot", "price", "colors", "formality", "style_tags", "name"?}],
-                        the anchor included; closet items cost 0
+    candidates          [{"id", "slot", "price", "colors", "formality", "style_tags", "pattern"?,
+                        "fit"?, "season"?, "name"?}], the anchor included; closet items cost 0
     profile_style_tags  [str]
+    profile_fits        [str]
     profile_avoid       [str], style tags or colors
 """
 
@@ -24,40 +25,50 @@ import re
 # Copied from training/vocab.py because Veri receives this file alone.
 # test_reward.py fails if the copies drift.
 NEUTRALS = frozenset({
-    "white", "cream", "beige", "tan", "khaki", "brown",
-    "gray", "charcoal", "black", "navy", "denim", "gold", "silver",
+    "white", "cream", "beige", "tan", "khaki",
+    "brown", "gray", "charcoal", "black",
 })
-CLASHES = frozenset(frozenset(p) for p in [
-    ("red", "pink"), ("red", "orange"), ("red", "purple"), ("orange", "pink"),
-    ("orange", "purple"), ("green", "red"), ("yellow", "purple"), ("burgundy", "orange"),
-])
+VERSATILES = frozenset({
+    "navy", "denim", "olive", "blue", "forest-green", "muted-green",
+    "burgundy", "light-blue", "lilac", "gold", "silver",
+})
+ACCENTS = frozenset({
+    "yellow", "orange", "red", "pink", "purple",
+})
+COLOR_COMPATIBILITY = {
+    "neutral": {"neutral": 1.0, "versatile": 1.0, "accent": 0.9},
+    "versatile": {"neutral": 1.0, "versatile": 0.9, "accent": 0.75},
+    "accent": {"neutral": 0.9, "versatile": 0.75, "accent": 0.6},
+}
 STYLE_TAGS = (
-    "minimal", "classic", "relaxed", "tailored", "smart-casual", "preppy",
-    "streetwear", "graphic", "workwear", "outdoors", "athleisure",
-    "vintage", "bohemian", "romantic", "edgy", "trendy", "logos",
+    "minimal", "old-money", "western", "preppy",
+    "streetwear", "techwear", "workwear", "outdoors", "athleisure",
+    "bohemian", "y2k", "goth", "coastal", "sporty",
+    "clean-girl", "soft-girl", "grunge",
 )
 OCCASION_FORMALITY = {
-    "everyday": (1, 3),
-    "work": (3, 4),
-    "date": (2, 4),
-    "party": (2, 4),
     "formal": (5, 5),
-    "active": (1, 1),
-    "wedding_guest": (4, 5),
-    "interview": (4, 5),
-    "brunch": (2, 3),
-    "travel": (1, 2),
-    "concert": (1, 3),
-    "outdoors": (1, 2),
-    "campus": (1, 2),
-    "lounge": (1, 1),
+    "semi-formal": (4, 5),
+    "work": (3, 4),
+    "everyday": (2, 4),
+    "party": (2, 4),
+    "casual": (1, 3),
+    "athletic": (1, 2),
+    "comfy": (1, 1),
+}
+LOUD_PATTERNS = frozenset({"check", "large-print", "graphic"})
+
+COLOR_GROUP = {
+    **{c: "neutral" for c in NEUTRALS},
+    **{c: "versatile" for c in VERSATILES},
+    **{c: "accent" for c in ACCENTS},
 }
 
 OUTFITS_WANTED = 3
 MAX_REASON_WORDS = 40
 CONTEXT_COLUMNS = (
     "occasion", "budget_min", "budget_max", "anchor", "candidates",
-    "profile_style_tags", "profile_avoid",
+    "profile_style_tags", "profile_fits", "profile_avoid",
 )
 _NAME_STOPWORDS = frozenset({"with", "from", "mens", "women", "womens", "unisex", "the", "and"})
 
@@ -113,12 +124,13 @@ def prepare_context(row):
         raise ValueError(f"anchor {anchor['id']} is missing from candidates")
     ctx["by_id"] = by_id
     ctx["profile_style_tags"] = set(ctx["profile_style_tags"] or [])
+    ctx["profile_fits"] = set(ctx["profile_fits"] or [])
     ctx["profile_avoid"] = set(ctx["profile_avoid"] or [])
     return ctx
 
 
 def score_outfit(outfit, ctx):
-    """(score, gates_passed, breakdown) for one parsed outfit. Max 6.5; 0 when a gate fails."""
+    """(score, gates_passed, breakdown) for one parsed outfit. Max 7.5; 0 when a gate fails."""
     if "by_id" not in ctx:
         ctx = prepare_context(ctx)
     by_id = ctx["by_id"]
@@ -134,8 +146,10 @@ def score_outfit(outfit, ctx):
         "complete": _complete(outfit["items"], items),
         "budget": _budget(items, outfit["total"], ctx["budget_min"], ctx["budget_max"]),
         "color": _color(items),
+        "pattern": _pattern(items),
+        "season": _season(items),
         "formality": _formality(items, ctx["occasion"]),
-        "profile": _profile(others, ctx["profile_style_tags"], ctx["profile_avoid"]),
+        "profile": _profile(others, ctx["profile_style_tags"], ctx["profile_fits"], ctx["profile_avoid"]),
         "reason": _reason(outfit["reason"], outfit["items"], items),
     }
     return round(sum(breakdown.values()), 4), True, breakdown
@@ -163,10 +177,24 @@ def _budget(items, stated, lo, hi):
 
 
 def _color(items):
-    accents = {c for it in items for c in it["colors"] if c not in NEUTRALS}
-    if any(frozenset((a, b)) in CLASHES for a in accents for b in accents if a < b):
-        return 0.0
-    return {0: 1.0, 1: 1.0, 2: 0.5}.get(len(accents), 0.0)
+    colors = sorted({c for it in items for c in it["colors"]})
+    return min(
+        (COLOR_COMPATIBILITY[COLOR_GROUP[a]][COLOR_GROUP[b]]
+         for i, a in enumerate(colors) for b in colors[i + 1:]),
+        default=1.0,
+    )
+
+
+def _pattern(items):
+    loud = sum(1 for it in items if it.get("pattern") in LOUD_PATTERNS)
+    return 0.5 if loud <= 1 else 0.0
+
+
+def _season(items):
+    seasons = [set(it["season"]) for it in items if it.get("season")]
+    if len(seasons) < 2:
+        return 0.5
+    return 0.5 if set.intersection(*seasons) else 0.0
 
 
 def _formality(items, occasion):
@@ -178,12 +206,20 @@ def _formality(items, occasion):
     return 1.0 if coherent and all(lo <= f <= hi for f in levels) else 0.0
 
 
-def _profile(items, tags, avoid):
+def _profile(items, tags, fits, avoid):
     if any(avoid & (set(it["style_tags"]) | set(it["colors"])) for it in items):
         return 0.0
-    if not items or not tags:
+    if not items:
         return 1.0
-    return sum(1 for it in items if tags & set(it["style_tags"])) / len(items)
+    total = 0.0
+    for it in items:
+        checks = []
+        if tags:
+            checks.append(1.0 if tags & set(it["style_tags"]) else 0.0)
+        if fits and it.get("fit"):
+            checks.append(1.0 if it["fit"] in fits else 0.0)
+        total += sum(checks) / len(checks) if checks else 1.0
+    return total / len(items)
 
 
 def _words(text):
@@ -191,7 +227,7 @@ def _words(text):
 
 
 def _name_words(item):
-    skip = NEUTRALS | set(STYLE_TAGS) | _NAME_STOPWORDS | {c for pair in CLASHES for c in pair}
+    skip = set(COLOR_GROUP) | set(STYLE_TAGS) | _NAME_STOPWORDS
     return {w for w in _words(item.get("name") or "") if len(w) >= 4 and w not in skip}
 
 

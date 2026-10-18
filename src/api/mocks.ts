@@ -34,8 +34,10 @@ function item(
     price,
     colors: [color],
     formality: 2,
-    style_tags: ['minimal', 'relaxed'],
+    style_tags: ['minimal'],
     season: ['fall', 'winter', 'spring'],
+    pattern: 'solid',
+    fit: slot === 'shoes' || slot === 'accessory' ? null : 'regular',
     image: '',
     url: '',
     ...extra,
@@ -83,6 +85,7 @@ export const catalog: CatalogItem[] = [
     url: "https://www.outdoorvoices.com/products/m-zephyr-pant-navy",
   }),
   item('bottom_126', 'RecTrek cropped wide leg pant', 'bottom', 38.97, 'beige', {
+    fit: 'relaxed',
     brand: "Outdoor Voices",
     department: 'unisex',
     image: "https://cdn.shopify.com/s/files/1/0190/1390/files/W702555-DCW-BNE_RecTrekCroppedWideLegPant_Bone_000.jpg",
@@ -95,6 +98,7 @@ export const catalog: CatalogItem[] = [
     url: "https://www.outerknown.com/products/seventyseven-cord-utility-shorts-lejp_3lc6x-resale",
   }),
   item('bottom_147', 'Washed low rise baggy jeans', 'bottom', 55, 'denim', {
+    fit: 'oversized',
     brand: "Edikted",
     department: 'women',
     image: "https://cdn.shopify.com/s/files/1/0467/4148/7783/files/s25081_plum_s14091T_blue-raw-washed_02-09-267_76141d9c-5a8d-4371-a49e-a14175a3e3f9.jpg",
@@ -107,6 +111,7 @@ export const catalog: CatalogItem[] = [
     url: "https://fahertybrand.com/products/recycled-cotton-jersey-t-shirt-dress-washed-black",
   }),
   item('outerwear_061', 'Sunwashed organic hoodie', 'outerwear', 49, 'navy', {
+    fit: 'relaxed',
     brand: "Faherty",
     department: 'women',
     image: "https://cdn.shopify.com/s/files/1/0359/8357/files/WKS2414-NBZ_Sunwashed_Slub_Hoodie_LD_FRONT_1_Web.jpg",
@@ -137,13 +142,14 @@ export const catalog: CatalogItem[] = [
     image: "https://cdn.shopify.com/s/files/1/1104/4168/files/A11484_25Q2_Tree_Runner_Go_Utility_Natural_White_Rustic_Brown_Natural_White_PDP_LEFT-2000x2000.png",
     url: "https://www.allbirds.com/products/mens-tree-runner-go-utility-natural-white-rustic-brown",
   }),
-  item('shoes_004', 'Stan Smith', 'shoes', 75, 'green', {
+  item('shoes_004', 'Stan Smith', 'shoes', 75, 'forest-green', {
     brand: "Brain Dead",
     department: 'unisex',
     image: "https://cdn.shopify.com/s/files/1/0642/8893/files/Brain_Dead_x_Adidas_Dark_Green_Stan_Smith_Side_optimized.jpg",
     url: "https://wearebraindead.com/products/brain-dead-x-adidas-stan-smith-dark-green",
   }),
   item('accessory_014', 'Fantasy Fest tote', 'accessory', 20, 'cream', {
+    pattern: 'graphic',
     brand: "Brain Dead",
     department: 'unisex',
     image: "https://cdn.shopify.com/s/files/1/0642/8893/files/Fantasy_Games_Tote_Natural_Back_optimized.jpg",
@@ -160,10 +166,11 @@ export const catalog: CatalogItem[] = [
 const byId = (id: string) => catalog.find((c) => c.id === id)!;
 
 export const profile: StyleProfile = {
-  summary: 'Mostly neutrals with one accent color, relaxed fits, smart-casual. Avoids logos.',
-  style_tags: ['minimal', 'relaxed', 'smart-casual', 'neutral tones'],
+  summary: 'Mostly neutrals with one accent color, relaxed fits, minimal workwear. Avoids y2k.',
+  style_tags: ['minimal', 'workwear', 'coastal'],
   colors: ['cream', 'black', 'olive', 'navy'],
-  avoid: ['logos', 'neon'],
+  fits: ['relaxed', 'regular'],
+  avoid: ['y2k', 'orange'],
   departments: ['men', 'women'],
   looks: [
     { name: 'Weekend errands', photo_ids: [] },
@@ -176,7 +183,10 @@ export const profile: StyleProfile = {
       slot: 'top',
       colors: ['navy'],
       formality: 3,
-      style_tags: ['smart-casual'],
+      style_tags: ['preppy'],
+      pattern: 'solid',
+      fit: 'regular',
+      season: ['spring', 'summer', 'fall', 'winter'],
       photo_id: '',
     },
     {
@@ -186,6 +196,9 @@ export const profile: StyleProfile = {
       colors: ['white'],
       formality: 2,
       style_tags: ['minimal'],
+      pattern: 'solid',
+      fit: null,
+      season: ['spring', 'summer', 'fall', 'winter'],
       photo_id: '',
     },
     {
@@ -194,7 +207,10 @@ export const profile: StyleProfile = {
       slot: 'outerwear',
       colors: ['tan'],
       formality: 3,
-      style_tags: ['relaxed'],
+      style_tags: ['workwear'],
+      pattern: 'solid',
+      fit: 'relaxed',
+      season: ['spring', 'fall', 'winter'],
       photo_id: '',
     },
   ],

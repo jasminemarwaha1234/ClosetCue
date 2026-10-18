@@ -9,33 +9,43 @@ from training import reward as R
 from training import vocab
 
 
-def item(id, slot, price, colors, formality, tags, name):
-    return {"id": id, "slot": slot, "price": price, "colors": colors,
-            "formality": formality, "style_tags": tags, "name": name}
+ALL_YEAR = ["spring", "summer", "fall", "winter"]
+
+
+def item(id, slot, price, colors, formality, tags, name, pattern="solid", fit=None, season=ALL_YEAR):
+    return {"id": id, "slot": slot, "price": price, "colors": colors, "formality": formality,
+            "style_tags": tags, "name": name, "pattern": pattern, "fit": fit, "season": season}
 
 
 CANDIDATES = [
-    item("top_001", "top", 40.0, ["cream"], 2, ["minimal", "relaxed"], "Relaxed cotton crewneck"),
-    item("top_002", "top", 60.0, ["red"], 3, ["classic"], "Silk camp shirt"),
-    item("bottom_001", "bottom", 70.0, ["denim"], 2, ["classic", "relaxed"], "Straight leg jeans"),
-    item("bottom_002", "bottom", 90.0, ["black"], 4, ["tailored"], "Pleated wool trousers"),
-    item("bottom_003", "bottom", 50.0, ["pink"], 2, ["trendy"], "Satin mini skirt"),
-    item("dress_001", "dress", 120.0, ["green"], 2, ["romantic", "relaxed"], "Linen midi dress"),
+    item("top_001", "top", 40.0, ["cream"], 2, ["minimal"], "Relaxed cotton crewneck", fit="relaxed"),
+    item("top_002", "top", 60.0, ["red"], 3, ["preppy"], "Silk camp shirt", fit="slim"),
+    item("top_003", "top", 45.0, ["pink"], 2, ["bohemian"], "Floral blouse", "small-print", "relaxed"),
+    item("bottom_001", "bottom", 70.0, ["denim"], 2, ["minimal", "workwear"], "Straight leg jeans",
+         fit="regular"),
+    item("bottom_002", "bottom", 90.0, ["black"], 4, ["old-money"], "Pleated wool trousers", fit="regular"),
+    item("bottom_004", "bottom", 60.0, ["khaki"], 2, ["preppy"], "Straight cotton chinos", fit="regular"),
+    item("bottom_003", "bottom", 50.0, ["orange"], 2, ["y2k"], "Satin mini skirt", "large-print", "slim"),
+    item("dress_001", "dress", 120.0, ["muted-green"], 2, ["bohemian", "minimal"], "Linen midi dress",
+         fit="relaxed", season=["spring", "summer"]),
     item("shoes_001", "shoes", 80.0, ["white"], 2, ["minimal"], "Leather court sneakers"),
-    item("shoes_002", "shoes", 150.0, ["black"], 5, ["classic"], "Patent derby shoes"),
-    item("outerwear_001", "outerwear", 110.0, ["olive"], 2, ["workwear"], "Waxed chore jacket"),
-    item("accessory_001", "accessory", 25.0, ["orange"], 2, ["graphic", "logos"], "Canvas baseball cap"),
-    item("accessory_002", "accessory", 30.0, ["silver"], 2, ["minimal"], "Chain bracelet"),
-    item("accessory_003", "accessory", 20.0, ["black"], 2, ["classic"], "Leather belt"),
-    item("closet_3", "top", 0.0, ["navy"], 2, ["classic", "minimal"], "navy oxford shirt"),
+    item("shoes_002", "shoes", 150.0, ["black"], 5, ["old-money"], "Patent derby shoes"),
+    item("outerwear_001", "outerwear", 110.0, ["olive"], 2, ["workwear"], "Waxed chore jacket",
+         fit="relaxed", season=["fall", "winter"]),
+    item("accessory_001", "accessory", 25.0, ["orange"], 2, ["streetwear", "y2k"], "Canvas baseball cap",
+         "graphic"),
+    item("accessory_002", "accessory", 30.0, ["gray"], 2, ["minimal"], "Knit beanie"),
+    item("accessory_003", "accessory", 20.0, ["black"], 2, ["minimal"], "Leather belt"),
+    item("accessory_004", "accessory", 35.0, ["red"], 3, ["preppy"], "Silk scarf"),
+    item("closet_3", "top", 0.0, ["navy"], 2, ["preppy", "minimal"], "navy oxford shirt", fit="regular"),
 ]
 
 
 def ctx(**over):
     row = {
         "occasion": "everyday", "budget_min": 100.0, "budget_max": 250.0, "anchor": None,
-        "candidates": CANDIDATES, "profile_style_tags": ["minimal", "relaxed", "classic"],
-        "profile_avoid": ["logos"],
+        "candidates": CANDIDATES, "profile_style_tags": ["minimal", "workwear", "preppy"],
+        "profile_fits": ["relaxed", "regular"], "profile_avoid": ["y2k"],
     }
     row.update(over)
     return row
@@ -52,20 +62,28 @@ def score(o, **over):
     return R.score_outfit(o, ctx(**over))
 
 
+def breakdown(ids, key, **over):
+    return score(outfit(ids, 0.0), **over)[2][key]
+
+
 def text(*outfits, **extra):
     return json.dumps({"outfits": list(outfits), **extra})
 
 
 def test_vocab_copy_matches():
     assert R.NEUTRALS == vocab.NEUTRALS
-    assert R.CLASHES == vocab.CLASHES
+    assert R.VERSATILES == vocab.VERSATILES
+    assert R.ACCENTS == vocab.ACCENTS
+    assert R.COLOR_GROUP == vocab.COLOR_GROUP
+    assert R.COLOR_COMPATIBILITY == vocab.COLOR_COMPATIBILITY
     assert R.STYLE_TAGS == vocab.STYLE_TAGS
     assert R.OCCASION_FORMALITY == vocab.OCCASION_FORMALITY
+    assert R.LOUD_PATTERNS == vocab.LOUD_PATTERNS
 
 
 def test_clearly_good_scores_max():
     s, ok, b = score(GOOD)
-    assert ok and s == 6.5, b
+    assert ok and s == 7.5, b
 
 
 def test_closet_anchor_free_and_counted_at_budget_min():
@@ -86,7 +104,7 @@ def test_closet_price_in_column_is_ignored():
 
 def test_catalog_anchor_missing_costs_one():
     s, ok, b = score(GOOD, anchor={"source": "catalog", "id": "outerwear_001"})
-    assert ok and b["anchor"] == 0.0 and s == 5.5
+    assert ok and b["anchor"] == 0.0 and s == 6.5
 
 
 def test_budget_edges():
@@ -105,7 +123,7 @@ def test_stated_total_must_match_within_a_cent():
 def test_dress_without_bottom_is_complete():
     o = outfit(["dress_001", "shoes_001"], 200.0, "The linen dress with white sneakers is easy and fresh.")
     s, ok, b = score(o)
-    assert ok and b["complete"] == 1.0 and s == 6.5, b
+    assert ok and b["complete"] == 1.0 and s == 7.5, b
 
 
 def test_incomplete_outfits():
@@ -118,7 +136,7 @@ def test_incomplete_outfits():
 def test_two_accessories_and_outerwear_allowed():
     o = outfit(["top_001", "bottom_001", "shoes_001", "accessory_002", "accessory_003"], 240.0)
     s, ok, b = score(o)
-    assert ok and b["complete"] == 1.0 and s == 6.5, b
+    assert ok and b["complete"] == 1.0 and s == 7.5, b
 
 
 def test_invented_item_fails_gate():
@@ -126,12 +144,29 @@ def test_invented_item_fails_gate():
     assert (s, ok) == (0.0, False) and b == {"invented": ["bottom_999"]}
 
 
-def test_color_rules():
-    clash = outfit(["top_002", "bottom_003", "shoes_001"], 190.0, "The camp shirt and mini skirt pop.")
-    assert score(clash)[2]["color"] == 0.0
-    two_accents = outfit(["top_002", "bottom_001", "shoes_001", "outerwear_001"], 320.0)
-    assert score(two_accents, budget_max=400.0)[2]["color"] == 0.5
-    assert score(GOOD)[2]["color"] == 1.0
+def test_color_tiers():
+    assert breakdown(["top_001", "bottom_002", "shoes_001"], "color") == 1.0
+    assert breakdown(["top_002", "bottom_002", "shoes_001"], "color") == 0.9
+    assert breakdown(["top_002", "bottom_003", "shoes_001"], "color") == 0.6
+    assert breakdown(["top_002", "bottom_001", "shoes_001"], "color") == 0.75
+    assert breakdown(["top_002", "bottom_002", "shoes_001", "accessory_004"], "color") == 0.9
+    assert breakdown(["dress_001", "shoes_001"], "color") == 1.0
+
+
+def test_pattern_rule():
+    assert breakdown(["top_001", "bottom_003", "shoes_001", "accessory_001"], "pattern") == 0.0
+    assert breakdown(["top_003", "bottom_003", "shoes_001"], "pattern") == 0.5
+    no_pattern = [{k: v for k, v in c.items() if k != "pattern"} for c in CANDIDATES]
+    assert breakdown(["top_001", "bottom_003", "shoes_001"], "pattern", candidates=no_pattern) == 0.5
+
+
+def test_season_rule():
+    assert breakdown(["dress_001", "outerwear_001", "shoes_001"], "season") == 0.0
+    assert breakdown(["dress_001", "shoes_001"], "season") == 0.5
+    unseasoned = [dict(c, season=[]) if c["id"] == "outerwear_001" else c for c in CANDIDATES]
+    assert breakdown(["dress_001", "outerwear_001", "shoes_001"], "season", candidates=unseasoned) == 0.5
+    seasonless = [{k: v for k, v in c.items() if k != "season"} for c in CANDIDATES]
+    assert breakdown(["dress_001", "outerwear_001", "shoes_001"], "season", candidates=seasonless) == 0.5
 
 
 def test_formality_rules():
@@ -141,11 +176,15 @@ def test_formality_rules():
     assert score(GOOD, occasion="not_an_occasion")[2]["formality"] == 0.0
 
 
-def test_profile_avoid_and_overlap():
-    with_logo = outfit(["top_001", "bottom_001", "shoes_001", "accessory_001"], 215.0)
-    assert score(with_logo)[2]["profile"] == 0.0
-    assert score(GOOD, profile_style_tags=["minimal"])[2]["profile"] == 2 / 3
-    assert score(GOOD, profile_style_tags=[])[2]["profile"] == 1.0
+def test_profile_avoid_style_and_fit():
+    with_cap = outfit(["top_001", "bottom_001", "shoes_001", "accessory_001"], 215.0)
+    assert score(with_cap)[2]["profile"] == 0.0
+    # Crewneck misses on style only, jeans match both, sneakers have no fit and miss on style.
+    assert score(GOOD, profile_style_tags=["workwear"], profile_fits=[])[2]["profile"] == 1 / 3
+    assert score(GOOD, profile_style_tags=["workwear"])[2]["profile"] == (0.5 + 1 + 0) / 3
+    # A fit mismatch halves an item that matches on style.
+    assert score(GOOD, profile_fits=["regular"])[2]["profile"] == (0.5 + 1 + 1) / 3
+    assert score(GOOD, profile_style_tags=[], profile_fits=[])[2]["profile"] == 1.0
     # A closet anchor the user chose is never held against them.
     o = outfit(["closet_3", "bottom_001", "shoes_001"], 150.0, "Your oxford shirt with jeans.")
     assert score(o, anchor={"source": "closet", "id": "closet_3"}, profile_avoid=["navy"])[2]["profile"] == 1.0
@@ -174,11 +213,11 @@ def test_parse_rejects_bad_shapes():
 
 def test_completion_mean_over_three_and_repeats():
     other = outfit(["dress_001", "shoes_001"], 200.0, "The linen dress with white sneakers.")
-    third = outfit(["closet_3", "bottom_001", "shoes_001"], 150.0, "Your oxford shirt with jeans.")
+    third = outfit(["closet_3", "bottom_004", "shoes_001"], 140.0, "Your oxford shirt with chinos.")
     c = ctx()
-    assert R.score_completion(text(GOOD, other, third), c) == 6.5
-    assert R.score_completion(text(GOOD), c) == round(6.5 / 3, 4)
-    assert R.score_completion(text(GOOD, GOOD, GOOD), c) == round(6.5 / 3, 4)
+    assert R.score_completion(text(GOOD, other, third), c) == 7.5
+    assert R.score_completion(text(GOOD), c) == round(7.5 / 3, 4)
+    assert R.score_completion(text(GOOD, GOOD, GOOD), c) == round(7.5 / 3, 4)
     assert R.score_completion("not json", c) == 0.0
 
 
@@ -190,13 +229,13 @@ def test_reward_entry_point_handles_messages_and_json_columns():
     kwargs["occasion"] = ["everyday"] * 3
     kwargs["prompts"] = ["p"] * 3
     got = R.reward(completions, **kwargs)
-    assert got == [round(6.5 / 3, 4)] * 2 + [0.0]
+    assert got == [round(7.5 / 3, 4)] * 2 + [0.0]
 
 
 def test_ranking_and_spread():
     good2 = outfit(["dress_001", "shoes_001"], 200.0, "The linen dress with white sneakers.")
-    good3 = outfit(["closet_3", "bottom_001", "shoes_001"], 150.0, "Your oxford shirt with jeans.")
-    meh = outfit(["top_002", "bottom_001", "shoes_001", "outerwear_001"], 300.0, "A bold red layered look.")
+    good3 = outfit(["closet_3", "bottom_004", "shoes_001"], 140.0, "Your oxford shirt with chinos.")
+    meh = outfit(["top_002", "bottom_001", "shoes_002", "outerwear_001"], 390.0, "A bold red layered look.")
     bad = outfit(["top_002", "bottom_003", "shoes_002", "accessory_001"], 285.0, "Great. Fun.")
     cases = {
         "three good": text(GOOD, good2, good3),

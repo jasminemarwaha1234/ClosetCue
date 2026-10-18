@@ -161,20 +161,14 @@ export function useAnchorItem(): { catalog?: CatalogItem; closet?: ClosetItem } 
 }
 
 export const OCCASIONS: { value: Occasion; label: string }[] = [
-  { value: 'everyday', label: 'Everyday' },
-  { value: 'work', label: 'Work' },
-  { value: 'date', label: 'Date' },
-  { value: 'party', label: 'Party' },
   { value: 'formal', label: 'Formal' },
-  { value: 'active', label: 'Active' },
-  { value: 'wedding_guest', label: 'Wedding guest' },
-  { value: 'interview', label: 'Interview' },
-  { value: 'brunch', label: 'Brunch' },
-  { value: 'travel', label: 'Travel' },
-  { value: 'concert', label: 'Concert' },
-  { value: 'outdoors', label: 'Outdoors' },
-  { value: 'campus', label: 'Campus' },
-  { value: 'lounge', label: 'Lounge' },
+  { value: 'semi-formal', label: 'Semi-formal' },
+  { value: 'work', label: 'Work' },
+  { value: 'everyday', label: 'Everyday' },
+  { value: 'party', label: 'Party' },
+  { value: 'casual', label: 'Casual' },
+  { value: 'athletic', label: 'Athletic' },
+  { value: 'comfy', label: 'Comfy' },
 ];
 
 export const occasionLabel = (o: Occasion) => OCCASIONS.find((x) => x.value === o)?.label ?? o;
