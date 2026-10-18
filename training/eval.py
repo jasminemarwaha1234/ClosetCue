@@ -7,8 +7,9 @@ reward.CONTEXT_COLUMNS, "profile_id"}. The model answers the first --limit rows 
 with a pause between calls, through the same clients the live /outfits route uses.
 
 Answers are scored on the raw text the way GRPO scores them (reward.score_completion, so fenced JSON
-gets 0). They also go through the live route's guard, which strips fences and uses real totals, to
-count the outfits users would see.
+gets 0), and against the row's best possible reward (build_prompts.best_outfits), since some rows
+can't reach the maximum. They also go through the live route's guard, which strips fences and uses
+real totals, to count the outfits users would see.
 
 Writes <out>/<model>.jsonl (one record per answer, as it arrives) and <out>/<model>_summary.json, and
 prints the summary. A 429 after every fallback model means the quota is gone: the run stops and the
@@ -26,6 +27,7 @@ from pathlib import Path
 
 from backend.routes.outfits import CHAIN, _guard
 from training import reward
+from training.build_prompts import best_outfits
 
 MODELS = dict(CHAIN)
 DELAY = 4.0  # seconds between calls, under the Gemini free tier's per-minute limit
@@ -50,6 +52,12 @@ def score_answer(text: str, row: dict) -> dict:
         "reward": reward.score_completion(text, ctx),
         "live_kept": len(_guard(text, ctx, upgrade=False)),
     }
+
+
+def best_possible(row: dict) -> float:
+    """The reward of the best answer the row allows; 0 when no complete outfit fits."""
+    ctx = reward.prepare_context(row)
+    return reward.score_completion(json.dumps({"outfits": best_outfits(ctx)}), ctx)
 
 
 def _quota(e: Exception) -> bool:
@@ -80,6 +88,7 @@ async def run(model: str, rows: list[dict], path: Path) -> tuple[list[dict], str
             record = {
                 "row": n, "profile_id": row.get("profile_id"), "candidates": len(reward.prepare_context(row)["by_id"]),
                 "raw": text, "latency": round(time.monotonic() - start, 2), "error": error,
+                "best_possible": best_possible(row),
             }
             if text is not None:
                 record.update(score_answer(text, row))
@@ -91,12 +100,14 @@ async def run(model: str, rows: list[dict], path: Path) -> tuple[list[dict], str
 
 def summarize(records: list[dict], model: str, stopped: str | None) -> dict:
     """Rates over answers that came back (errors are counted apart); outfit rates over the outfits
-    in valid answers, where an outfit with an invented item fails every check."""
+    in valid answers, where an outfit with an invented item fails every check. The % of best
+    possible averages each answer's reward over its row's best, skipping rows where that is 0."""
     answered = [r for r in records if r["error"] is None]
     outfits = [o for r in answered for o in r["outfits"]]
     n = len(answered)
     latencies = sorted(r["latency"] for r in answered)
     mean_reward = statistics.fmean(r["reward"] for r in answered) if answered else None
+    winnable = [r for r in answered if r["best_possible"]]
 
     def pct(count, total):
         return round(100 * count / total, 1) if total else None
@@ -116,6 +127,8 @@ def summarize(records: list[dict], model: str, stopped: str | None) -> dict:
         "anchor_pct": pct(sum(o["breakdown"].get("anchor") == 1.0 for o in outfits), len(outfits)),
         "mean_reward": round(mean_reward, 3) if answered else None,
         "mean_reward_of_max_pct": pct(mean_reward, MAX_REWARD) if answered else None,
+        "mean_best_possible": round(statistics.fmean(r["best_possible"] for r in answered), 3) if answered else None,
+        "mean_reward_of_best_pct": pct(sum(r["reward"] / r["best_possible"] for r in winnable), len(winnable)),
         "live_outfits_pct": pct(sum(r["live_kept"] for r in answered), reward.OUTFITS_WANTED * n),
         "live_answers_ok_pct": pct(sum(r["live_kept"] >= 2 for r in answered), n),
         "latency_median_s": round(statistics.median(latencies), 2) if latencies else None,
@@ -136,6 +149,8 @@ LABELS = [
     ("anchor_pct", "Anchor included %"),
     ("mean_reward", f"Mean reward (max {MAX_REWARD})"),
     ("mean_reward_of_max_pct", "Mean reward, % of max"),
+    ("mean_best_possible", "Mean best possible reward"),
+    ("mean_reward_of_best_pct", "Mean reward, % of each row's best"),
     ("live_outfits_pct", "Outfits the live guard keeps %"),
     ("live_answers_ok_pct", "Answers with 2+ kept (no retry) %"),
     ("latency_median_s", "Median latency (s)"),
@@ -153,7 +168,8 @@ def report(summary: dict, records: list[dict]) -> str:
         picks = [("Random", r) for r in random.Random(0).sample(answered, min(3, len(answered)))]
         picks.append(("Lowest reward", min(answered, key=lambda r: r["reward"])))
         for title, r in picks:
-            lines += ["", f"--- {title}: row {r['row']} ({r['profile_id']}), reward {r['reward']}, "
+            lines += ["", f"--- {title}: row {r['row']} ({r['profile_id']}), reward {r['reward']} "
+                          f"of {r['best_possible']} possible, "
                           f"live guard keeps {r['live_kept']}, {r['latency']}s", r["raw"]]
             lines += [f"  outfit {o['items']}: score {o['score']}, {o['breakdown']}" for o in r["outfits"]]
     for r in records:

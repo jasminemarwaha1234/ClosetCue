@@ -112,6 +112,8 @@ def test_metrics_on_fake_answers(monkeypatch, tmp_path):
     assert [r["reward"] for r in records] == [5.0, 0.0, 2.1667, 0.0, 0.0]
     assert [r["live_kept"] for r in records] == [2, 0, 0, 2, 0]
     assert [r["fenced"] for r in records] == [False, False, False, True, False]
+    # The best answer pairs the two in-budget outfits (7.5 each) with one over budget (6.5).
+    assert [r["best_possible"] for r in records] == [7.1667] * 5
     s = E.summarize(records, "gemini", stopped)
     assert {k: v for k, v in s.items() if not k.startswith("latency")} == {
         "model": "gemini",
@@ -128,6 +130,8 @@ def test_metrics_on_fake_answers(monkeypatch, tmp_path):
         "anchor_pct": 75.0,
         "mean_reward": 1.433,
         "mean_reward_of_max_pct": 19.1,
+        "mean_best_possible": 7.167,
+        "mean_reward_of_best_pct": 20.0,
         "live_outfits_pct": 26.7,
         "live_answers_ok_pct": 40.0,
     }

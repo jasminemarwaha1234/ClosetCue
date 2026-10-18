@@ -20,10 +20,12 @@ built by prompt.build_request, the same function the live /outfits route uses.
 """
 
 import argparse
+import itertools
 import json
 import random
 from pathlib import Path
 
+from training import reward
 from training.prompt import build_request
 from training.retrieval import _allowed
 from training.vocab import OCCASION_FORMALITY
@@ -96,6 +98,40 @@ def complete_possible(row: dict) -> bool:
             if cost <= row["budget_max"]:
                 return True
     return False
+
+
+def best_outfits(ctx: dict, extend: int = 50) -> list[dict]:
+    """The 3 highest-scoring outfits for a reward context, best first: every top+bottom+shoes and
+    dress+shoes that can include the anchor, then the `extend` best of those with one outerwear,
+    one accessory, or one of each added. Only the best bases are extended so a 100-candidate row
+    (about 10,000 bases) takes about 0.2 s; on real rows, extending 1000 found nothing better."""
+    anchor = ctx["anchor"]["id"] if ctx["anchor"] else None
+    by_slot: dict[str, list[str]] = {}
+    for item in ctx["by_id"].values():
+        by_slot.setdefault(item["slot"], []).append(item["id"])
+    found: dict[frozenset, tuple[float, dict]] = {}
+
+    def add(ids: list[str]) -> None:
+        if frozenset(ids) not in found:
+            outfit = {"items": ids, "total": round(sum(ctx["by_id"][i]["price"] for i in ids), 2),
+                      "reason": f"Built around {ids[0]}."}
+            found[frozenset(ids)] = (reward.score_outfit(outfit, ctx)[0], outfit)
+
+    for slots in (("top", "bottom", "shoes"), ("dress", "shoes")):
+        if anchor and ctx["by_id"][anchor]["slot"] in slots:
+            pools = [[anchor] if s == ctx["by_id"][anchor]["slot"] else by_slot.get(s, []) for s in slots]
+        else:
+            pools = [by_slot.get(s, []) for s in slots] + ([[anchor]] if anchor else [])
+        for ids in itertools.product(*pools):
+            add(list(ids))
+    bases = sorted(found.values(), key=lambda s: -s[0])[:extend]
+    outerwear, accessories = by_slot.get("outerwear", []), by_slot.get("accessory", [])
+    extras = [[o] for o in outerwear] + [[a] for a in accessories] + [[o, a] for o in outerwear for a in accessories]
+    for _, base in bases:
+        for extra in extras:
+            if not set(extra) & set(base["items"]):
+                add(base["items"] + extra)
+    return [o for _, o in sorted(found.values(), key=lambda s: -s[0])[:reward.OUTFITS_WANTED]]
 
 
 def main():

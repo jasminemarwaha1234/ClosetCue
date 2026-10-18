@@ -1,12 +1,11 @@
 """Run with `python -m pytest training/test_build_prompts.py`."""
 
-import itertools
 import json
 import random
 
 from training import reward
 from training.build_prompts import (
-    ANCHOR_MIX, SIZES, _in_proportion, build_rows, complete_possible, main, split_profiles,
+    ANCHOR_MIX, SIZES, _in_proportion, best_outfits, build_rows, complete_possible, main, split_profiles,
 )
 from training.gen_profiles import generate
 from training.prompt import SYSTEM
@@ -98,27 +97,27 @@ def test_known_good_answer_scores_high():
     assert len(rows) >= 150
     for r in rows[:10]:
         ctx = reward.prepare_context(r)
-        answer = json.dumps({"outfits": _best_outfits(ctx)})
+        answer = json.dumps({"outfits": best_outfits(ctx)})
         assert reward.score_completion(answer, ctx) >= 6.5
 
 
-def _best_outfits(ctx: dict) -> list[dict]:
-    """The 3 highest-scoring top+bottom+shoes or dress+shoes outfits that include the anchor."""
-    anchor = ctx["anchor"]["id"] if ctx["anchor"] else None
-    by_slot = {}
-    for item in ctx["by_id"].values():
-        by_slot.setdefault(item["slot"], []).append(item)
-    scored = []
-    for slots in (("top", "bottom", "shoes"), ("dress", "shoes")):
-        for combo in itertools.product(*(by_slot.get(s, []) for s in slots)):
-            ids = [i["id"] for i in combo]
-            if anchor and anchor not in ids:
-                if ctx["by_id"][anchor]["slot"] in slots:
-                    continue
-                ids.append(anchor)
-            items = [ctx["by_id"][i] for i in ids]
-            outfit = {"items": ids, "total": round(sum(i["price"] for i in items), 2),
-                      "reason": f"The {ids[0]} anchors it."}
-            score, _, _ = reward.score_outfit(outfit, ctx)
-            scored.append((-score, ids, outfit))
-    return [o for _, _, o in sorted(scored)[:3]]
+
+def test_best_outfits_adds_an_accessory_to_reach_budget_min():
+    def item(id, price):
+        return {"id": id, "slot": id.split("_")[0], "price": price, "colors": ["black"], "formality": 2,
+                "style_tags": ["minimal"]}
+    row = {"occasion": "casual", "budget_min": 150, "budget_max": 200, "anchor": None,
+           "candidates": [item("top_1", 30), item("top_2", 40), item("bottom_1", 50), item("shoes_1", 60),
+                          item("accessory_1", 20)],
+           "profile_style_tags": ["minimal"], "profile_fits": [], "profile_avoid": []}
+    best = best_outfits(reward.prepare_context(row))
+    assert [(o["items"], o["total"]) for o in best] == [
+        (["top_2", "bottom_1", "shoes_1"], 150),
+        (["top_2", "bottom_1", "shoes_1", "accessory_1"], 170),
+        (["top_1", "bottom_1", "shoes_1", "accessory_1"], 160),
+    ]
+    assert reward.score_completion(json.dumps({"outfits": best}), row) == 7.5
+    # With top_1 as the anchor, only outfits around it count.
+    anchored = {**row, "anchor": {"source": "catalog", "id": "top_1"}}
+    best = best_outfits(reward.prepare_context(anchored))
+    assert [o["items"] for o in best] == [["top_1", "bottom_1", "shoes_1", "accessory_1"], ["top_1", "bottom_1", "shoes_1"]]
