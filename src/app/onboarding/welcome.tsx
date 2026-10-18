@@ -13,17 +13,32 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
-import { GoogleLogo } from '@/components/logos';
+import { AccountFields } from '@/components/AccountFields';
 import { hasProfile } from '@/lib/onboarding';
-import { continueAsGuest, getSession, signInWithGoogle } from '@/lib/supabase';
+import { continueAsGuest, createAccount, getSession, signIn, usernameError } from '@/lib/supabase';
 import { colors, radii, type } from '@/theme';
 
-// Welcome + sign-in. Designed in Paper ("As If / Welcome – sign in").
-// Google brings a saved profile back on any phone; a guest stays on this one.
+// Welcome + sign-in. Designed in Paper ("As If / Welcome – sign in"), with a username and
+// password in place of Google for now. An account brings a saved profile back on any phone;
+// a guest stays on this one.
 export default function WelcomeScreen() {
-  const [busy, setBusy] = useState<null | 'google' | 'guest'>(null);
+  const [mode, setMode] = useState<'signin' | 'create'>('signin');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState<null | 'account' | 'guest'>(null);
+  const creating = mode === 'create';
 
   // Someone who already finished onboarding goes straight to Build.
   async function next() {
@@ -36,12 +51,19 @@ export default function WelcomeScreen() {
     }
   }
 
-  async function google() {
-    setBusy('google');
+  async function submit() {
+    const problem = usernameError(username) ?? (password.length < 6 ? 'Use a password of at least 6 characters.' : null);
+    if (problem) {
+      Alert.alert(creating ? "Couldn't create your account" : "Couldn't sign in", problem);
+      return;
+    }
+    setBusy('account');
     try {
-      if (await signInWithGoogle()) await next();
+      await (creating ? createAccount(username, password) : signIn(username, password));
+      setPassword('');
+      await next();
     } catch (e) {
-      Alert.alert("Couldn't sign in with Google", e instanceof Error ? e.message : String(e));
+      Alert.alert(creating ? "Couldn't create your account" : "Couldn't sign in", e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(null);
     }
@@ -58,8 +80,8 @@ export default function WelcomeScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.hero}>
           <Text style={styles.wordmark}>
             As If<Text style={styles.dot}>.</Text>
@@ -76,17 +98,27 @@ export default function WelcomeScreen() {
             </Text>
           </View>
 
-          <Pressable style={styles.button} onPress={google} disabled={busy !== null}>
-            {busy === 'google' ? (
+          <AccountFields
+            username={username}
+            password={password}
+            onUsername={setUsername}
+            onPassword={setPassword}
+            onSubmit={submit}
+            newPassword={creating}
+          />
+
+          <Pressable style={styles.button} onPress={submit} disabled={busy !== null}>
+            {busy === 'account' ? (
               <ActivityIndicator color={colors.onPrimary} />
             ) : (
-              <>
-                <View style={styles.logo}>
-                  <GoogleLogo />
-                </View>
-                <Text style={styles.buttonText}>Continue with Google</Text>
-              </>
+              <Text style={styles.buttonText}>{creating ? 'Create account' : 'Sign in'}</Text>
             )}
+          </Pressable>
+          <Pressable onPress={() => setMode(creating ? 'signin' : 'create')} hitSlop={8} style={styles.switch}>
+            <Text style={styles.switchText}>
+              {creating ? 'Have an account? ' : 'New here? '}
+              <Text style={styles.switchLink}>{creating ? 'Sign in' : 'Create an account'}</Text>
+            </Text>
           </Pressable>
 
           <View style={styles.guest}>
@@ -97,12 +129,12 @@ export default function WelcomeScreen() {
                 <Text style={styles.guestText}>Continue as guest</Text>
               )}
             </Pressable>
-            <Text style={styles.note}>Guests stay on this phone. Add Google later to keep it.</Text>
+            <Text style={styles.note}>Guests stay on this phone. Save an account later to keep it.</Text>
           </View>
         </View>
       </ScrollView>
       <StatusBar style="dark" />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -114,7 +146,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 96,
     paddingBottom: 40,
-    gap: 48,
+    gap: 40,
   },
   hero: { gap: 16 },
   wordmark: { ...type.wordmark, color: colors.text },
@@ -130,8 +162,6 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 16, fontWeight: '600', lineHeight: 22, color: colors.text },
   cardText: { fontSize: 15, lineHeight: 22, color: colors.textBody },
   button: {
-    flexDirection: 'row',
-    gap: 10,
     height: 56,
     borderRadius: radii.pill,
     backgroundColor: colors.primary,
@@ -139,15 +169,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: { ...type.button, color: colors.onPrimary },
-  logo: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  guest: { gap: 10, alignItems: 'center' },
+  switch: { alignSelf: 'center' },
+  switchText: { fontSize: 15, lineHeight: 20, color: colors.textMuted },
+  switchLink: { fontWeight: '600', color: colors.onPrimarySoft },
+  guest: { gap: 10, alignItems: 'center', paddingTop: 6 },
   guestButton: {
     alignSelf: 'stretch',
     height: 56,

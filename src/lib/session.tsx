@@ -89,7 +89,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [payMethodId, setPayMethodId] = useState<PayMethodId>('apple_pay');
 
   // Load the profile and catalog, and prefill the anchor with a suggestion. Again after
-  // signing in (Google or guest), since the profile belongs to the account.
+  // signing in (an account or a guest), since the profile belongs to the account.
   useEffect(() => {
     const load = () =>
       Promise.all([getProfile(), getCatalog()])

@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { router } from 'expo-router';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { GoogleLogo } from '@/components/logos';
-import { getSession, isGuest, linkGoogle, signOut, supabase } from '@/lib/supabase';
+import { AccountFields } from '@/components/AccountFields';
+import { getSession, isGuest, saveGuestAccount, signOut, supabase, usernameError, usernameOf } from '@/lib/supabase';
 import { colors, radii, spacing } from '@/theme';
 
-// Your account, at the bottom of Your style. A guest can add Google to keep their profile
-// on any phone; a Google account can sign out.
+// Your account, at the bottom of Your style. A guest can save their account with a username
+// and password to keep their profile on any phone; an account can sign out.
 export function AccountCard() {
   const [session, setSession] = useState<Session | null>(null);
+  const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     getSession().then(setSession);
@@ -19,15 +22,23 @@ export function AccountCard() {
     return () => sub?.data.subscription.unsubscribe();
   }, []);
 
-  if (!supabase) return null;
+  if (!supabase || !session) return null;
   const guest = isGuest(session);
 
-  async function saveWithGoogle() {
+  async function save() {
+    const problem = usernameError(username) ?? (password.length < 6 ? 'Use a password of at least 6 characters.' : null);
+    if (problem) {
+      Alert.alert("Couldn't save your account", problem);
+      return;
+    }
     setBusy(true);
     try {
-      await linkGoogle();
+      await saveGuestAccount(username, password);
+      setSaving(false);
+      setPassword('');
+      setSession(await getSession());
     } catch (e) {
-      Alert.alert("Couldn't add Google", e instanceof Error ? e.message : String(e));
+      Alert.alert("Couldn't save your account", e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
     }
@@ -41,20 +52,29 @@ export function AccountCard() {
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{guest ? "You're a guest" : 'Signed in with Google'}</Text>
+      <Text style={styles.title}>{guest ? "You're a guest" : `Signed in as ${usernameOf(session)}`}</Text>
       <Text style={styles.text}>
         {guest
-          ? 'Your profile is saved on this phone only. Add Google to keep it everywhere.'
-          : `${session?.user.email ?? 'Your Google account'}. Your profile comes back on any phone.`}
+          ? 'Your profile is saved on this phone only. Save an account to keep it everywhere.'
+          : 'Your profile comes back on any phone you sign in on.'}
       </Text>
-      {guest ? (
-        <Pressable
-          onPress={saveWithGoogle}
-          disabled={busy}
-          style={({ pressed }) => [styles.google, (pressed || busy) && styles.dim]}
-        >
-          <GoogleLogo />
-          <Text style={styles.googleText}>Save with Google</Text>
+      {guest && saving ? (
+        <View style={styles.form}>
+          <AccountFields
+            username={username}
+            password={password}
+            onUsername={setUsername}
+            onPassword={setPassword}
+            onSubmit={save}
+            newPassword
+          />
+          <Pressable onPress={save} disabled={busy} style={({ pressed }) => [styles.button, (pressed || busy) && styles.dim]}>
+            {busy ? <ActivityIndicator color={colors.onPrimary} /> : <Text style={styles.buttonText}>Save account</Text>}
+          </Pressable>
+        </View>
+      ) : guest ? (
+        <Pressable onPress={() => setSaving(true)} style={({ pressed }) => [styles.outline, pressed && styles.dim]}>
+          <Text style={styles.outlineText}>Save your account</Text>
         </Pressable>
       ) : (
         <Pressable onPress={leave} hitSlop={8}>
@@ -69,10 +89,17 @@ const styles = StyleSheet.create({
   card: { gap: 8, padding: spacing.md, borderRadius: radii.xl, borderWidth: 1, borderColor: colors.hairline },
   title: { fontSize: 16, lineHeight: 22, fontWeight: '600', color: colors.text },
   text: { fontSize: 14, lineHeight: 20, color: colors.textBody },
-  google: {
+  form: { gap: 10, marginTop: 6 },
+  button: {
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: { fontSize: 16, lineHeight: 20, fontWeight: '600', color: colors.onPrimary },
+  outline: {
     marginTop: 6,
-    flexDirection: 'row',
-    gap: 10,
     height: 48,
     borderRadius: 24,
     borderWidth: 1.5,
@@ -80,7 +107,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  googleText: { fontSize: 16, lineHeight: 20, fontWeight: '600', color: colors.text },
+  outlineText: { fontSize: 16, lineHeight: 20, fontWeight: '600', color: colors.onPrimarySoft },
   link: { fontSize: 15, lineHeight: 20, fontWeight: '600', color: colors.onPrimarySoft, paddingTop: 4 },
   dim: { opacity: 0.6 },
 });

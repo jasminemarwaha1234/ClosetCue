@@ -1,13 +1,11 @@
 import 'expo-sqlite/localStorage/install';
 import { createClient, type Session } from '@supabase/supabase-js';
-import * as Linking from 'expo-linking';
-import * as WebBrowser from 'expo-web-browser';
 
 // The phone only talks to Supabase to sign in (PLAN.md section 4). Every read and write goes
 // through the backend, which checks the access token we send it and holds the service key.
 //
-// Two ways in, from the welcome screen: Google, or a guest (Supabase's anonymous sign-in).
-// A guest can add Google later from Your style and keeps the same account and profile.
+// Two ways in, from the welcome screen: a username and password, or a guest (Supabase's
+// anonymous sign-in). A guest can save their account later from Your style and keeps it.
 
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const key = process.env.EXPO_PUBLIC_SUPABASE_KEY; // the publishable (anon) key, never a secret key
@@ -25,17 +23,13 @@ export const supabase =
       })
     : null;
 
-// Where Google sends the browser back to: exp://<laptop>/--/auth in Expo Go, lahacksai://auth
-// in a build. Both must be in Supabase's Authentication -> URL Configuration -> Redirect URLs.
-const redirectTo = Linking.createURL('auth');
-
 export async function getSession(): Promise<Session | null> {
   if (!supabase) return null;
   const { data } = await supabase.auth.getSession();
   return data.session;
 }
 
-// The signed-in user's access token, or null before they choose Google or guest.
+// The signed-in user's access token, or null before they sign in or continue as a guest.
 export async function accessToken(): Promise<string | null> {
   return (await getSession())?.access_token ?? null;
 }
@@ -48,52 +42,74 @@ export async function continueAsGuest() {
   if (error) throw error;
 }
 
-// Opens Google in an in-app browser and finishes the sign-in when it comes back.
-// Returns false if the person closed the browser.
-async function viaBrowser(startUrl: string | undefined): Promise<boolean> {
-  if (!supabase || !startUrl) throw new Error("Google sign-in isn't set up yet.");
-  const result = await WebBrowser.openAuthSessionAsync(startUrl, redirectTo);
-  if (result.type !== 'success') return false;
+// Accounts are a username and password. Supabase signs in with an email, so each username maps
+// to an address on a domain nobody receives mail at. That only works with "Confirm email" off
+// (Authentication -> Sign In / Providers -> Email), so Supabase never tries to send to it.
+const ACCOUNT_DOMAIN = 'users.asif.app';
 
-  // Supabase answers with tokens in the fragment, or a code with PKCE, or an error.
-  const back = new URL(result.url);
-  const params = new URLSearchParams(back.hash.slice(1) || back.search.slice(1));
-  const failure = params.get('error_description') ?? params.get('error');
-  if (failure) throw new Error(failure.replace(/\+/g, ' '));
-  const code = params.get('code');
-  if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) throw error;
-    return true;
+export const USERNAME_RULE = /^[a-z0-9_.]{3,20}$/;
+
+export function usernameError(username: string): string | null {
+  return USERNAME_RULE.test(username.trim().toLowerCase())
+    ? null
+    : 'Usernames are 3 to 20 letters, numbers, dots or underscores.';
+}
+
+const emailFor = (username: string) => `${username.trim().toLowerCase()}@${ACCOUNT_DOMAIN}`;
+
+// The username back from a session, for "Signed in as …".
+export const usernameOf = (session: Session | null) =>
+  (session?.user.user_metadata?.username as string | undefined) ?? session?.user.email?.split('@')[0] ?? null;
+
+// Supabase's messages, in the app's words.
+function friendly(message: string): Error {
+  if (/invalid login credentials/i.test(message)) return new Error('Wrong username or password.');
+  if (/already (registered|been registered)|already exists/i.test(message)) return new Error('That username is taken.');
+  if (/password should be at least/i.test(message)) return new Error('Use a password of at least 6 characters.');
+  return new Error(message);
+}
+
+// Creating an account with "Confirm email" on would make Supabase email the made-up address,
+// and bounced mail can get the project's email sending restricted. So check first.
+async function requireNoEmailConfirmation() {
+  const res = await fetch(`${url}/auth/v1/settings`, { headers: { apikey: key! } });
+  const settings: { mailer_autoconfirm?: boolean } = await res.json();
+  if (!settings.mailer_autoconfirm) {
+    throw new Error('Turn off "Confirm email" in Supabase first (Authentication → Sign In / Providers → Email).');
   }
-  const access_token = params.get('access_token');
-  const refresh_token = params.get('refresh_token');
-  if (!access_token || !refresh_token) throw new Error('Google sign-in came back without a session.');
-  const { error } = await supabase.auth.setSession({ access_token, refresh_token });
-  if (error) throw error;
-  return true;
 }
 
-export async function signInWithGoogle(): Promise<boolean> {
-  if (!supabase) throw new Error("Google sign-in isn't set up yet.");
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo, skipBrowserRedirect: true },
-  });
-  if (error) throw error;
-  return viaBrowser(data.url);
+export async function signIn(username: string, password: string) {
+  if (!supabase) throw new Error("Accounts aren't set up yet. Continue as a guest.");
+  const { error } = await supabase.auth.signInWithPassword({ email: emailFor(username), password });
+  if (error) throw friendly(error.message);
 }
 
-// A guest adds Google to the same account, so their profile and closet stay. Needs
-// "Allow manual linking" on in Supabase (Authentication -> Sign In / Providers).
-export async function linkGoogle(): Promise<boolean> {
-  if (!supabase) throw new Error("Google sign-in isn't set up yet.");
-  const { data, error } = await supabase.auth.linkIdentity({
-    provider: 'google',
-    options: { redirectTo, skipBrowserRedirect: true },
+export async function createAccount(username: string, password: string) {
+  if (!supabase) throw new Error("Accounts aren't set up yet. Continue as a guest.");
+  await requireNoEmailConfirmation();
+  const { data, error } = await supabase.auth.signUp({
+    email: emailFor(username),
+    password,
+    options: { data: { username: username.trim().toLowerCase() } },
   });
-  if (error) throw error;
-  return viaBrowser(data.url);
+  if (error) throw friendly(error.message);
+  if (!data.session) {
+    // Supabase is waiting for an email confirmation that can never arrive.
+    throw new Error('Turn off "Confirm email" in Supabase (Authentication → Sign In / Providers → Email).');
+  }
+}
+
+// A guest keeps their account, profile and closet by giving it a username and password.
+// Needs "Allow manual linking" on, and "Confirm email" off so the address counts as verified.
+export async function saveGuestAccount(username: string, password: string) {
+  if (!supabase) throw new Error("Accounts aren't set up yet.");
+  await requireNoEmailConfirmation();
+  const name = username.trim().toLowerCase();
+  const linked = await supabase.auth.updateUser({ email: emailFor(name), data: { username: name } });
+  if (linked.error) throw friendly(linked.error.message);
+  const withPassword = await supabase.auth.updateUser({ password });
+  if (withPassword.error) throw friendly(withPassword.error.message);
 }
 
 // Also used by "Delete my data", so the next launch starts at the welcome screen.
