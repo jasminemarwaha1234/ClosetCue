@@ -68,7 +68,6 @@ class StyleProfile(BaseModel):
     summary: str
     style_tags: list[str]  # same vocabulary as CatalogItem.style_tags
     colors: list[str]  # colors the user wears most
-    formality: int  # 1-5, what they usually wear
     avoid: list[str]  # style tags or colors to leave out, such as "logos"
     departments: list[Literal["men", "women"]]  # catalog sections to show; unisex items always show
     looks: list[Look]
@@ -94,6 +93,10 @@ class OutfitsRequest(BaseModel):
     budget_max: float
     max_item_price: Optional[float] = None  # no single catalog item may cost more
     occasion: Occasion
+    # "Make it nicer": ids of the outfit's items and owned pieces. The backend returns one
+    # pricier version with the budget range moved up to (that outfit's total, total + $150],
+    # so it can exceed budget_max. The checkout mandate is what refuses it.
+    upgrade_of: Optional[list[str]] = None
 
 
 class Outfit(BaseModel):
@@ -193,21 +196,6 @@ class RatePair(BaseModel):
 class RateChoice(BaseModel):
     pair_id: str
     choice: Literal["a", "b"]
-
-
-# POST /fit (FitFeedback) -> StyleProfile, updated from the ratings
-FitRating = Literal["too_small", "right", "too_big"]
-
-
-class ItemFit(BaseModel):
-    item_id: str
-    fit: FitRating
-    liked: bool
-
-
-class FitFeedback(BaseModel):
-    order_id: str
-    items: list[ItemFit]
 
 
 # DELETE /me -> 204, after deleting the user's profile, feedback and mandates

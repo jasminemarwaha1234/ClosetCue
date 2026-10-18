@@ -75,7 +75,7 @@ The track asks us to "Build systems that learn, adapt, and improve from data. Cr
 | --- | --- |
 | Learns from data | Supervised fine-tuning (SFT: training on example answers) on outfits a strong model wrote, kept only when they pass our reward. Then GRPO, a reinforcement learning method that trains against a scoring function. |
 | Improves | A held-out eval of base Llama, then SFT, then GRPO, with a frontier model as a reference, plus a blind human A/B test. |
-| Adapts | Each user's style profile updates from their feedback. Every "which outfit is better?" answer becomes a preference pair, and a DPO round (training on preferred versus rejected answers) on those pairs gives model v2. |
+| Adapts | Every "which outfit is better?" answer becomes a preference pair, and a DPO round (training on preferred versus rejected answers) on those pairs gives model v2. |
 
 The judges' likely question is "Why not just prompt GPT or Gemini?" The answer has to be numbers: how often the base model breaks budget, invents items or leaves out shoes, against how often ours does, plus latency and cost per outfit.
 
@@ -115,7 +115,6 @@ The judges' likely question is "Why not just prompt GPT or Gemini?" The answer h
 4. **Outfit cards.** The trained stylist returns 2–3 complete outfits built around the anchor, each with a total price and a one-line reason ("the cream knit picks up the off-white sneaker sole"). An owned anchor shows as "from your closet" and costs nothing. Swap any single piece you'd buy, or open it with **View at retailer**.
 5. **Try it on.** See the outfit on your own full-body photo. The flat-lay view is the fallback.
 6. **Checkout under a limit.** The agent proposes a cart. You approve it against a spending limit you set, and the backend refuses anything over it. Confirm with Face ID or the passcode, then see a receipt (section 8).
-7. **Feedback.** "How did it fit?" updates your profile right away and becomes training data for the next model.
 
 **Available at any time, outside the loop:**
 
@@ -180,7 +179,8 @@ Design these in Paper before building. The first six are the demo path.
 7. **Checkout:** the cart, the spending limit, the tokenized card, confirm.
 8. **Which is better?:** the blind A/B screen (section 6).
 9. **Trust:** what data is used, delete my data, AI use policy, merchant impact.
-10. **How did it fit?:** feedback that updates the profile.
+
+There is no "How did it fit?" screen: the app can't know when an order arrives, and no real order is placed.
 
 ### Routes
 
@@ -202,10 +202,9 @@ src/app/
 ├── pick-item.tsx            modal: choose the anchor from the catalog or your closet, or none
 ├── outfits.tsx              5. Outfits
 ├── tryon/[outfitId].tsx     6. Try-on
-├── checkout/
-│   ├── index.tsx            7. Checkout, including the refusal
-│   └── receipt.tsx          receipt and what's left of the mandate
-└── fit/[orderId].tsx        10. How did it fit?
+└── checkout/
+    ├── index.tsx            7. Checkout, including the refusal
+    └── receipt.tsx          receipt and what's left of the mandate
 ```
 
 ---
@@ -239,12 +238,11 @@ photos ────────────────────────�
                                           builds profile + closet ───────▶ Supabase: profiles
 edit profile ──────────────────────────▶ GET, PUT /profile ──────────────▶ Supabase: profiles
 browse, anchor ────────────────────────▶ GET /catalog ───────────────────▶ training/catalog.json
-anchor, budget range ──────────────────▶ POST /outfits ── candidates ────▶ Veri: our Llama 3B
+anchor, budget range, make it nicer ───▶ POST /outfits ── candidates ────▶ Veri: our Llama 3B
                                           retrieve, call, guard, retry once
 photo + items ─────────────────────────▶ POST /tryon ────────────────────▶ Gemini image editing
 cart ──────────────────────────────────▶ POST /checkout/mandate, /cart, /confirm ▶ Stripe Issuing (sandbox): card with a spending limit
 A/B choice ────────────────────────────▶ GET /rate/next, POST /rate ─────▶ Supabase: feedback (→ DPO data)
-fit rating ────────────────────────────▶ POST /fit ──────────────────────▶ Supabase: feedback, updated profile
 trust screen ──────────────────────────▶ DELETE /me ─────────────────────▶ Supabase: delete user's rows
                  Sentry: traces, logs and AI-call monitoring on both sides
 ```
@@ -253,7 +251,7 @@ trust screen ──────────────────────�
 - **Backend:** FastAPI in `backend/`. For the demo it runs on a laptop behind a tunnel, or on a small cloud VM if time allows. The pose and face models run inside the server process, on CPU.
 - **Supabase** stores accounts, style profiles and feedback:
   - **Anonymous sign-in** gives every user an account with no sign-up screen, so judges and friends can start in one tap. Email sign-in can come later.
-  - Tables: `profiles` (one per user, the style profile and closet as JSON), `feedback` (A/B choices and fit ratings, with the outfits shown). The `feedback` table exports straight to the DPO dataset.
+  - Tables: `profiles` (one per user, the style profile and closet as JSON), `feedback` (A/B choices, with the outfits shown). The `feedback` table exports straight to the DPO dataset.
   - Photos are never stored. "Delete my data" deletes the user's rows.
   - The phone only talks to Supabase for sign-in. Reads and writes go through the backend, which holds the service key.
 - **Secrets:** the Gemini, Veri, Supabase service and Stripe secret keys live only on the backend, in `backend/.env`. The app's settings go in the root `.env`, and everything in it ships inside the app. [README.md](README.md) lists both. The repo goes public for submission, and anything the phone app ships can be read.
@@ -376,9 +374,9 @@ About 1,000 **real products** (real brand, price, image and retailer link) from 
 Built by scripts, not by hand:
 
 1. **Pick stores** (`training/stores.json`, Charlie decides). Prefer stores on Shopify: many publish their whole product list at `<store>/products.json` (up to 250 products per page) with title, product type, price, images and URL. Big chains like Zara, H&M, Uniqlo and Nike have no such feed and block scraping, so skip them. Cover a real spread of styles, prices and both departments. Check each store's terms of service.
-2. **`scrape_catalog.py`** pulls each store's feed, maps its product types to our six slots, keeps one price and image per product, drops color variants of the same item, and caps each store at about 50 products spread across slots.
+2. **`scrape_catalog.py`** pulls each store's feed, maps its product types to our six slots, keeps one price and image per product, sets `url` to the product's own page (`<store>/products/<handle>`, never the store's home page), drops color variants of the same item, and caps each store at about 50 products spread across slots.
 3. **`tag_catalog.py`** has Gemini (the fast model) tag each item's `department`, `colors`, `formality`, `style_tags` and `season` from its title and image, choosing only from fixed vocabularies so "navy" and "dark blue" don't become two colors.
-4. **Check:** slot and department balance, every image URL loads, and a person spot-checks about 30 random items. Record the date the catalog was pulled; prices and stock drift.
+4. **Check:** slot and department balance, every image and product URL loads, and a person spot-checks about 30 random items. Record the date the catalog was pulled; prices and stock drift.
 
 ```json
 {
@@ -437,7 +435,7 @@ The same code runs in the backend as a guard on every live answer (section 4), s
 1. **v0, the baseline.** Base Llama with our prompt, no training. Evaluated, not trained.
 2. **v1-sft.** `sft_text` with LoRA on the filtered Gemini answers. One L4. Short.
 3. **v1-grpo.** GRPO from the SFT checkpoint with the reward. One L4, `max_steps` about 100, 4–8 rollouts per prompt.
-4. **v2-dpo** (stretch). DPO on preference pairs from the in-app A/B screen and outfit feedback, collected from real people at the event.
+4. **v2-dpo** (stretch). DPO on preference pairs from the in-app A/B screen, collected from real people at the event.
 
 ### Small first, then scale up
 
@@ -555,9 +553,9 @@ The app needs no Stripe SDK: the user never enters a card, and every Stripe call
 
 **Fallback.** If Issuing isn't available on our Stripe account, the mandate stays enforced in our code only, the card reference is a fixed test card (`Visa •••• 4242`), and the payment is labeled as simulated.
 
-**Demo moment:** you say "make it nicer", the agent proposes a $90 upgrade that would push the cart past your $200 limit, and the backend refuses the cart and says why. The app then offers the closest outfit that fits. Judges see the limit enforced twice, in our code and on the card, not just promised in a policy.
+**Demo moment:** you say "make it nicer", the agent proposes a $90 upgrade that would push the cart past your $200 limit, and the backend refuses the cart and says why. "Make it nicer" is `POST /outfits` with `upgrade_of` set to the current outfit's item ids: the backend runs the normal pipeline with the budget range moved up to (that outfit's total, total + $150] and returns one outfit. That's the one request allowed past `budget_max`, because the mandate is what's supposed to refuse it. The app then offers the closest outfit that fits. Judges see the limit enforced twice, in our code and on the card, not just promised in a policy.
 
-**Merchant impact panel:** outfit-level selling raises basket size, and fit feedback should cut returns. Cite a real source for return rates on the panel and on Devpost. Don't invent numbers.
+**Merchant impact panel:** outfit-level selling raises basket size, and trying an outfit on before buying should cut returns. Cite a real source for return rates on the panel and on Devpost. Don't invent numbers.
 
 ---
 
@@ -583,9 +581,8 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 
 1. v2-dpo from A/B answers gathered at the event
 2. **Closet items as candidates, not just the anchor:** "you already own shoes that work". Retrieval adds the user's closet items to the candidate list at $0, the reward counts them as free, and `Outfit.owned` already carries them to the app
-3. "How did it fit?" feedback updating the profile
-4. Sentry tracing, logs and AI monitoring, with a written "what it showed us"
-5. Screenshots as inspiration: the scan currently skips screenshots. Instead, include them, tag them "inspiration" (outfits the user likes) as opposed to "worn" (camera photos of the user), and weigh the two differently in the style profile
+3. Sentry tracing, logs and AI monitoring, with a written "what it showed us"
+4. Screenshots as inspiration: the scan currently skips screenshots. Instead, include them, tag them "inspiration" (outfits the user likes) as opposed to "worn" (camera photos of the user), and weigh the two differently in the style profile
 
 **Later (after the hackathon, unless we're far ahead)**
 
@@ -598,7 +595,7 @@ Two people, about 22 hours. The model work comes first: an app with no trained m
 
 ## 10. Who does what, and when
 
-**Person A (Charlie): model and backend.** Catalog (scraper and tagging), data, retrieval, reward, Veri runs, eval, journal, `/profile` (including the closet), `/outfits`, `/catalog`, `/rate`, `/fit`, Supabase.
+**Person A (Charlie): model and backend.** Catalog (scraper and tagging), data, retrieval, reward, Veri runs, eval, journal, `/profile` (including the closet), `/outfits` (including make it nicer), `/catalog`, `/rate`, Supabase.
 **Person B (Jasmine): design and app.** Paper style guide and screens, Expo Router setup, every screen including the A/B screen, `/tryon`, `/checkout`, `DELETE /me`, `/scan`, `/faces/find-owner` (including fix 4 in [backend/SCAN_FIXES.md](backend/SCAN_FIXES.md)), the face-matching consent screen, the Stripe Issuing setup behind `/checkout`, Sentry, domain and landing page, demo video.
 
 The split works because training runs take 30–60 minutes of waiting. Person A writes server endpoints while a run trains.
@@ -606,12 +603,12 @@ The split works because training runs take 30–60 minutes of waiting. Person A 
 ### Staying unblocked
 
 1. **Contract first (Sat 2–4 PM, together).** Agree on the outfit JSON schema, the request and response of every endpoint, and the `catalog.json` fields. Write them into `backend/schemas.py` and `src/api/types.ts`, and have B write `src/api/mocks.ts` from them. After that, neither of us waits on the other.
-2. **Split the server by file.** A owns `profile.py`, `outfits.py`, `catalog.py`, `feedback.py` (`/rate` and `/fit`) and the `services/` files for Gemini, Veri and Supabase. B owns `tryon.py`, `checkout.py`, `me.py`, `scan.py`, `faces.py`, and the pose and face `services/`. `main.py` and `schemas.py` are shared: keep edits there small and pull before touching them.
+2. **Split the server by file.** A owns `profile.py`, `outfits.py`, `catalog.py`, `feedback.py` (`/rate`) and the `services/` files for Gemini, Veri and Supabase. B owns `tryon.py`, `checkout.py`, `me.py`, `scan.py`, `faces.py`, and the pose and face `services/`. `main.py` and `schemas.py` are shared: keep edits there small and pull before touching them.
 3. **Integration checkpoints**, where the app swaps a mock for the real endpoint:
    - **Sat 10 PM:** `/profile` live, and `/outfits` against v0.
    - **Sun 6 AM:** `/outfits` against our trained model.
 4. **Git:** short-lived branches, or push to `main` inside your own folders, and pull often.
-5. **Watch A's load.** A is on the critical path, since no trained model means no Model Learning track. If A falls behind, B takes the Supabase setup or `/rate` and `/fit`, all plain create, read, update and delete code.
+5. **Watch A's load.** A is on the critical path, since no trained model means no Model Learning track. If A falls behind, B takes the Supabase setup or `/rate`, all plain create, read, update and delete code.
 
 Times are PDT. Shift them if we start late, but keep the 10 PM track decision and the 8:30 AM feature freeze.
 

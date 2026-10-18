@@ -65,7 +65,6 @@ export const profile: StyleProfile = {
   summary: 'Mostly neutrals with one accent color, relaxed fits, smart-casual. Avoids logos.',
   style_tags: ['minimal', 'relaxed', 'smart-casual', 'neutral tones'],
   colors: ['cream', 'black', 'olive', 'navy'],
-  formality: 2,
   avoid: ['logos', 'neon'],
   departments: ['men', 'women'],
   looks: [
@@ -146,7 +145,7 @@ export function outfits(req: OutfitsRequest): OutfitsResponse {
 }
 
 // "Make it nicer" for the checkout demo: the same outfit with the leather jacket, which
-// pushes the cart over a $200 limit. Not in the API yet (backend/CHANGES_FOR_CHARLIE.md).
+// pushes the cart over a $200 limit.
 export function nicer(o: Outfit): Outfit {
   const items = o.items.map((i) => (i.slot === 'outerwear' ? byId('outerwear_011') : i));
   return {

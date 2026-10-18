@@ -23,7 +23,6 @@ export default function RootLayout() {
         <Stack.Screen name="tryon/[outfitId]" options={{ title: '' }} />
         <Stack.Screen name="checkout/index" options={{ title: '' }} />
         <Stack.Screen name="checkout/receipt" options={{ headerShown: false }} />
-        <Stack.Screen name="fit/[orderId]" options={{ title: 'How did it fit?' }} />
       </Stack>
     </SessionProvider>
   );

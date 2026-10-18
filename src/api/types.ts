@@ -53,7 +53,6 @@ export type StyleProfile = {
   summary: string;
   style_tags: string[]; // same vocabulary as CatalogItem.style_tags
   colors: string[]; // colors the user wears most
-  formality: number; // 1-5, what they usually wear
   avoid: string[]; // style tags or colors to leave out, such as "logos"
   departments: ('men' | 'women')[]; // catalog sections to show; unisex items always show
   looks: Look[];
@@ -87,6 +86,10 @@ export type OutfitsRequest = {
   budget_max: number;
   max_item_price?: number | null; // no single catalog item may cost more
   occasion: Occasion;
+  // "Make it nicer": ids of the outfit's items and owned pieces. The backend returns one
+  // pricier version with the budget range moved up to (that outfit's total, total + $150],
+  // so it can exceed budget_max. The checkout mandate is what refuses it.
+  upgrade_of?: string[] | null;
 };
 
 export type Outfit = {
@@ -164,10 +167,5 @@ export type RatePair = {
 };
 
 export type RateChoice = { pair_id: string; choice: 'a' | 'b' };
-
-// POST /fit (FitFeedback) -> StyleProfile, updated from the ratings
-export type FitRating = 'too_small' | 'right' | 'too_big';
-export type ItemFit = { item_id: string; fit: FitRating; liked: boolean };
-export type FitFeedback = { order_id: string; items: ItemFit[] };
 
 // DELETE /me -> 204, after deleting the user's profile, feedback and mandates

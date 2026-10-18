@@ -1,4 +1,10 @@
-> **Status, Oct 17 late (after the "updated plan w payment info" push):** three things are open: the new "View at retailer" request at the bottom, plus the two below. `StyleProfile.formality` is still in `schemas.py` and `types.ts`, and there's still no way to ask `/outfits` for "make it nicer". The app already follows everything in JANGES_FOR_JASMINE.md. Until "make it nicer" exists, the app fakes it from `src/api/mocks.ts`.
+> **Status, Oct 18 (Charlie):** all three are in the contract and PLAN.md.
+> - `StyleProfile.formality` is removed from `schemas.py` and `types.ts`.
+> - "Make it nicer" is option A, with item ids rather than an outfit id, because the backend doesn't store outfits: `OutfitsRequest.upgrade_of?: string[] | null` holds the current outfit's item and owned ids. `POST /outfits` then returns one outfit with the budget range moved up to (that outfit's total, total + $150], so it can go past `budget_max`. `makeItNicer(req, outfit)` in `client.ts` calls it when mocks are off.
+> - The scraper will fill `url` with each product's page (PLAN.md section 5).
+> - `/fit`, its types and the fit placeholder screen are gone.
+>
+> Still open on my side: the final list of allowed color names and `style_tags`.
 
 # Change request: remove "formality" from the style profile
 
