@@ -109,12 +109,7 @@ export default function BuildScreen() {
 
         <View style={styles.group}>
           <SectionTitle>Occasion</SectionTitle>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.bleed}
-            contentContainerStyle={styles.occasions}
-          >
+          <View style={styles.occasions}>
             {OCCASIONS.map((o) => (
               <Chip
                 key={o.value}
@@ -123,7 +118,7 @@ export default function BuildScreen() {
                 onPress={() => s.setOccasion(o.value)}
               />
             ))}
-          </ScrollView>
+          </View>
         </View>
 
         <PrimaryButton label="Build outfits" onPress={build} loading={loading} />
@@ -165,6 +160,5 @@ const styles = StyleSheet.create({
   maxRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 4 },
   maxLabel: { fontSize: 15, lineHeight: 20, color: colors.textBody },
   maxChips: { flexDirection: 'row', gap: 6 },
-  bleed: { marginHorizontal: -spacing.lg },
-  occasions: { gap: 8, paddingHorizontal: spacing.lg },
+  occasions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });
